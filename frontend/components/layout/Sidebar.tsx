@@ -1,0 +1,148 @@
+'use client'
+
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import {
+  LayoutDashboard,
+  FileSearch,
+  Upload,
+  Users,
+  LogOut,
+  ShieldAlert,
+} from 'lucide-react'
+import { useAuth } from '@/lib/auth'
+import { cn } from '@/lib/utils'
+import { ROL_LABELS } from '@/lib/utils'
+import {
+  Sidebar as ShadSidebar,
+  SidebarContent,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarHeader,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarSeparator,
+  useSidebar,
+} from '@/components/ui/sidebar'
+import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { Button } from '@/components/ui/button'
+
+const navItems = [
+  {
+    href: '/dashboard',
+    label: 'Dashboard',
+    icon: LayoutDashboard,
+    roles: ['vicepresidente', 'directivo', 'tecnico'],
+  },
+  {
+    href: '/hallazgos',
+    label: 'Hallazgos',
+    icon: FileSearch,
+    roles: ['vicepresidente', 'directivo', 'tecnico'],
+  },
+  {
+    href: '/uploads',
+    label: 'Carga de datos',
+    icon: Upload,
+    roles: ['vicepresidente', 'directivo'],
+  },
+  {
+    href: '/usuarios',
+    label: 'Usuarios',
+    icon: Users,
+    roles: ['vicepresidente'],
+  },
+]
+
+export default function AppSidebar() {
+  const pathname = usePathname()
+  const { user, logout } = useAuth()
+  const { setOpenMobile } = useSidebar()
+
+  const visible = navItems.filter(
+    (item) => user && item.roles.includes(user.rol)
+  )
+
+  return (
+    <ShadSidebar collapsible="icon">
+      {/* Logo */}
+      <SidebarHeader className="border-b border-sidebar-border px-4 py-4">
+        <div className="flex items-center gap-2.5">
+          <div className="bg-sidebar-accent rounded-lg p-1.5 shrink-0">
+            <ShieldAlert className="w-5 h-5 text-sidebar-accent-foreground" />
+          </div>
+          <div className="group-data-[collapsible=icon]:hidden">
+            <p className="text-sm font-bold text-sidebar-foreground leading-tight">
+              Hallazgos ERO
+            </p>
+            <p className="text-[10px] text-sidebar-foreground/50 uppercase tracking-widest">
+              Fiduprevisora
+            </p>
+          </div>
+        </div>
+      </SidebarHeader>
+
+      {/* Nav */}
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {visible.map((item) => {
+                const active =
+                  pathname === item.href || pathname.startsWith(item.href + '/')
+                return (
+                  <SidebarMenuItem key={item.href}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={active}
+                      tooltip={item.label}
+                      onClick={() => setOpenMobile(false)}
+                    >
+                      <Link href={item.href}>
+                        <item.icon />
+                        <span>{item.label}</span>
+                      </Link>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )
+              })}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+
+      {/* User / Logout */}
+      <SidebarFooter className="border-t border-sidebar-border px-3 py-3">
+        <div className="flex items-center gap-3 px-2 py-1.5 rounded-lg bg-sidebar-accent/60 mb-1 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0">
+          <Avatar className="w-7 h-7 shrink-0">
+            <AvatarFallback className="bg-accent text-accent-foreground text-xs font-bold">
+              {user?.nombre?.charAt(0).toUpperCase()}
+            </AvatarFallback>
+          </Avatar>
+          <div className="min-w-0 group-data-[collapsible=icon]:hidden">
+            <p className="text-xs font-semibold text-sidebar-foreground truncate">
+              {user?.nombre}
+            </p>
+            <p className="text-[10px] text-sidebar-foreground/50 capitalize">
+              {user ? ROL_LABELS[user.rol] : ''}
+            </p>
+          </div>
+        </div>
+        <SidebarSeparator className="my-1 bg-sidebar-border" />
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={logout}
+          className={cn(
+            'w-full justify-start gap-2 text-sidebar-foreground/70 hover:text-sidebar-foreground hover:bg-sidebar-accent'
+          )}
+        >
+          <LogOut className="w-4 h-4" />
+          <span className="group-data-[collapsible=icon]:hidden">Cerrar sesión</span>
+        </Button>
+      </SidebarFooter>
+    </ShadSidebar>
+  )
+}
