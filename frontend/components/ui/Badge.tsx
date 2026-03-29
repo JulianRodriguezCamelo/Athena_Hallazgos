@@ -1,3 +1,4 @@
+import type { HTMLAttributes } from 'react'
 import { cva, type VariantProps } from "class-variance-authority"
 import { cn } from "@/lib/utils"
 
@@ -6,14 +7,14 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        default:   "bg-primary text-primary-foreground border-transparent",
-        secondary: "bg-secondary text-secondary-foreground border-transparent",
+        default:     "bg-primary text-primary-foreground border-transparent",
+        secondary:   "bg-secondary text-secondary-foreground border-transparent",
         destructive: "bg-destructive/10 text-destructive border-transparent",
-        outline:   "border-border text-foreground bg-transparent",
-        success:   "bg-green-100 text-green-800 border-transparent",
-        warning:   "bg-amber-100 text-amber-800 border-transparent",
-        accent:    "bg-accent/10 text-accent border-transparent",
-        ghost:     "bg-muted text-muted-foreground border-transparent",
+        outline:     "border-border text-foreground bg-transparent",
+        success:     "bg-green-100 text-green-800 border-transparent",
+        warning:     "bg-amber-100 text-amber-800 border-transparent",
+        accent:      "bg-accent/10 text-accent border-transparent",
+        ghost:       "bg-muted text-muted-foreground border-transparent",
       },
     },
     defaultVariants: {
@@ -22,9 +23,7 @@ const badgeVariants = cva(
   }
 )
 
-interface BadgeProps
-  extends React.HTMLAttributes<HTMLSpanElement>,
-    VariantProps<typeof badgeVariants> {}
+interface BadgeProps extends HTMLAttributes<HTMLSpanElement>, VariantProps<typeof badgeVariants> {}
 
 function Badge({ className, variant, ...props }: BadgeProps) {
   return (

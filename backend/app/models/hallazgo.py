@@ -12,6 +12,7 @@ class Hallazgo(db.Model):
     descripcion = db.Column(db.Text, nullable=True)
     fecha_inicial_evento = db.Column(db.DateTime, nullable=True)
     fecha_finalizacion_evento = db.Column(db.DateTime, nullable=True)
+    vicepresidencia = db.Column(db.String(200), nullable=True, index=True)
     dependencia_reporta_ero = db.Column(db.String(200), nullable=True, index=True)
     reportado_para = db.Column(db.String(200), nullable=True)
     estado = db.Column(db.String(100), nullable=True, index=True)
@@ -34,6 +35,12 @@ class Hallazgo(db.Model):
     # Prórroga
     prorroga = db.Column(db.String(100), nullable=True)
     fecha_cierre_final_prorroga = db.Column(db.DateTime, nullable=True)
+
+    # Actividades asociadas
+    actividades = db.relationship(
+        "Actividad", backref="hallazgo", lazy="dynamic",
+        cascade="all, delete-orphan", passive_deletes=True
+    )
 
     # --- Metadatos del sistema ---
     upload_id = db.Column(
@@ -61,6 +68,7 @@ class Hallazgo(db.Model):
                 if self.fecha_finalizacion_evento
                 else None
             ),
+            "vicepresidencia": self.vicepresidencia,
             "dependencia_reporta_ero": self.dependencia_reporta_ero,
             "reportado_para": self.reportado_para,
             "estado": self.estado,

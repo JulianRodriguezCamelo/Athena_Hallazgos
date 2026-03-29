@@ -15,17 +15,15 @@ def _base_query(user):
     query = Hallazgo.query
     if user.rol == "vicepresidente":
         return query
-    if user.rol == "directivo":
-        return query.filter(Hallazgo.dependencia_reporta_ero == user.dependencia)
-    if user.rol == "tecnico":
-        nombre = user.nombre
-        return query.filter(
-            db.or_(
-                Hallazgo.responsable_plan_accion.ilike(f"%{nombre}%"),
-                Hallazgo.responsable_accion.ilike(f"%{nombre}%"),
-                Hallazgo.reportado_por.ilike(f"%{nombre}%"),
-            )
-        )
+
+    # Directivo y técnico: filtrar por vicepresidencia
+    if user.rol in ("directivo", "tecnico"):
+        if user.vicepresidencia:
+            return query.filter(Hallazgo.vicepresidencia == user.vicepresidencia)
+        if user.rol == "directivo" and user.dependencia:
+            return query.filter(Hallazgo.dependencia_reporta_ero == user.dependencia)
+        return query.filter(db.false())
+
     return query.filter(db.false())
 
 

@@ -263,7 +263,7 @@ function SidebarTrigger({
       data-sidebar="trigger"
       data-slot="sidebar-trigger"
       variant="ghost"
-      size="icon-sm"
+      size="icon"
       className={cn(className)}
       onClick={(event) => {
         onClick?.(event)
@@ -696,6 +696,7 @@ function SidebarMenuSubButton({
 }
 
 export {
+  sidebarMenuButtonVariants,
   Sidebar,
   SidebarContent,
   SidebarFooter,

@@ -55,6 +55,7 @@ def create_user():
         nombre=data["nombre"].strip(),
         email=data["email"].lower().strip(),
         rol=data["rol"],
+        vicepresidencia=data.get("vicepresidencia", "").strip() or None,
         dependencia=data.get("dependencia", "").strip() or None,
         activo=data.get("activo", True),
     )
@@ -83,6 +84,8 @@ def update_user(user_id):
         if data["rol"] not in ("vicepresidente", "directivo", "tecnico"):
             return jsonify({"error": "Rol inválido"}), 400
         user.rol = data["rol"]
+    if "vicepresidencia" in data:
+        user.vicepresidencia = data["vicepresidencia"].strip() or None
     if "dependencia" in data:
         user.dependencia = data["dependencia"].strip() or None
     if "activo" in data:

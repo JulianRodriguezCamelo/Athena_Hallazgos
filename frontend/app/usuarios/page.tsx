@@ -9,10 +9,9 @@ import { useAuth } from '@/lib/auth'
 import DashboardShell from '@/components/layout/DashboardShell'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/Badge'
-import { Input } from '@/components/ui/Input'
+import { Input } from '@/components/ui/input'
 import Select from '@/components/ui/Select'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import {
@@ -35,6 +34,7 @@ interface User {
   nombre: string
   email: string
   rol: string
+  vicepresidencia: string | null
   dependencia: string | null
   activo: boolean
 }
@@ -44,10 +44,11 @@ interface FormData {
   email: string
   password: string
   rol: string
+  vicepresidencia: string
   dependencia: string
 }
 
-const EMPTY_FORM: FormData = { nombre: '', email: '', password: '', rol: 'tecnico', dependencia: '' }
+const EMPTY_FORM: FormData = { nombre: '', email: '', password: '', rol: 'tecnico', vicepresidencia: '', dependencia: '' }
 
 const ROL_OPTIONS = [
   { value: 'vicepresidente', label: 'Vicepresidente' },
@@ -76,7 +77,7 @@ export default function UsuariosPage() {
     setLoading(true)
     try {
       const res = await usersApi.list()
-      setUsers(res.data.users)
+      setUsers((res.data as { users: User[] }).users)
     } finally {
       setLoading(false)
     }
@@ -93,7 +94,7 @@ export default function UsuariosPage() {
 
   function openEdit(u: User) {
     setEditing(u)
-    setForm({ nombre: u.nombre, email: u.email, password: '', rol: u.rol, dependencia: u.dependencia ?? '' })
+    setForm({ nombre: u.nombre, email: u.email, password: '', rol: u.rol, vicepresidencia: u.vicepresidencia ?? '', dependencia: u.dependencia ?? '' })
     setError('')
     setModalOpen(true)
   }
@@ -110,6 +111,7 @@ export default function UsuariosPage() {
         nombre: form.nombre,
         email: form.email,
         rol: form.rol,
+        vicepresidencia: form.vicepresidencia || null,
         dependencia: form.dependencia || null,
         ...(form.password && { password: form.password }),
       }
@@ -192,7 +194,7 @@ export default function UsuariosPage() {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-primary hover:bg-primary">
-                    {['Nombre', 'Email', 'Rol', 'Dependencia', 'Estado', 'Acciones'].map((h) => (
+                    {['Nombre', 'Email', 'Rol', 'Vicepresidencia', 'Dependencia', 'Estado', 'Acciones'].map((h) => (
                       <TableHead key={h} className="text-primary-foreground font-semibold text-xs whitespace-nowrap py-3">
                         {h}
                       </TableHead>
@@ -221,6 +223,7 @@ export default function UsuariosPage() {
                           {ROL_LABELS[u.rol] ?? u.rol}
                         </Badge>
                       </TableCell>
+                      <TableCell className="text-muted-foreground text-xs">{u.vicepresidencia ?? '—'}</TableCell>
                       <TableCell className="text-muted-foreground text-xs">{u.dependencia ?? '—'}</TableCell>
                       <TableCell>
                         <Badge variant={u.activo ? 'success' : 'ghost'}>
@@ -305,12 +308,18 @@ export default function UsuariosPage() {
                 onChange={(e) => setForm({ ...form, rol: e.target.value })}
               />
               <Input
-                label="Dependencia / Dirección"
-                value={form.dependencia}
-                onChange={(e) => setForm({ ...form, dependencia: e.target.value })}
-                placeholder="Ej: Tecnología"
+                label="Vicepresidencia"
+                value={form.vicepresidencia}
+                onChange={(e) => setForm({ ...form, vicepresidencia: e.target.value })}
+                placeholder="Ej: VP Operaciones"
               />
             </div>
+            <Input
+              label="Dependencia / Dirección"
+              value={form.dependencia}
+              onChange={(e) => setForm({ ...form, dependencia: e.target.value })}
+              placeholder="Ej: Tecnología"
+            />
             <div className="flex justify-end gap-2 pt-2">
               <Button variant="ghost" onClick={() => setModalOpen(false)}>
                 Cancelar

@@ -28,6 +28,8 @@ def create_app(config_name: str = "default") -> Flask:
 
     # Crear tablas y usuario admin por defecto
     with app.app_context():
+        # Importar modelos para que SQLAlchemy los registre antes de create_all
+        from app.models import hallazgo, actividad, user, upload_history  # noqa: F401
         db.create_all()
         _seed_admin()
 

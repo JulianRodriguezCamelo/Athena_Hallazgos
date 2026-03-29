@@ -17,6 +17,7 @@ export interface User {
   nombre: string
   email: string
   rol: Rol
+  vicepresidencia: string | null
   dependencia: string | null
   activo: boolean
 }
@@ -52,7 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(async (email: string, password: string) => {
     const res = await authApi.login(email, password)
-    const { access_token, user: u } = res.data
+    const { access_token, user: u } = res.data as { access_token: string; user: User }
     localStorage.setItem('access_token', access_token)
     localStorage.setItem('user', JSON.stringify(u))
     setUser(u)

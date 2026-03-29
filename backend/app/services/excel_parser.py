@@ -1,5 +1,6 @@
 import re
 from datetime import datetime
+from collections import defaultdict
 import pandas as pd
 
 
@@ -12,6 +13,10 @@ COLUMN_MAP = {
     # ── Descripción / tipo ────────────────────────────────────────────────────
     r"^descripci[oó]n$":               "descripcion",
     r"^tipo$":                         "descripcion",         # columna "Tipo" → descripcion
+
+    # ── Vicepresidencia ───────────────────────────────────────────────────────
+    r"vicepresidencia":                "vicepresidencia",
+    r"^vp$":                           "vicepresidencia",
 
     # ── Proceso / dependencia ─────────────────────────────────────────────────
     r"dependencia":                    "dependencia_reporta_ero",
@@ -35,7 +40,7 @@ COLUMN_MAP = {
     r"enviar.*a":                      "reportado_para",       # "Enviar A"
     r"reportado.*por":                 "reportado_por",
     r"^fuente$":                       "reportado_por",        # "Fuente"
-    r"responsable":                    "responsable_plan_accion",
+    r"^responsable$":                  "responsable_plan_accion",
 
     # ── Aplicativo / sistema ──────────────────────────────────────────────────
     r"aplicativo.*afecta.*ero":        "aplicativo_afecta_ero",
@@ -67,6 +72,21 @@ DATE_FIELDS = {
     "fecha_finalizacion_evento",
     "fecha_cierre_proyectada",
     "fecha_cierre_final_prorroga",
+}
+
+# Campos de la actividad (tomados del record parseado)
+ACTIVIDAD_FIELDS = {
+    "id_plan_accion",
+    "nombre_plan_accion",
+    "descripcion_plan_accion",
+    "estado_plan_accion",
+    "responsable_plan_accion",
+    "estado_accion",
+    "responsable_accion",
+    "fecha_cierre_proyectada",
+    "prorroga",
+    "fecha_cierre_final_prorroga",
+    "observaciones",
 }
 
 
@@ -126,16 +146,37 @@ def _is_data_row(row: pd.Series, col_mapping: dict) -> bool:
     return non_null > max(1, len(values) * 0.2)
 
 
-def parse_excel(file_path: str) -> tuple[list[dict], list[str]]:
+def _record_to_actividad(record: dict, codigo_evento: str | None) -> dict:
+    """Convierte un record de Excel en un dict de actividad."""
+    return {
+        "codigo_evento": codigo_evento,
+        "id_plan_accion": record.get("id_plan_accion"),
+        "nombre_plan_accion": record.get("nombre_plan_accion"),
+        "descripcion": record.get("descripcion_plan_accion"),
+        "estado_plan_accion": record.get("estado_plan_accion"),
+        "responsable": record.get("responsable_plan_accion"),
+        "estado_accion": record.get("estado_accion"),
+        "responsable_accion": record.get("responsable_accion"),
+        "fecha_compromiso": record.get("fecha_cierre_proyectada"),
+        "prorroga": record.get("prorroga"),
+        "fecha_prorroga": record.get("fecha_cierre_final_prorroga"),
+        "observaciones": record.get("observaciones"),
+    }
+
+
+def parse_excel(file_path: str) -> tuple[list[dict], list[dict], list[str]]:
     """
     Parsea el archivo Excel.
-    Retorna (registros, errores).
-    Maneja automáticamente archivos con doble fila de encabezado.
+    Retorna (hallazgos, actividades, errores).
+    - Agrupa filas por codigo_evento.
+    - La primera fila de cada grupo = hallazgo.
+    - Las filas adicionales del mismo codigo_evento = actividades.
+    - Filas sin codigo_evento: cada una es un hallazgo independiente.
     """
     try:
         df = pd.read_excel(file_path, dtype=str, header=0)
     except Exception as e:
-        return [], [f"No se pudo leer el archivo: {str(e)}"]
+        return [], [], [f"No se pudo leer el archivo: {str(e)}"]
 
     # Limpiar filas y columnas completamente vacías
     df = df.dropna(how="all").reset_index(drop=True)
@@ -145,18 +186,18 @@ def parse_excel(file_path: str) -> tuple[list[dict], list[str]]:
     col_mapping = _map_columns(list(df.columns))
 
     if not col_mapping:
-        return [], [
+        return [], [], [
             "No se reconocieron columnas válidas en el archivo. "
             "Verifique que la primera fila contenga los encabezados."
         ]
 
-    records: list[dict] = []
+    # Parsear todas las filas a records planos
+    flat_records: list[tuple[int, dict]] = []  # (row_num, record)
     errors: list[str] = []
 
     for idx, row in df.iterrows():
         row_num = int(idx) + 2  # +2: encabezado + índice base 0
 
-        # Saltar filas de sub-encabezado (como la fila de agrupación "Actividad")
         if not _is_data_row(row, col_mapping):
             continue
 
@@ -172,8 +213,34 @@ def parse_excel(file_path: str) -> tuple[list[dict], list[str]]:
                         record[model_field] = f"{record[model_field]} | {val}"
                     else:
                         record[model_field] = val
-            records.append(record)
+            flat_records.append((row_num, record))
         except Exception as e:
             errors.append(f"Fila {row_num}: {str(e)}")
 
-    return records, errors
+    # Agrupar por codigo_evento
+    # Orden preservado: dict en Python 3.7+
+    groups: dict[str, list[dict]] = {}  # codigo_evento -> [records]
+    no_code_records: list[dict] = []    # filas sin codigo_evento
+
+    for _row_num, record in flat_records:
+        codigo = record.get("codigo_evento")
+        if not codigo:
+            no_code_records.append(record)
+        else:
+            if codigo not in groups:
+                groups[codigo] = []
+            groups[codigo].append(record)
+
+    hallazgos: list[dict] = []
+    actividades_data: list[tuple[str, dict]] = []  # (codigo_evento, actividad_dict)
+
+    # Grupos con codigo_evento: primer registro = hallazgo, resto = actividades
+    for codigo, records in groups.items():
+        hallazgos.append(records[0])
+        for extra in records[1:]:
+            actividades_data.append((codigo, _record_to_actividad(extra, codigo)))
+
+    # Filas sin codigo_evento: cada una es hallazgo independiente
+    hallazgos.extend(no_code_records)
+
+    return hallazgos, actividades_data, errors

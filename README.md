@@ -1,6 +1,6 @@
 # Hallazgos ERO — Findings Management System
 
-A full-stack web application for managing operational risk findings (ERO — *Eventos de Riesgo Operacional*) at **Fiduprevisora**. It supports importing findings from Excel reports, tracking action plans, and visualizing KPIs through an interactive dashboard.
+A full-stack web application for managing operational risk findings (ERO — _Eventos de Riesgo Operacional_) at **Fiduprevisora**. It supports importing findings from Excel reports, tracking action plans, and visualizing KPIs through an interactive dashboard.
 
 ---
 
@@ -33,16 +33,16 @@ Hallazgos ERO provides a centralized platform to:
 
 ## Tech Stack
 
-| Layer      | Technology                                      |
-|------------|-------------------------------------------------|
-| Frontend   | Next.js 16, React 19, TypeScript, Tailwind CSS 4 |
-| UI         | shadcn/ui, Lucide React, Recharts               |
-| Backend    | Python, Flask 3.x                               |
-| ORM        | Flask-SQLAlchemy                                |
-| Database   | PostgreSQL 15                                   |
-| Auth       | Flask-JWT-Extended (Bearer tokens, 8h expiry)   |
-| Excel      | pandas + openpyxl + xlrd                        |
-| Container  | Docker Compose                                  |
+| Layer     | Technology                                       |
+| --------- | ------------------------------------------------ |
+| Frontend  | Next.js 16, React 19, TypeScript, Tailwind CSS 4 |
+| UI        | shadcn/ui, Lucide React, Recharts                |
+| Backend   | Python, Flask 3.x                                |
+| ORM       | Flask-SQLAlchemy                                 |
+| Database  | PostgreSQL 15                                    |
+| Auth      | Flask-JWT-Extended (Bearer tokens, 8h expiry)    |
+| Excel     | pandas + openpyxl + xlrd                         |
+| Container | Docker Compose                                   |
 
 ---
 
@@ -89,63 +89,67 @@ hallazgos/
 
 ## Features
 
-- 📂 **Excel Import** — Upload `.xlsx` / `.xls` files; the parser flexibly maps column names to the internal model. Upload history is tracked per user.
-- 🔍 **Findings Browser** — Paginated, filterable list of findings. Filters include status, department, responsible party, and date range. Data visible is scoped to the user's role.
-- 📊 **Dashboard** — Visual KPIs including:
-  - Total findings, open/closed counts
-  - Distribution by status and by department
-  - Top responsible parties
-  - 12-month activity timeline
-  - Extension (prórroga) tracking
-- 👤 **User Management** — VP-only CRUD for users; each user has a role and a department (*dependencia*).
-- 🔐 **JWT Authentication** — Secure token-based login with 8-hour token expiry.
+- **Excel Import** — Upload `.xlsx` / `.xls` files; the parser flexibly maps column names to the internal model. Upload history is tracked per user.
+- **Findings Browser** — Paginated, filterable list of findings. Filters include status, department, responsible party, and date range. Data visible is scoped to the user's role.
+- **Dashboard** — Visual KPIs including:
+- Total findings, open/closed counts
+- Distribution by status and by department
+- Top responsible parties
+- 12-month activity timeline
+- Extension (prórroga) tracking
+- **User Management** — VP-only CRUD for users; each user has a role and a department (_dependencia_).
+- **JWT Authentication** — Secure token-based login with 8-hour token expiry.
 
 ---
 
 ## Roles & Permissions
 
-| Action                        | vicepresidente | directivo    | tecnico |
-|-------------------------------|:--------------:|:------------:|:-------:|
-| View all findings             | ✅             | ❌           | ❌      |
-| View department findings      | ✅             | ✅           | ❌      |
-| View own findings             | ✅             | ✅           | ✅      |
-| Upload Excel files            | ✅             | ✅           | ❌      |
-| View all upload history       | ✅             | own only     | ❌      |
-| Create / edit users           | ✅             | ❌           | ❌      |
-| Access global dashboard       | ✅             | ❌           | ❌      |
+| Action                   | vicepresidente | directivo | tecnico |
+| ------------------------ | :------------: | :-------: | :-----: |
+| View all findings        |       ✅       |    ❌     |   ❌    |
+| View department findings |       ✅       |    ✅     |   ❌    |
+| View own findings        |       ✅       |    ✅     |   ✅    |
+| Upload Excel files       |       ✅       |    ✅     |   ❌    |
+| View all upload history  |       ✅       | own only  |   ❌    |
+| Create / edit users      |       ✅       |    ❌     |   ❌    |
+| Access global dashboard  |       ✅       |    ❌     |   ❌    |
 
 ---
 
 ## API Reference
 
 ### Authentication
-| Method | Endpoint            | Description                        |
-|--------|---------------------|------------------------------------|
-| POST   | `/api/auth/login`   | `{ email, password }` → `{ access_token, user }` |
-| GET    | `/api/auth/me`      | Returns the authenticated user     |
+
+| Method | Endpoint          | Description                                      |
+| ------ | ----------------- | ------------------------------------------------ |
+| POST   | `/api/auth/login` | `{ email, password }` → `{ access_token, user }` |
+| GET    | `/api/auth/me`    | Returns the authenticated user                   |
 
 ### Findings
-| Method | Endpoint              | Description                          |
-|--------|-----------------------|--------------------------------------|
-| GET    | `/api/hallazgos/`     | Paginated list with filters          |
-| GET    | `/api/hallazgos/:id`  | Finding detail                       |
-| PUT    | `/api/hallazgos/:id`  | Update editable fields               |
+
+| Method | Endpoint             | Description                 |
+| ------ | -------------------- | --------------------------- |
+| GET    | `/api/hallazgos/`    | Paginated list with filters |
+| GET    | `/api/hallazgos/:id` | Finding detail              |
+| PUT    | `/api/hallazgos/:id` | Update editable fields      |
 
 ### Uploads
-| Method | Endpoint                | Description                                   |
-|--------|-------------------------|-----------------------------------------------|
-| POST   | `/api/uploads/`         | Upload Excel file (`multipart/form-data`, field: `file`) |
-| GET    | `/api/uploads/history`  | Upload history                                |
+
+| Method | Endpoint               | Description                                              |
+| ------ | ---------------------- | -------------------------------------------------------- |
+| POST   | `/api/uploads/`        | Upload Excel file (`multipart/form-data`, field: `file`) |
+| GET    | `/api/uploads/history` | Upload history                                           |
 
 ### Dashboard
-| Method | Endpoint                          | Description                    |
-|--------|-----------------------------------|--------------------------------|
-| GET    | `/api/dashboard/metrics`          | Total KPIs                     |
-| GET    | `/api/dashboard/por-estado`       | Distribution by status         |
-| GET    | `/api/dashboard/por-dependencia`  | Distribution by department     |
-| GET    | `/api/dashboard/por-responsable`  | Top responsible parties        |
-| GET    | `/api/dashboard/timeline`         | Last 12 months activity        |
-| GET    | `/api/dashboard/prorrogas`        | Extension totals               |
+
+| Method | Endpoint                         | Description                |
+| ------ | -------------------------------- | -------------------------- |
+| GET    | `/api/dashboard/metrics`         | Total KPIs                 |
+| GET    | `/api/dashboard/por-estado`      | Distribution by status     |
+| GET    | `/api/dashboard/por-dependencia` | Distribution by department |
+| GET    | `/api/dashboard/por-responsable` | Top responsible parties    |
+| GET    | `/api/dashboard/timeline`        | Last 12 months activity    |
+| GET    | `/api/dashboard/prorrogas`       | Extension totals           |
 
 ---
 
@@ -164,11 +168,11 @@ cd hallazgos
 docker compose up --build
 ```
 
-| Service  | URL                     |
-|----------|-------------------------|
-| Frontend | http://localhost:3000   |
-| Backend  | http://localhost:5000   |
-| Database | localhost:5432          |
+| Service  | URL                   |
+| -------- | --------------------- |
+| Frontend | http://localhost:3000 |
+| Backend  | http://localhost:5000 |
+| Database | localhost:5432        |
 
 ### Manual Setup
 
@@ -234,10 +238,10 @@ NEXT_PUBLIC_API_URL=http://localhost:5000
 
 A default administrator account is automatically created on first run:
 
-| Field    | Value                      |
-|----------|----------------------------|
-| Email    | `admin@fiduprevisora.com`  |
-| Password | `Admin2025*`               |
-| Role     | `vicepresidente`           |
+| Field    | Value                     |
+| -------- | ------------------------- |
+| Email    | `admin@fiduprevisora.com` |
+| Password | `Admin2025*`              |
+| Role     | `vicepresidente`          |
 
-> ⚠️ **Change the default password immediately in any production environment.**
+> **Change the default password immediately in any production environment.**

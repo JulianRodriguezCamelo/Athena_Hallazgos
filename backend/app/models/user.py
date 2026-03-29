@@ -15,6 +15,7 @@ class User(db.Model):
         nullable=False,
         default="tecnico",
     )
+    vicepresidencia = db.Column(db.String(200), nullable=True)
     dependencia = db.Column(db.String(120), nullable=True)
     activo = db.Column(db.Boolean, default=True)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
@@ -39,6 +40,7 @@ class User(db.Model):
             "nombre": self.nombre,
             "email": self.email,
             "rol": self.rol,
+            "vicepresidencia": self.vicepresidencia,
             "dependencia": self.dependencia,
             "activo": self.activo,
             "created_at": self.created_at.isoformat() if self.created_at else None,

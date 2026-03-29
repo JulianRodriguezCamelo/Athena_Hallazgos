@@ -87,8 +87,12 @@ export const hallazgosApi = {
   get: (id: number) => request(`/api/hallazgos/${id}`),
   update: (id: number, data: Record<string, unknown>) =>
     request(`/api/hallazgos/${id}`, { method: 'PUT', body: data }),
+  actividades: (id: number) => request(`/api/hallazgos/${id}/actividades`),
   estados: () => request('/api/hallazgos/estados'),
   dependencias: () => request('/api/hallazgos/dependencias'),
+  vicepresidencias: () => request('/api/hallazgos/vicepresidencias'),
+  responsables: () => request('/api/hallazgos/responsables'),
+  estadosPlan: () => request('/api/hallazgos/estados_plan'),
 }
 
 // ── Uploads ───────────────────────────────────────────────────────────────────

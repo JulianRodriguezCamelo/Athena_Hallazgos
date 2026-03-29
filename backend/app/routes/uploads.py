@@ -5,6 +5,7 @@ from flask_jwt_extended import jwt_required
 from werkzeug.utils import secure_filename
 from app.extensions import db
 from app.models.hallazgo import Hallazgo
+from app.models.actividad import Actividad
 from app.models.upload_history import UploadHistory
 from app.services.excel_parser import parse_excel
 from app.utils.decorators import get_current_user, min_role
@@ -42,6 +43,12 @@ def upload_excel():
     os.makedirs(Config.UPLOAD_FOLDER, exist_ok=True)
     file.save(save_path)
 
+    # Carga global: eliminar todos los hallazgos y actividades existentes
+    Actividad.query.delete()
+    Hallazgo.query.delete()
+    UploadHistory.query.delete()
+    db.session.flush()
+
     # Crear registro de historial
     history = UploadHistory(
         filename_original=original_name,
@@ -53,20 +60,37 @@ def upload_excel():
     db.session.flush()  # Para obtener el ID
 
     # Parsear Excel
-    records, errors = parse_excel(save_path)
+    hallazgo_records, actividades_data, errors = parse_excel(save_path)
 
     exitosos = 0
-    for record in records:
+    # codigo_evento -> hallazgo_id para vincular actividades
+    codigo_to_hallazgo: dict[str, int] = {}
+
+    for record in hallazgo_records:
         try:
             hallazgo = Hallazgo(upload_id=history.id, **record)
             db.session.add(hallazgo)
+            db.session.flush()  # Obtener el ID generado
+            codigo = record.get("codigo_evento")
+            if codigo:
+                codigo_to_hallazgo[codigo] = hallazgo.id
             exitosos += 1
         except Exception as e:
-            errors.append(f"Error al guardar registro: {str(e)}")
+            errors.append(f"Error al guardar hallazgo: {str(e)}")
 
-    history.total_registros = len(records)
+    # Guardar actividades vinculadas al hallazgo correspondiente
+    for codigo_evento, actividad_dict in actividades_data:
+        hallazgo_id = codigo_to_hallazgo.get(codigo_evento)
+        if hallazgo_id:
+            try:
+                actividad = Actividad(hallazgo_id=hallazgo_id, **actividad_dict)
+                db.session.add(actividad)
+            except Exception as e:
+                errors.append(f"Error al guardar actividad: {str(e)}")
+
+    history.total_registros = len(hallazgo_records)
     history.registros_exitosos = exitosos
-    history.registros_fallidos = len(records) - exitosos + len(
+    history.registros_fallidos = len(hallazgo_records) - exitosos + len(
         [e for e in errors if "No se pudo" in e or "No se reconocieron" in e]
     )
     history.estado = "completado" if exitosos > 0 else "error"
@@ -77,7 +101,7 @@ def upload_excel():
     return jsonify({
         "message": "Archivo procesado exitosamente",
         "upload": history.to_dict(),
-        "errores": errors[:10],  # Retornar solo los primeros 10 errores
+        "errores": errors[:10],
     }), 201
 
 
@@ -130,7 +154,7 @@ def delete_upload(upload_id):
     if user.rol == "directivo" and upload.uploaded_by_id != user.id:
         return jsonify({"error": "No tiene permisos para eliminar esta carga"}), 403
 
-    # Borrar hallazgos asociados y el registro
+    # Actividades eliminadas en cascada al borrar hallazgos
     Hallazgo.query.filter_by(upload_id=upload_id).delete()
     db.session.delete(upload)
     db.session.commit()

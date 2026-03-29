@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required
 from app.extensions import db
 from app.models.hallazgo import Hallazgo
+from app.models.actividad import Actividad
 from app.utils.decorators import get_current_user, min_role
 
 hallazgos_bp = Blueprint("hallazgos", __name__, url_prefix="/api/hallazgos")
@@ -11,21 +12,20 @@ def _apply_role_filter(query, user):
     """Filtra hallazgos según el rol del usuario."""
     if user.rol == "vicepresidente":
         return query  # Ve todo
-    if user.rol == "directivo":
-        # Ve los de su dependencia
-        return query.filter(
-            Hallazgo.dependencia_reporta_ero == user.dependencia
-        )
-    if user.rol == "tecnico":
-        # Ve solo donde es responsable (plan de acción o acción)
-        nombre = user.nombre
-        return query.filter(
-            db.or_(
-                Hallazgo.responsable_plan_accion.ilike(f"%{nombre}%"),
-                Hallazgo.responsable_accion.ilike(f"%{nombre}%"),
-                Hallazgo.reportado_por.ilike(f"%{nombre}%"),
+
+    # Directivo y técnico: filtrar por vicepresidencia asignada
+    if user.rol in ("directivo", "tecnico"):
+        if user.vicepresidencia:
+            return query.filter(
+                Hallazgo.vicepresidencia == user.vicepresidencia
             )
-        )
+        # Sin vicepresidencia asignada: fallback a dependencia (directivo)
+        if user.rol == "directivo" and user.dependencia:
+            return query.filter(
+                Hallazgo.dependencia_reporta_ero == user.dependencia
+            )
+        return query.filter(db.false())
+
     return query.filter(db.false())
 
 
@@ -38,6 +38,7 @@ def list_hallazgos():
     # Filtros opcionales
     estado = request.args.get("estado")
     dependencia = request.args.get("dependencia")
+    vicepresidencia = request.args.get("vicepresidencia")
     responsable = request.args.get("responsable")
     estado_plan = request.args.get("estado_plan_accion")
     search = request.args.get("search")
@@ -48,6 +49,8 @@ def list_hallazgos():
         query = query.filter(Hallazgo.estado.ilike(f"%{estado}%"))
     if dependencia and user.rol == "vicepresidente":
         query = query.filter(Hallazgo.dependencia_reporta_ero.ilike(f"%{dependencia}%"))
+    if vicepresidencia and user.rol == "vicepresidente":
+        query = query.filter(Hallazgo.vicepresidencia.ilike(f"%{vicepresidencia}%"))
     if responsable:
         query = query.filter(
             db.or_(
@@ -116,6 +119,21 @@ def update_hallazgo(hallazgo_id):
     return jsonify({"message": "Hallazgo actualizado", "hallazgo": hallazgo.to_dict()}), 200
 
 
+@hallazgos_bp.route("/<int:hallazgo_id>/actividades", methods=["GET"])
+@jwt_required()
+def get_actividades(hallazgo_id):
+    """Retorna las actividades de un hallazgo."""
+    user = get_current_user()
+    query = _apply_role_filter(Hallazgo.query, user)
+    hallazgo = query.filter_by(id=hallazgo_id).first()
+
+    if not hallazgo:
+        return jsonify({"error": "Hallazgo no encontrado o sin permisos"}), 404
+
+    actividades = Actividad.query.filter_by(hallazgo_id=hallazgo_id).all()
+    return jsonify({"actividades": [a.to_dict() for a in actividades]}), 200
+
+
 @hallazgos_bp.route("/estados", methods=["GET"])
 @jwt_required()
 def get_estados():
@@ -124,16 +142,49 @@ def get_estados():
     query = _apply_role_filter(Hallazgo.query, user)
     estados = db.session.query(Hallazgo.estado).filter(
         Hallazgo.estado.isnot(None)
-    ).distinct().all()
+    ).filter(Hallazgo.id.in_(query.with_entities(Hallazgo.id))).distinct().all()
     return jsonify({"estados": [e[0] for e in estados if e[0]]}), 200
 
 
 @hallazgos_bp.route("/dependencias", methods=["GET"])
 @jwt_required()
-@min_role("directivo")
 def get_dependencias():
-    """Retorna las dependencias únicas (solo vice y directivo)."""
+    """Retorna las dependencias únicas."""
+    user = get_current_user()
+    query = _apply_role_filter(Hallazgo.query, user)
     dependencias = db.session.query(Hallazgo.dependencia_reporta_ero).filter(
         Hallazgo.dependencia_reporta_ero.isnot(None)
-    ).distinct().all()
+    ).filter(Hallazgo.id.in_(query.with_entities(Hallazgo.id))).distinct().all()
     return jsonify({"dependencias": [d[0] for d in dependencias if d[0]]}), 200
+
+
+@hallazgos_bp.route("/vicepresidencias", methods=["GET"])
+@jwt_required()
+def get_vicepresidencias():
+    """Retorna las vicepresidencias únicas presentes en los datos."""
+    vicepresidencias = db.session.query(Hallazgo.vicepresidencia).filter(
+        Hallazgo.vicepresidencia.isnot(None)
+    ).distinct().order_by(Hallazgo.vicepresidencia).all()
+    return jsonify({"vicepresidencias": [v[0] for v in vicepresidencias if v[0]]}), 200
+
+@hallazgos_bp.route("/responsables", methods=["GET"])
+@jwt_required()
+def get_responsables():
+    """Retorna los responsables únicos presentes en los datos."""
+    user = get_current_user()
+    query = _apply_role_filter(Hallazgo.query, user)
+    responsables = db.session.query(Hallazgo.responsable_plan_accion).filter(
+        Hallazgo.responsable_plan_accion.isnot(None)
+    ).filter(Hallazgo.id.in_(query.with_entities(Hallazgo.id))).distinct().order_by(Hallazgo.responsable_plan_accion).all()
+    return jsonify({"responsables": [r[0] for r in responsables if r[0]]}), 200
+
+@hallazgos_bp.route("/estados_plan", methods=["GET"])
+@jwt_required()
+def get_estados_plan():
+    """Retorna los estados del plan únicos presentes en los datos."""
+    user = get_current_user()
+    query = _apply_role_filter(Hallazgo.query, user)
+    estados = db.session.query(Hallazgo.estado_plan_accion).filter(
+        Hallazgo.estado_plan_accion.isnot(None)
+    ).filter(Hallazgo.id.in_(query.with_entities(Hallazgo.id))).distinct().order_by(Hallazgo.estado_plan_accion).all()
+    return jsonify({"estados_plan_accion": [e[0] for e in estados if e[0]]}), 200

@@ -1,11 +1,13 @@
 'use client'
 
-import { useState, type FormEvent } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { ShieldAlert, Eye, EyeOff } from 'lucide-react'
+import { ShieldAlert, Eye, EyeOff, AlertCircle } from 'lucide-react'
 import { useAuth } from '@/lib/auth'
-import Button from '@/components/ui/button'
-import Input from '@/components/ui/Input'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Card, CardContent } from '@/components/ui/card'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -16,7 +18,7 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  async function handleSubmit(e: FormEvent) {
+  async function handleSubmit(e: { preventDefault(): void }) {
     e.preventDefault()
     setError('')
     setLoading(true)
@@ -35,8 +37,8 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex">
-      {/* Left panel */}
-      <div className="hidden lg:flex lg:w-1/2 bg-[#7B1F1F] flex-col justify-between p-12 relative overflow-hidden">
+      {/* Left panel — brand */}
+      <div className="hidden lg:flex lg:w-1/2 bg-primary flex-col justify-between p-12 relative overflow-hidden">
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-16">
             <div className="bg-white/15 rounded-xl p-2.5">
@@ -44,9 +46,7 @@ export default function LoginPage() {
             </div>
             <div>
               <p className="text-xl font-bold text-white">Hallazgos ERO</p>
-              <p className="text-xs text-white/50 uppercase tracking-widest">
-                Fiduprevisora
-              </p>
+              <p className="text-xs text-white/50 uppercase tracking-widest">Fiduprevisora</p>
             </div>
           </div>
           <h2 className="text-4xl font-bold text-white leading-tight mb-4">
@@ -74,81 +74,88 @@ export default function LoginPage() {
         {/* Decorative circles */}
         <div className="absolute -top-24 -right-24 w-80 h-80 rounded-full bg-white/5" />
         <div className="absolute -bottom-16 -left-16 w-64 h-64 rounded-full bg-white/5" />
-        <div className="absolute top-1/2 right-8 w-32 h-32 rounded-full bg-[#E07B39]/20" />
+        <div className="absolute top-1/2 right-8 w-32 h-32 rounded-full bg-accent/20" />
       </div>
 
-      {/* Right panel */}
-      <div className="flex-1 flex items-center justify-center p-8 bg-[#F8F5F5]">
+      {/* Right panel — form */}
+      <div className="flex-1 flex items-center justify-center p-8 bg-background">
         <div className="w-full max-w-sm">
           {/* Mobile logo */}
           <div className="flex items-center gap-2 mb-8 lg:hidden">
-            <div className="bg-[#7B1F1F] rounded-lg p-1.5">
-              <ShieldAlert className="w-5 h-5 text-white" />
+            <div className="bg-primary rounded-lg p-1.5">
+              <ShieldAlert className="w-5 h-5 text-primary-foreground" />
             </div>
-            <p className="text-base font-bold text-[#7B1F1F]">Hallazgos ERO</p>
+            <p className="text-base font-bold text-primary">Hallazgos ERO</p>
           </div>
 
-          <div className="bg-white rounded-2xl shadow-sm border border-[#E8E0E0] p-8">
-            <h1 className="text-2xl font-bold text-gray-900 mb-1">
-              Bienvenido
-            </h1>
-            <p className="text-sm text-gray-500 mb-7">
-              Ingresa tus credenciales para continuar
-            </p>
+          <Card className="shadow-sm">
+            <CardContent className="p-8">
+              <h1 className="text-2xl font-bold text-foreground mb-1">Bienvenido</h1>
+              <p className="text-sm text-muted-foreground mb-7">
+                Ingresa tus credenciales para continuar
+              </p>
 
-            {error && (
-              <div className="mb-5 px-4 py-3 rounded-lg bg-red-50 border border-red-200 text-sm text-red-700">
-                {error}
-              </div>
-            )}
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <Input
-                label="Correo electrónico"
-                type="email"
-                placeholder="usuario@fiduprevisora.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                autoComplete="email"
-              />
-
-              <div className="flex flex-col gap-1">
-                <label className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
-                  Contraseña
-                </label>
-                <div className="relative">
-                  <input
-                    type={showPass ? 'text' : 'password'}
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    autoComplete="current-password"
-                    className="w-full rounded-md border border-[#E8E0E0] bg-white px-3 py-2 text-sm pr-10 focus:outline-none focus:ring-2 focus:ring-[#E07B39]/30 focus:border-[#E07B39]"
-                  />
-                  <button
-                    type="button"
-                    tabIndex={-1}
-                    onClick={() => setShowPass(!showPass)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                  >
-                    {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
+              {error && (
+                <div className="mb-5 flex items-start gap-2 px-4 py-3 rounded-lg bg-destructive/10 border border-destructive/20 text-sm text-destructive">
+                  <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+                  {error}
                 </div>
-              </div>
+              )}
 
-              <Button
-                type="submit"
-                variant="secondary"
-                size="lg"
-                loading={loading}
-                className="w-full mt-2"
-              >
-                Iniciar sesión
-              </Button>
-            </form>
-          </div>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-1.5">
+                  <Label htmlFor="email" className="text-xs font-semibold text-foreground/70 uppercase tracking-wide">
+                    Correo electrónico
+                  </Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="usuario@fiduprevisora.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    autoComplete="email"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <Label htmlFor="password" className="text-xs font-semibold text-foreground/70 uppercase tracking-wide">
+                    Contraseña
+                  </Label>
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPass ? 'text' : 'password'}
+                      placeholder="••••••••"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      autoComplete="current-password"
+                      className="pr-10"
+                    />
+                    <button
+                      type="button"
+                      tabIndex={-1}
+                      onClick={() => setShowPass(!showPass)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {showPass ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                <Button
+                  type="submit"
+                  variant="secondary"
+                  size="lg"
+                  loading={loading}
+                  className="w-full mt-2"
+                >
+                  Iniciar sesión
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>

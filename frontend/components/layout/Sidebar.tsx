@@ -21,9 +21,9 @@ import {
   SidebarGroupContent,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
   SidebarSeparator,
+  sidebarMenuButtonVariants,
   useSidebar,
 } from '@/components/ui/sidebar'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
@@ -94,17 +94,15 @@ export default function AppSidebar() {
                   pathname === item.href || pathname.startsWith(item.href + '/')
                 return (
                   <SidebarMenuItem key={item.href}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={active}
-                      tooltip={item.label}
+                    <Link
+                      href={item.href}
                       onClick={() => setOpenMobile(false)}
+                      data-active={active || undefined}
+                      className={sidebarMenuButtonVariants({ variant: 'default', size: 'default' })}
                     >
-                      <Link href={item.href}>
-                        <item.icon />
-                        <span>{item.label}</span>
-                      </Link>
-                    </SidebarMenuButton>
+                      <item.icon />
+                      <span className="group-data-[collapsible=icon]:hidden">{item.label}</span>
+                    </Link>
                   </SidebarMenuItem>
                 )
               })}

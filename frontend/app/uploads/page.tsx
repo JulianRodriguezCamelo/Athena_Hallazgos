@@ -55,7 +55,10 @@ export default function UploadsPage() {
     setLoadingHistory(true)
     try {
       const res = await uploadsApi.history()
-      setHistory(res.data.uploads ?? res.data.history ?? [])
+      const d = res.data as { uploads?: UploadRecord[]; history?: UploadRecord[] }
+      setHistory(d.uploads ?? d.history ?? [])
+    } catch {
+      // ignore
     } finally {
       setLoadingHistory(false)
     }
@@ -72,11 +75,12 @@ export default function UploadsPage() {
     setResult(null)
     try {
       const res = await uploadsApi.upload(file)
-      const u: UploadRecord = res.data.upload
+      const d = res.data as { upload: UploadRecord; errores?: string[] }
+      const u: UploadRecord = d.upload
       setResult({
         ok: true,
         msg: `Procesado: ${u.registros_exitosos} registros guardados correctamente.`,
-        errors: res.data.errores,
+        errors: d.errores,
       })
       loadHistory()
     } catch (err: unknown) {
