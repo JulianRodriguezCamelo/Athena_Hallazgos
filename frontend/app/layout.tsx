@@ -7,7 +7,7 @@ import { ThemeProvider } from '@/components/ThemeProvider'
 const geist = Geist({ variable: '--font-geist-sans', subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Hallazgos ERO | Fiduprevisora',
+  title: 'Athena | Fiduprevisora',
   description: 'Sistema de gestión de hallazgos y eventos de riesgo operacional',
 }
 

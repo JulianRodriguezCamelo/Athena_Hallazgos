@@ -90,9 +90,9 @@ export const hallazgosApi = {
   actividades: (id: number) => request(`/api/hallazgos/${id}/actividades`),
   estados: () => request('/api/hallazgos/estados'),
   dependencias: () => request('/api/hallazgos/dependencias'),
-  vicepresidencias: () => request('/api/hallazgos/vicepresidencias'),
   responsables: () => request('/api/hallazgos/responsables'),
   estadosPlan: () => request('/api/hallazgos/estados_plan'),
+  vicepresidencias: () => request('/api/hallazgos/vicepresidencias'),
 }
 
 // ── Uploads ───────────────────────────────────────────────────────────────────
@@ -101,6 +101,11 @@ export const uploadsApi = {
     const form = new FormData()
     form.append('file', file)
     return request('/api/uploads/', { method: 'POST', body: form, isFormData: true })
+  },
+  analyze: (file: File) => {
+    const form = new FormData()
+    form.append('file', file)
+    return request('/api/uploads/analyze', { method: 'POST', body: form, isFormData: true })
   },
   history: (params?: Record<string, unknown>) =>
     request('/api/uploads/history', { params }),

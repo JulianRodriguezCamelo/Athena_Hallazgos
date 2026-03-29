@@ -4,6 +4,7 @@ from app.extensions import db
 from app.models.hallazgo import Hallazgo
 from app.models.actividad import Actividad
 from app.utils.decorators import get_current_user, min_role
+from datetime import datetime, timezone
 
 hallazgos_bp = Blueprint("hallazgos", __name__, url_prefix="/api/hallazgos")
 
@@ -13,18 +14,19 @@ def _apply_role_filter(query, user):
     if user.rol == "vicepresidente":
         return query  # Ve todo
 
-    # Directivo y técnico: filtrar por vicepresidencia asignada
     if user.rol in ("directivo", "tecnico"):
+        # Filtrar por vicepresidencia si está configurada en el usuario
         if user.vicepresidencia:
             return query.filter(
                 Hallazgo.vicepresidencia == user.vicepresidencia
             )
-        # Sin vicepresidencia asignada: fallback a dependencia (directivo)
-        if user.rol == "directivo" and user.dependencia:
+        # Fallback: filtrar por dependencia (directivo y técnico)
+        if user.dependencia:
             return query.filter(
                 Hallazgo.dependencia_reporta_ero == user.dependencia
             )
-        return query.filter(db.false())
+        # Sin restricciones configuradas: ve todo
+        return query
 
     return query.filter(db.false())
 
@@ -42,6 +44,10 @@ def list_hallazgos():
     responsable = request.args.get("responsable")
     estado_plan = request.args.get("estado_plan_accion")
     search = request.args.get("search")
+    vencido = request.args.get("vencido")
+    con_prorroga = request.args.get("con_prorroga")
+    fecha_cierre_desde = request.args.get("fecha_cierre_desde")
+    fecha_cierre_hasta = request.args.get("fecha_cierre_hasta")
     page = int(request.args.get("page", 1))
     per_page = int(request.args.get("per_page", 20))
 
@@ -68,6 +74,29 @@ def list_hallazgos():
                 Hallazgo.nombre_plan_accion.ilike(f"%{search}%"),
             )
         )
+    if vencido == "true":
+        query = query.filter(
+            Hallazgo.fecha_cierre_proyectada < datetime.now(timezone.utc),
+            ~Hallazgo.estado.ilike("%cerrado%"),
+            ~Hallazgo.estado.ilike("%cerrada%"),
+        )
+    if con_prorroga == "true":
+        query = query.filter(
+            Hallazgo.prorroga.isnot(None),
+            Hallazgo.prorroga != "",
+        )
+    if fecha_cierre_desde:
+        try:
+            dt = datetime.strptime(fecha_cierre_desde, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+            query = query.filter(Hallazgo.fecha_cierre_proyectada >= dt)
+        except ValueError:
+            pass
+    if fecha_cierre_hasta:
+        try:
+            dt = datetime.strptime(fecha_cierre_hasta, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+            query = query.filter(Hallazgo.fecha_cierre_proyectada <= dt)
+        except ValueError:
+            pass
 
     query = query.order_by(Hallazgo.fecha_inicial_evento.desc())
     paginated = query.paginate(page=page, per_page=per_page, error_out=False)

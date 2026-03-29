@@ -1,5 +1,6 @@
 import os
 import uuid
+from datetime import datetime
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required
 from werkzeug.utils import secure_filename
@@ -160,3 +161,77 @@ def delete_upload(upload_id):
     db.session.commit()
 
     return jsonify({"message": "Carga eliminada exitosamente"}), 200
+
+
+@uploads_bp.route("/analyze", methods=["POST"])
+@jwt_required()
+def analyze_excel():
+    """Analiza un Excel y retorna estadísticas sin guardar en BD."""
+    if "file" not in request.files:
+        return jsonify({"error": "No se envió ningún archivo"}), 400
+
+    file = request.files["file"]
+    if file.filename == "" or not _allowed_file(file.filename):
+        return jsonify({"error": "Solo se permiten archivos .xlsx o .xls"}), 400
+
+    original_name = secure_filename(file.filename)
+    unique_name = f"tmp_analyze_{uuid.uuid4().hex}_{original_name}"
+    save_path = os.path.join(Config.UPLOAD_FOLDER, unique_name)
+    os.makedirs(Config.UPLOAD_FOLDER, exist_ok=True)
+    file.save(save_path)
+
+    try:
+        hallazgos, actividades_data, errors = parse_excel(save_path)
+    finally:
+        try:
+            os.remove(save_path)
+        except OSError:
+            pass
+
+    hoy = datetime.now()
+
+    por_estado: dict[str, int] = {}
+    por_dependencia: dict[str, int] = {}
+    por_responsable: dict[str, int] = {}
+    vencidos = 0
+    con_prorroga = 0
+
+    for h in hallazgos:
+        estado = h.get("estado") or "Sin estado"
+        por_estado[estado] = por_estado.get(estado, 0) + 1
+
+        dep = h.get("dependencia_reporta_ero") or "Sin dependencia"
+        por_dependencia[dep] = por_dependencia.get(dep, 0) + 1
+
+        resp = h.get("responsable_plan_accion")
+        if resp:
+            por_responsable[resp] = por_responsable.get(resp, 0) + 1
+
+        fecha_cierre = h.get("fecha_cierre_proyectada")
+        estado_h = (h.get("estado") or "").lower()
+        if (
+            fecha_cierre
+            and isinstance(fecha_cierre, datetime)
+            and fecha_cierre < hoy
+            and "cerrado" not in estado_h
+            and "cerrada" not in estado_h
+        ):
+            vencidos += 1
+
+        if h.get("prorroga"):
+            con_prorroga += 1
+
+    dep_sorted = sorted(por_dependencia.items(), key=lambda x: x[1], reverse=True)[:10]
+    resp_sorted = sorted(por_responsable.items(), key=lambda x: x[1], reverse=True)[:10]
+    estado_sorted = sorted(por_estado.items(), key=lambda x: x[1], reverse=True)
+
+    return jsonify({
+        "total": len(hallazgos),
+        "total_actividades": len(actividades_data),
+        "vencidos": vencidos,
+        "con_prorroga": con_prorroga,
+        "por_estado": [{"estado": k, "total": v} for k, v in estado_sorted],
+        "por_dependencia": [{"nombre": k, "total": v} for k, v in dep_sorted],
+        "por_responsable": [{"nombre": k, "total": v} for k, v in resp_sorted],
+        "errores": errors[:20],
+    }), 200

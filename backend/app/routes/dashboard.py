@@ -4,6 +4,7 @@ from flask_jwt_extended import jwt_required
 from sqlalchemy import func, case
 from app.extensions import db
 from app.models.hallazgo import Hallazgo
+from app.models.actividad import Actividad
 from app.models.upload_history import UploadHistory
 from app.utils.decorators import get_current_user
 
@@ -16,13 +17,15 @@ def _base_query(user):
     if user.rol == "vicepresidente":
         return query
 
-    # Directivo y técnico: filtrar por vicepresidencia
     if user.rol in ("directivo", "tecnico"):
+        # Filtrar por vicepresidencia si está configurada en el usuario
         if user.vicepresidencia:
             return query.filter(Hallazgo.vicepresidencia == user.vicepresidencia)
-        if user.rol == "directivo" and user.dependencia:
+        # Fallback: filtrar por dependencia (directivo y técnico)
+        if user.dependencia:
             return query.filter(Hallazgo.dependencia_reporta_ero == user.dependencia)
-        return query.filter(db.false())
+        # Sin restricciones configuradas: ve todo
+        return query
 
     return query.filter(db.false())
 
@@ -116,23 +119,60 @@ def por_dependencia():
 def por_responsable():
     user = get_current_user()
     q = _base_query(user)
+    hallazgo_ids = q.with_entities(Hallazgo.id)
+
+    # Fuente 1: responsable directo en Hallazgo (cualquier campo)
+    from_hallazgo = (
+        db.session.query(
+            Hallazgo.id.label("hallazgo_id"),
+            func.coalesce(
+                Hallazgo.responsable_plan_accion,
+                Hallazgo.responsable_accion,
+            ).label("responsable"),
+        )
+        .filter(
+            func.coalesce(
+                Hallazgo.responsable_plan_accion,
+                Hallazgo.responsable_accion,
+            ).isnot(None)
+        )
+        .filter(Hallazgo.id.in_(hallazgo_ids))
+    )
+
+    # Fuente 2: responsable en Actividades vinculadas
+    from_actividad = (
+        db.session.query(
+            Actividad.hallazgo_id.label("hallazgo_id"),
+            func.coalesce(
+                Actividad.responsable,
+                Actividad.responsable_accion,
+            ).label("responsable"),
+        )
+        .filter(
+            func.coalesce(
+                Actividad.responsable,
+                Actividad.responsable_accion,
+            ).isnot(None)
+        )
+        .filter(Actividad.hallazgo_id.in_(hallazgo_ids))
+    )
+
+    combined = from_hallazgo.union(from_actividad).subquery()
 
     results = (
         db.session.query(
-            Hallazgo.responsable_plan_accion,
-            func.count(Hallazgo.id).label("total"),
+            combined.c.responsable,
+            func.count(db.distinct(combined.c.hallazgo_id)).label("total"),
         )
-        .filter(Hallazgo.responsable_plan_accion.isnot(None))
-        .filter(Hallazgo.id.in_(q.with_entities(Hallazgo.id)))
-        .group_by(Hallazgo.responsable_plan_accion)
-        .order_by(func.count(Hallazgo.id).desc())
+        .group_by(combined.c.responsable)
+        .order_by(func.count(db.distinct(combined.c.hallazgo_id)).desc())
         .limit(15)
         .all()
     )
 
     return jsonify({
         "data": [
-            {"responsable": r.responsable_plan_accion, "total": r.total}
+            {"responsable": r.responsable, "total": r.total}
             for r in results
         ]
     }), 200

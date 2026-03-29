@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { UserPlus, Pencil, UserX, UserCheck, Users } from 'lucide-react'
-import { usersApi } from '@/lib/api'
+import { usersApi, hallazgosApi } from '@/lib/api'
 import { ROL_LABELS, cn } from '@/lib/utils'
 import { useAuth } from '@/lib/auth'
 import DashboardShell from '@/components/layout/DashboardShell'
@@ -34,7 +34,6 @@ interface User {
   nombre: string
   email: string
   rol: string
-  vicepresidencia: string | null
   dependencia: string | null
   activo: boolean
 }
@@ -44,11 +43,10 @@ interface FormData {
   email: string
   password: string
   rol: string
-  vicepresidencia: string
   dependencia: string
 }
 
-const EMPTY_FORM: FormData = { nombre: '', email: '', password: '', rol: 'tecnico', vicepresidencia: '', dependencia: '' }
+const EMPTY_FORM: FormData = { nombre: '', email: '', password: '', rol: 'tecnico', dependencia: '' }
 
 const ROL_OPTIONS = [
   { value: 'vicepresidente', label: 'Vicepresidente' },
@@ -72,12 +70,17 @@ export default function UsuariosPage() {
   const [form, setForm] = useState<FormData>(EMPTY_FORM)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+  const [dependencias, setDependencias] = useState<string[]>([])
 
   const load = useCallback(async () => {
     setLoading(true)
     try {
-      const res = await usersApi.list()
+      const [res, deps] = await Promise.all([
+        usersApi.list(),
+        hallazgosApi.dependencias(),
+      ])
       setUsers((res.data as { users: User[] }).users)
+      setDependencias((deps.data as { dependencias: string[] }).dependencias)
     } finally {
       setLoading(false)
     }
@@ -94,7 +97,7 @@ export default function UsuariosPage() {
 
   function openEdit(u: User) {
     setEditing(u)
-    setForm({ nombre: u.nombre, email: u.email, password: '', rol: u.rol, vicepresidencia: u.vicepresidencia ?? '', dependencia: u.dependencia ?? '' })
+    setForm({ nombre: u.nombre, email: u.email, password: '', rol: u.rol, dependencia: u.dependencia ?? '' })
     setError('')
     setModalOpen(true)
   }
@@ -111,7 +114,6 @@ export default function UsuariosPage() {
         nombre: form.nombre,
         email: form.email,
         rol: form.rol,
-        vicepresidencia: form.vicepresidencia || null,
         dependencia: form.dependencia || null,
         ...(form.password && { password: form.password }),
       }
@@ -194,7 +196,7 @@ export default function UsuariosPage() {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-primary hover:bg-primary">
-                    {['Nombre', 'Email', 'Rol', 'Vicepresidencia', 'Dependencia', 'Estado', 'Acciones'].map((h) => (
+                    {['Nombre', 'Email', 'Rol', 'Dependencia', 'Estado', 'Acciones'].map((h) => (
                       <TableHead key={h} className="text-primary-foreground font-semibold text-xs whitespace-nowrap py-3">
                         {h}
                       </TableHead>
@@ -223,7 +225,6 @@ export default function UsuariosPage() {
                           {ROL_LABELS[u.rol] ?? u.rol}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-muted-foreground text-xs">{u.vicepresidencia ?? '—'}</TableCell>
                       <TableCell className="text-muted-foreground text-xs">{u.dependencia ?? '—'}</TableCell>
                       <TableCell>
                         <Badge variant={u.activo ? 'success' : 'ghost'}>
@@ -307,19 +308,16 @@ export default function UsuariosPage() {
                 value={form.rol}
                 onChange={(e) => setForm({ ...form, rol: e.target.value })}
               />
-              <Input
-                label="Vicepresidencia"
-                value={form.vicepresidencia}
-                onChange={(e) => setForm({ ...form, vicepresidencia: e.target.value })}
-                placeholder="Ej: VP Operaciones"
+              <Select
+                label="Dependencia / Dirección"
+                options={[
+                  { value: '', label: '— Sin dependencia —' },
+                  ...dependencias.map((d) => ({ value: d, label: d })),
+                ]}
+                value={form.dependencia}
+                onChange={(e) => setForm({ ...form, dependencia: e.target.value })}
               />
             </div>
-            <Input
-              label="Dependencia / Dirección"
-              value={form.dependencia}
-              onChange={(e) => setForm({ ...form, dependencia: e.target.value })}
-              placeholder="Ej: Tecnología"
-            />
             <div className="flex justify-end gap-2 pt-2">
               <Button variant="ghost" onClick={() => setModalOpen(false)}>
                 Cancelar
