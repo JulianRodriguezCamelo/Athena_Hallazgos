@@ -1,0 +1,7 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx shadcn@latest add card badge table dialog avatar separator label scroll-area tooltip --overwrite -y)"
+    ]
+  }
+}
