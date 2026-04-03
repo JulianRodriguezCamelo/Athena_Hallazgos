@@ -64,7 +64,7 @@ def upload_excel():
     hallazgo_records, actividades_data, errors = parse_excel(save_path)
 
     exitosos = 0
-    # codigo_evento -> hallazgo_id para vincular actividades
+    # codigo_del_hallazgo -> hallazgo_id para vincular actividades
     codigo_to_hallazgo: dict[str, int] = {}
 
     for record in hallazgo_records:
@@ -72,7 +72,7 @@ def upload_excel():
             hallazgo = Hallazgo(upload_id=history.id, **record)
             db.session.add(hallazgo)
             db.session.flush()  # Obtener el ID generado
-            codigo = record.get("codigo_evento")
+            codigo = record.get("codigo_del_hallazgo")
             if codigo:
                 codigo_to_hallazgo[codigo] = hallazgo.id
             exitosos += 1
@@ -80,8 +80,8 @@ def upload_excel():
             errors.append(f"Error al guardar hallazgo: {str(e)}")
 
     # Guardar actividades vinculadas al hallazgo correspondiente
-    for codigo_evento, actividad_dict in actividades_data:
-        hallazgo_id = codigo_to_hallazgo.get(codigo_evento)
+    for codigo_del_hallazgo, actividad_dict in actividades_data:
+        hallazgo_id = codigo_to_hallazgo.get(codigo_del_hallazgo)
         if hallazgo_id:
             try:
                 actividad = Actividad(hallazgo_id=hallazgo_id, **actividad_dict)

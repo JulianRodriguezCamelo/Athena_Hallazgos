@@ -69,7 +69,7 @@ def list_hallazgos():
     if search:
         query = query.filter(
             db.or_(
-                Hallazgo.codigo_evento.ilike(f"%{search}%"),
+                Hallazgo.codigo_del_hallazgo.ilike(f"%{search}%"),
                 Hallazgo.descripcion.ilike(f"%{search}%"),
                 Hallazgo.nombre_plan_accion.ilike(f"%{search}%"),
             )

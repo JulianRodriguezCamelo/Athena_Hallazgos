@@ -24,7 +24,7 @@ import {
 
 interface Hallazgo {
   id: number
-  codigo_evento: string | null
+  codigo_del_hallazgo: string | null
   descripcion: string | null
   fecha_inicial_evento: string | null
   fecha_cierre_proyectada: string | null
@@ -701,7 +701,7 @@ export default function HallazgosPage() {
                   {hallazgos.map((h) => (
                     <TableRow key={h.id} className="group">
                       <TableCell className="font-mono text-xs font-semibold text-primary whitespace-nowrap">
-                        {h.codigo_evento ?? '—'}
+                        {h.codigo_del_hallazgo ?? '—'}
                       </TableCell>
                       <TableCell className="max-w-xs">
                         <p className="truncate text-foreground text-sm" title={h.descripcion ?? ''}>
@@ -799,7 +799,7 @@ export default function HallazgosPage() {
       <Modal
         open={!!selected}
         onClose={() => setSelected(null)}
-        title={`Hallazgo ${selected?.codigo_evento ?? ''}`}
+        title={`Hallazgo ${selected?.codigo_del_hallazgo ?? ''}`}
         size="2xl"
       >
         {selected && (
@@ -841,7 +841,7 @@ export default function HallazgosPage() {
                 </div>
 
                 <div className="grid grid-cols-2 gap-x-6 gap-y-4">
-                  <DetailField label="Código del evento"       value={selected.codigo_evento} />
+                  <DetailField label="Código del evento"       value={selected.codigo_del_hallazgo} />
                   <DetailField label="Estado"                  value={selected.estado} />
                   <DetailField label="Dependencia ERO"         value={selected.dependencia_reporta_ero} />
                   <DetailField label="Reportado para"          value={selected.reportado_para} />
