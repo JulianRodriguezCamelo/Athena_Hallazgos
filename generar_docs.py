@@ -679,7 +679,7 @@ def crear_diagrama_relaciones():
                                │               HALLAZGO                       │
                                │──────────────────────────────────────────────│
                                │ PK id                                        │
-                               │    codigo_evento (INDEX)                     │
+                               │    codigo_del_hallazgo (INDEX)                     │
                                │    descripcion (TEXT)                        │
                                │    fecha_inicial_evento                      │
                                │    fecha_finalizacion_evento                 │
@@ -712,7 +712,7 @@ def crear_diagrama_relaciones():
                                │──────────────────────────────────────────────│
                                │ PK id                                        │
                                │ FK hallazgo_id (INDEX) ──────────────────────│── → HALLAZGO.id
-                               │    codigo_evento (INDEX)                     │
+                               │    codigo_del_hallazgo (INDEX)                     │
                                │    id_plan_accion                            │
                                │    nombre_plan_accion                        │
                                │    descripcion (TEXT)                        │
@@ -796,7 +796,7 @@ def crear_diagrama_relaciones():
     )
     hallazgo_attrs = [
         ("id",                          "INTEGER, PK",    "Identificador único"),
-        ("codigo_evento",               "VARCHAR, INDEX", "Código único del evento ERO"),
+        ("codigo_del_hallazgo",               "VARCHAR, INDEX", "Código único del evento ERO"),
         ("descripcion",                 "TEXT",           "Descripción detallada del hallazgo"),
         ("fecha_inicial_evento",        "DATETIME",       "Fecha de inicio del evento"),
         ("fecha_finalizacion_evento",   "DATETIME",       "Fecha de fin del evento"),
@@ -857,7 +857,7 @@ def crear_diagrama_relaciones():
     act_attrs = [
         ("id",                  "INTEGER, PK",    "Identificador único"),
         ("hallazgo_id",         "INTEGER, FK",    "Referencia al hallazgo padre (CASCADE)"),
-        ("codigo_evento",       "VARCHAR, INDEX", "Código del evento para referencia"),
+        ("codigo_del_hallazgo",       "VARCHAR, INDEX", "Código del evento para referencia"),
         ("id_plan_accion",      "VARCHAR",        "ID del plan de acción"),
         ("nombre_plan_accion",  "VARCHAR",        "Nombre del plan de acción"),
         ("descripcion",         "TEXT",           "Descripción de la actividad"),
@@ -1067,7 +1067,7 @@ def crear_diagrama_relaciones():
         ▼
   [EXCEL PARSER] excel_parser.py
   • Detecta columnas por regex (flexible)
-  • Agrupa filas por codigo_evento
+  • Agrupa filas por codigo_del_hallazgo
   • Primera fila del grupo → HALLAZGO
   • Filas adicionales del grupo → ACTIVIDAD
   • Parsea fechas (7 formatos soportados)

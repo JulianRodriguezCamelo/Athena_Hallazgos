@@ -8,7 +8,7 @@ class Hallazgo(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     # --- Campos del Excel ---
-    codigo_evento = db.Column(db.String(100), nullable=True, index=True)
+    codigo_del_hallazgo = db.Column(db.String(100), nullable=True, index=True)
     descripcion = db.Column(db.Text, nullable=True)
     fecha_inicial_evento = db.Column(db.DateTime, nullable=True)
     fecha_finalizacion_evento = db.Column(db.DateTime, nullable=True)
@@ -56,7 +56,7 @@ class Hallazgo(db.Model):
     def to_dict(self):
         return {
             "id": self.id,
-            "codigo_evento": self.codigo_evento,
+            "codigo_del_hallazgo": self.codigo_del_hallazgo,
             "descripcion": self.descripcion,
             "fecha_inicial_evento": (
                 self.fecha_inicial_evento.isoformat()
@@ -99,4 +99,4 @@ class Hallazgo(db.Model):
         }
 
     def __repr__(self):
-        return f"<Hallazgo {self.codigo_evento} [{self.estado}]>"
+        return f"<Hallazgo {self.codigo_del_hallazgo} [{self.estado}]>"

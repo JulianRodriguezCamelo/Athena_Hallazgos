@@ -7,8 +7,8 @@ import pandas as pd
 # Mapeo flexible: patrón (regex sobre nombre de columna normalizado) -> campo del modelo
 COLUMN_MAP = {
     # ── Identificación ────────────────────────────────────────────────────────
-    r"c[oó]digo.*evento":              "codigo_evento",
-    r"^num(ero)?$":                    "codigo_evento",       # columna "Num"
+    r"c[oó]digo.*evento":              "codigo_del_hallazgo",
+    r"^num(ero)?$":                    "codigo_del_hallazgo", # columna "Num"
 
     # ── Descripción / tipo ────────────────────────────────────────────────────
     r"^descripci[oó]n$":               "descripcion",
@@ -89,6 +89,13 @@ ACTIVIDAD_FIELDS = {
     "observaciones",
 }
 
+# Campos que identifican al hallazgo (no deben copiarse como actividad pura)
+HALLAZGO_ONLY_FIELDS = {
+    "codigo_del_hallazgo", "descripcion", "fecha_inicial_evento",
+    "fecha_finalizacion_evento", "vicepresidencia", "dependencia_reporta_ero",
+    "reportado_para", "estado", "reportado_por", "aplicativo_afecta_ero",
+}
+
 
 def _normalize(col: str) -> str:
     return str(col).strip().lower()
@@ -146,10 +153,11 @@ def _is_data_row(row: pd.Series, col_mapping: dict) -> bool:
     return non_null > max(1, len(values) * 0.2)
 
 
-def _record_to_actividad(record: dict, codigo_evento: str | None) -> dict:
+def _record_to_actividad(record: dict, codigo_del_hallazgo: str | None, orden: int = 1) -> dict:
     """Convierte un record de Excel en un dict de actividad."""
     return {
-        "codigo_evento": codigo_evento,
+        "codigo_del_hallazgo": codigo_del_hallazgo,
+        "orden": orden,
         "id_plan_accion": record.get("id_plan_accion"),
         "nombre_plan_accion": record.get("nombre_plan_accion"),
         "descripcion": record.get("descripcion_plan_accion"),
@@ -164,14 +172,24 @@ def _record_to_actividad(record: dict, codigo_evento: str | None) -> dict:
     }
 
 
+def _actividad_tiene_datos(act: dict) -> bool:
+    """Retorna True si la actividad tiene al menos un campo relevante con valor."""
+    campos = {
+        "id_plan_accion", "nombre_plan_accion", "descripcion",
+        "estado_plan_accion", "responsable", "estado_accion",
+        "responsable_accion", "fecha_compromiso", "observaciones",
+    }
+    return any(act.get(c) for c in campos)
+
+
 def parse_excel(file_path: str) -> tuple[list[dict], list[dict], list[str]]:
     """
     Parsea el archivo Excel.
     Retorna (hallazgos, actividades, errores).
-    - Agrupa filas por codigo_evento.
+    - Agrupa filas por codigo_del_hallazgo.
     - La primera fila de cada grupo = hallazgo.
-    - Las filas adicionales del mismo codigo_evento = actividades.
-    - Filas sin codigo_evento: cada una es un hallazgo independiente.
+    - Las filas adicionales del mismo codigo_del_hallazgo = actividades.
+    - Filas sin codigo_del_hallazgo: cada una es un hallazgo independiente.
     """
     try:
         df = pd.read_excel(file_path, dtype=str, header=0)
@@ -182,6 +200,23 @@ def parse_excel(file_path: str) -> tuple[list[dict], list[dict], list[str]]:
     df = df.dropna(how="all").reset_index(drop=True)
     df = df.loc[:, df.columns.notna()]
     df.columns = [str(c) for c in df.columns]
+
+    # FIX 1: Recuperar sub-encabezados de columnas sin nombre (Unnamed)
+    # Cuando el Excel tiene doble fila de encabezado, pandas deja las columnas
+    # secundarias como "Unnamed: N". La primera fila de datos puede contener
+    # los nombres reales de esas columnas (ej: "Responsable", "Fecha Compromiso").
+    unnamed_cols = [c for c in df.columns if c.startswith("Unnamed:")]
+    if unnamed_cols and len(df) > 0:
+        first_row = df.iloc[0]
+        renamed = {}
+        for col in unnamed_cols:
+            val = _clean(first_row.get(col))
+            # Solo renombrar si el valor parece un encabezado (texto, no número ni fecha)
+            if val and not val.replace(".", "").replace("-", "").replace("/", "").isdigit():
+                renamed[col] = val
+        if renamed:
+            df = df.rename(columns=renamed)
+            df = df.iloc[1:].reset_index(drop=True)
 
     col_mapping = _map_columns(list(df.columns))
 
@@ -217,13 +252,13 @@ def parse_excel(file_path: str) -> tuple[list[dict], list[dict], list[str]]:
         except Exception as e:
             errors.append(f"Fila {row_num}: {str(e)}")
 
-    # Agrupar por codigo_evento
+    # Agrupar por codigo_del_hallazgo
     # Orden preservado: dict en Python 3.7+
-    groups: dict[str, list[dict]] = {}  # codigo_evento -> [records]
-    no_code_records: list[dict] = []    # filas sin codigo_evento
+    groups: dict[str, list[dict]] = {}  # codigo_del_hallazgo -> [records]
+    no_code_records: list[dict] = []    # filas sin codigo_del_hallazgo
 
     for _row_num, record in flat_records:
-        codigo = record.get("codigo_evento")
+        codigo = record.get("codigo_del_hallazgo")
         if not codigo:
             no_code_records.append(record)
         else:
@@ -232,15 +267,19 @@ def parse_excel(file_path: str) -> tuple[list[dict], list[dict], list[str]]:
             groups[codigo].append(record)
 
     hallazgos: list[dict] = []
-    actividades_data: list[tuple[str, dict]] = []  # (codigo_evento, actividad_dict)
+    actividades_data: list[tuple[str, dict]] = []  # (codigo_del_hallazgo, actividad_dict)
 
-    # Grupos con codigo_evento: primer registro = hallazgo, resto = actividades
+    # Grupos con codigo_del_hallazgo: primer registro = hallazgo, todos los registros = actividades
+    # FIX 2: La primera fila también puede contener datos de la primera actividad,
+    # por eso se itera desde records[0] y no desde records[1:].
     for codigo, records in groups.items():
         hallazgos.append(records[0])
-        for extra in records[1:]:
-            actividades_data.append((codigo, _record_to_actividad(extra, codigo)))
+        for orden, record in enumerate(records, start=1):
+            act = _record_to_actividad(record, codigo, orden)
+            if _actividad_tiene_datos(act):
+                actividades_data.append((codigo, act))
 
-    # Filas sin codigo_evento: cada una es hallazgo independiente
+    # Filas sin codigo_del_hallazgo: cada una es hallazgo independiente
     hallazgos.extend(no_code_records)
 
     return hallazgos, actividades_data, errors
