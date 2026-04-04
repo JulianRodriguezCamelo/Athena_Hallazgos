@@ -80,6 +80,18 @@ export const dashboardApi = {
   uploadsRecientes: () => request('/api/dashboard/uploads-recientes'),
 }
 
+// ── Dashboard Directivo ───────────────────────────────────────────────────────
+export const directivoApi = {
+  misMetricas: () => request('/api/dashboard/directivo/mis-metricas'),
+  misHallazgos: (page = 1, perPage = 10) =>
+    request('/api/dashboard/directivo/mis-hallazgos', { params: { page, per_page: perPage } }),
+  misActividades: (page = 1, perPage = 10) =>
+    request('/api/dashboard/directivo/mis-actividades', { params: { page, per_page: perPage } }),
+  menciones: (page = 1, perPage = 10) =>
+    request('/api/dashboard/directivo/menciones', { params: { page, per_page: perPage } }),
+  porEstadoAccion: () => request('/api/dashboard/directivo/por-estado-accion'),
+}
+
 // ── Hallazgos ─────────────────────────────────────────────────────────────────
 export const hallazgosApi = {
   list: (params?: Record<string, unknown>) =>

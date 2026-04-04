@@ -121,14 +121,13 @@ def por_responsable():
     q = _base_query(user)
     hallazgo_ids = q.with_entities(Hallazgo.id)
 
-    # Fuente 1: responsable directo en Hallazgo (cualquier campo)
-    from_hallazgo = (
+    results = (
         db.session.query(
-            Hallazgo.id.label("hallazgo_id"),
             func.coalesce(
                 Hallazgo.responsable_plan_accion,
                 Hallazgo.responsable_accion,
             ).label("responsable"),
+            func.count(Hallazgo.id).label("total"),
         )
         .filter(
             func.coalesce(
@@ -137,35 +136,13 @@ def por_responsable():
             ).isnot(None)
         )
         .filter(Hallazgo.id.in_(hallazgo_ids))
-    )
-
-    # Fuente 2: responsable en Actividades vinculadas
-    from_actividad = (
-        db.session.query(
-            Actividad.hallazgo_id.label("hallazgo_id"),
+        .group_by(
             func.coalesce(
-                Actividad.responsable,
-                Actividad.responsable_accion,
-            ).label("responsable"),
+                Hallazgo.responsable_plan_accion,
+                Hallazgo.responsable_accion,
+            )
         )
-        .filter(
-            func.coalesce(
-                Actividad.responsable,
-                Actividad.responsable_accion,
-            ).isnot(None)
-        )
-        .filter(Actividad.hallazgo_id.in_(hallazgo_ids))
-    )
-
-    combined = from_hallazgo.union(from_actividad).subquery()
-
-    results = (
-        db.session.query(
-            combined.c.responsable,
-            func.count(db.distinct(combined.c.hallazgo_id)).label("total"),
-        )
-        .group_by(combined.c.responsable)
-        .order_by(func.count(db.distinct(combined.c.hallazgo_id)).desc())
+        .order_by(func.count(Hallazgo.id).desc())
         .limit(15)
         .all()
     )
@@ -257,6 +234,150 @@ def prorrogas():
     return jsonify({
         "total_prorrogas": total_prorrogas,
         "prorrogas_vencidas": vencidas,
+    }), 200
+
+
+def _mis_hallazgos_q(user):
+    """Hallazgos donde el usuario es responsable (plan o acción)."""
+    nombre = user.nombre
+    return Hallazgo.query.filter(
+        db.or_(
+            Hallazgo.responsable_plan_accion.ilike(f"%{nombre}%"),
+            Hallazgo.responsable_accion.ilike(f"%{nombre}%"),
+        )
+    )
+
+
+@dashboard_bp.route("/directivo/mis-metricas", methods=["GET"])
+@jwt_required()
+def directivo_mis_metricas():
+    user = get_current_user()
+    q = _mis_hallazgos_q(user)
+    now = datetime.now(timezone.utc)
+
+    total = q.count()
+    abiertas = q.filter(Hallazgo.estado.ilike("%abierto%")).count()
+    cerradas = q.filter(Hallazgo.estado.ilike("%cerrado%")).count()
+    vencidos = q.filter(
+        Hallazgo.fecha_cierre_proyectada < now,
+        ~Hallazgo.estado.ilike("%cerrado%"),
+    ).count()
+    con_prorroga = q.filter(
+        Hallazgo.prorroga.isnot(None),
+        Hallazgo.prorroga != "",
+    ).count()
+
+    nombre = user.nombre
+    mis_actividades = Actividad.query.filter(
+        db.or_(
+            Actividad.responsable.ilike(f"%{nombre}%"),
+            Actividad.responsable_accion.ilike(f"%{nombre}%"),
+        )
+    ).count()
+
+    return jsonify({
+        "total": total,
+        "abiertas": abiertas,
+        "cerradas": cerradas,
+        "vencidos": vencidos,
+        "con_prorroga": con_prorroga,
+        "mis_actividades": mis_actividades,
+    }), 200
+
+
+@dashboard_bp.route("/directivo/mis-hallazgos", methods=["GET"])
+@jwt_required()
+def directivo_mis_hallazgos():
+    user = get_current_user()
+    page = request.args.get("page", 1, type=int)
+    per_page = request.args.get("per_page", 10, type=int)
+
+    q = _mis_hallazgos_q(user).order_by(Hallazgo.fecha_cierre_proyectada.asc())
+    pag = q.paginate(page=page, per_page=per_page, error_out=False)
+
+    return jsonify({
+        "hallazgos": [h.to_dict() for h in pag.items],
+        "total": pag.total,
+        "page": page,
+        "pages": pag.pages,
+    }), 200
+
+
+@dashboard_bp.route("/directivo/mis-actividades", methods=["GET"])
+@jwt_required()
+def directivo_mis_actividades():
+    user = get_current_user()
+    nombre = user.nombre
+    page = request.args.get("page", 1, type=int)
+    per_page = request.args.get("per_page", 10, type=int)
+
+    q = Actividad.query.filter(
+        db.or_(
+            Actividad.responsable.ilike(f"%{nombre}%"),
+            Actividad.responsable_accion.ilike(f"%{nombre}%"),
+        )
+    ).order_by(Actividad.fecha_compromiso.asc())
+    pag = q.paginate(page=page, per_page=per_page, error_out=False)
+
+    return jsonify({
+        "actividades": [a.to_dict() for a in pag.items],
+        "total": pag.total,
+        "page": page,
+        "pages": pag.pages,
+    }), 200
+
+
+@dashboard_bp.route("/directivo/menciones", methods=["GET"])
+@jwt_required()
+def directivo_menciones():
+    """Hallazgos de otras áreas donde el usuario aparece como responsable."""
+    user = get_current_user()
+    nombre = user.nombre
+    page = request.args.get("page", 1, type=int)
+    per_page = request.args.get("per_page", 10, type=int)
+
+    q = Hallazgo.query.filter(
+        db.or_(
+            Hallazgo.responsable_plan_accion.ilike(f"%{nombre}%"),
+            Hallazgo.responsable_accion.ilike(f"%{nombre}%"),
+        )
+    )
+    if user.vicepresidencia:
+        q = q.filter(Hallazgo.vicepresidencia != user.vicepresidencia)
+    elif user.dependencia:
+        q = q.filter(Hallazgo.dependencia_reporta_ero != user.dependencia)
+
+    q = q.order_by(Hallazgo.fecha_cierre_proyectada.asc())
+    pag = q.paginate(page=page, per_page=per_page, error_out=False)
+
+    return jsonify({
+        "hallazgos": [h.to_dict() for h in pag.items],
+        "total": pag.total,
+        "page": page,
+        "pages": pag.pages,
+    }), 200
+
+
+@dashboard_bp.route("/directivo/por-estado-accion", methods=["GET"])
+@jwt_required()
+def directivo_por_estado_accion():
+    user = get_current_user()
+    hallazgo_ids = _mis_hallazgos_q(user).with_entities(Hallazgo.id)
+
+    results = (
+        db.session.query(
+            Hallazgo.estado_accion,
+            func.count(Hallazgo.id).label("total"),
+        )
+        .filter(Hallazgo.estado_accion.isnot(None))
+        .filter(Hallazgo.id.in_(hallazgo_ids))
+        .group_by(Hallazgo.estado_accion)
+        .order_by(func.count(Hallazgo.id).desc())
+        .all()
+    )
+
+    return jsonify({
+        "data": [{"estado": r.estado_accion, "total": r.total} for r in results]
     }), 200
 
 

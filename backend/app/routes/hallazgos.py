@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required
+from sqlalchemy import nullslast, case
 from app.extensions import db
 from app.models.hallazgo import Hallazgo
 from app.models.actividad import Actividad
@@ -58,10 +59,17 @@ def list_hallazgos():
     if vicepresidencia and user.rol == "vicepresidente":
         query = query.filter(Hallazgo.vicepresidencia.ilike(f"%{vicepresidencia}%"))
     if responsable:
+        actividad_subq = db.session.query(Actividad.hallazgo_id).filter(
+            db.or_(
+                Actividad.responsable.ilike(f"%{responsable}%"),
+                Actividad.responsable_accion.ilike(f"%{responsable}%"),
+            )
+        ).subquery()
         query = query.filter(
             db.or_(
                 Hallazgo.responsable_plan_accion.ilike(f"%{responsable}%"),
                 Hallazgo.responsable_accion.ilike(f"%{responsable}%"),
+                Hallazgo.id.in_(actividad_subq),
             )
         )
     if estado_plan:
@@ -98,11 +106,26 @@ def list_hallazgos():
         except ValueError:
             pass
 
-    query = query.order_by(Hallazgo.fecha_inicial_evento.desc())
+    query = query.order_by(
+        case((Hallazgo.codigo_del_hallazgo.isnot(None), 0), else_=1),
+        nullslast(Hallazgo.fecha_inicial_evento.desc()),
+    )
     paginated = query.paginate(page=page, per_page=per_page, error_out=False)
 
+    def _serialize(h):
+        d = h.to_dict()
+        if responsable:
+            es_directo = (
+                (h.responsable_plan_accion and responsable.lower() in h.responsable_plan_accion.lower()) or
+                (h.responsable_accion and responsable.lower() in h.responsable_accion.lower())
+            )
+            d["vinculado_via_actividad"] = not es_directo
+        else:
+            d["vinculado_via_actividad"] = False
+        return d
+
     return jsonify({
-        "hallazgos": [h.to_dict() for h in paginated.items],
+        "hallazgos": [_serialize(h) for h in paginated.items],
         "total": paginated.total,
         "pages": paginated.pages,
         "page": paginated.page,
@@ -199,13 +222,30 @@ def get_vicepresidencias():
 @hallazgos_bp.route("/responsables", methods=["GET"])
 @jwt_required()
 def get_responsables():
-    """Retorna los responsables únicos presentes en los datos."""
+    """Retorna los responsables únicos de hallazgos y actividades."""
     user = get_current_user()
     query = _apply_role_filter(Hallazgo.query, user)
-    responsables = db.session.query(Hallazgo.responsable_plan_accion).filter(
-        Hallazgo.responsable_plan_accion.isnot(None)
-    ).filter(Hallazgo.id.in_(query.with_entities(Hallazgo.id))).distinct().order_by(Hallazgo.responsable_plan_accion).all()
-    return jsonify({"responsables": [r[0] for r in responsables if r[0]]}), 200
+    hallazgo_ids = query.with_entities(Hallazgo.id)
+
+    from_hallazgos = db.session.query(Hallazgo.responsable_plan_accion).filter(
+        Hallazgo.responsable_plan_accion.isnot(None),
+        Hallazgo.id.in_(hallazgo_ids),
+    ).distinct()
+
+    from_actividades = db.session.query(Actividad.responsable).filter(
+        Actividad.responsable.isnot(None),
+        Actividad.hallazgo_id.in_(hallazgo_ids),
+    ).distinct()
+
+    nombres: set[str] = set()
+    for (r,) in from_hallazgos:
+        if r:
+            nombres.add(r)
+    for (r,) in from_actividades:
+        if r:
+            nombres.add(r)
+
+    return jsonify({"responsables": sorted(nombres)}), 200
 
 @hallazgos_bp.route("/estados_plan", methods=["GET"])
 @jwt_required()

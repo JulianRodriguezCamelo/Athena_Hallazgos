@@ -22,6 +22,7 @@ import { Badge } from '@/components/ui/Badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { Skeleton } from '@/components/ui/skeleton'
+import Modal from '@/components/ui/Modal'
 
 interface UploadRecord {
   id: number
@@ -50,6 +51,7 @@ export default function UploadsPage() {
   const [history, setHistory] = useState<UploadRecord[]>([])
   const [loadingHistory, setLoadingHistory] = useState(true)
   const [expandedId, setExpandedId] = useState<number | null>(null)
+  const [deleteTarget, setDeleteTarget] = useState<UploadRecord | null>(null)
 
   const loadHistory = useCallback(async () => {
     setLoadingHistory(true)
@@ -284,9 +286,7 @@ export default function UploadsPage() {
                         className="shrink-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10 w-7 h-7"
                         onClick={(e) => {
                           e.stopPropagation()
-                          if (confirm(`¿Eliminar la carga "${h.filename_original}" y sus ${h.total_registros} registros?`)) {
-                            uploadsApi.delete(h.id).then(() => loadHistory()).catch(() => {})
-                          }
+                          setDeleteTarget(h)
                         }}
                         title="Eliminar carga"
                       >
@@ -315,6 +315,40 @@ export default function UploadsPage() {
           )}
         </Card>
       </div>
+
+      {/* Delete confirmation modal */}
+      <Modal
+        open={deleteTarget !== null}
+        onClose={() => setDeleteTarget(null)}
+        title="Eliminar carga"
+        size="sm"
+      >
+        <div className="space-y-4">
+          <p className="text-sm text-foreground">
+            ¿Estás seguro de que deseas eliminar la carga{' '}
+            <span className="font-semibold">&ldquo;{deleteTarget?.filename_original}&rdquo;</span>{' '}
+            y sus <span className="font-semibold">{deleteTarget?.total_registros} registros</span>?
+          </p>
+          <p className="text-xs text-muted-foreground">Esta acción no se puede deshacer.</p>
+          <div className="flex justify-end gap-2 pt-2">
+            <Button variant="outline" size="sm" onClick={() => setDeleteTarget(null)}>
+              Cancelar
+            </Button>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => {
+                if (deleteTarget) {
+                  uploadsApi.delete(deleteTarget.id).then(() => loadHistory()).catch(() => {})
+                  setDeleteTarget(null)
+                }
+              }}
+            >
+              Eliminar
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </DashboardShell>
   )
 }

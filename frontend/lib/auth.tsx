@@ -17,6 +17,7 @@ export interface User {
   nombre: string
   email: string
   rol: Rol
+  vicepresidencia: string | null
   dependencia: string | null
   activo: boolean
 }

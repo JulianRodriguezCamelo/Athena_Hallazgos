@@ -19,11 +19,11 @@ import {
   ArrowDownRight,
   Shield,
   FileWarning,
-  Timer,
   Zap,
 } from 'lucide-react'
 import { dashboardApi } from '@/lib/api'
 import { useAuth } from '@/lib/auth'
+import DirectivoDashboard from './DirectivoDashboard'
 import { formatDateTime } from '@/lib/utils'
 import DashboardShell from '@/components/layout/DashboardShell'
 import { PageLoader } from '@/components/ui/Spinner'
@@ -84,7 +84,7 @@ interface UploadItem {
 // ─── Component ────────────────────────────────────────────────────────────────
 export default function DashboardPage() {
   const pathname = usePathname()
-  const { isVice } = useAuth()
+  const { isVice, isDirectivo } = useAuth()
 
   const [metrics, setMetrics] = useState<Metrics | null>(null)
   const [porEstado, setPorEstado] = useState<ChartItem[]>([])
@@ -176,6 +176,14 @@ export default function DashboardPage() {
 
   // ── Top responsable max for progress bar ────────────────────────────────────
   const maxResp = porResponsable.length > 0 ? Math.max(...porResponsable.map((r) => r.value)) : 1
+
+  if (isDirectivo) {
+    return (
+      <DashboardShell pathname={pathname}>
+        <DirectivoDashboard />
+      </DashboardShell>
+    )
+  }
 
   return (
     <DashboardShell pathname={pathname}>

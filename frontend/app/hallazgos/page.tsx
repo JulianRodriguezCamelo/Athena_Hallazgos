@@ -44,6 +44,7 @@ interface Hallazgo {
   estado_accion: string | null
   responsable_accion: string | null
   fecha_cierre_final_prorroga: string | null
+  vinculado_via_actividad?: boolean
 }
 
 interface Actividad {
@@ -131,7 +132,6 @@ function StatCard({ label, value, color }: { label: string; value: number; color
 function ActividadesTab({ hallazgoId }: { hallazgoId: number }) {
   const [actividades, setActividades] = useState<Actividad[]>([])
   const [loading, setLoading] = useState(true)
-  const [expanded, setExpanded] = useState<number | null>(null)
 
   useEffect(() => {
     hallazgosApi.actividades(hallazgoId)
@@ -151,50 +151,52 @@ function ActividadesTab({ hallazgoId }: { hallazgoId: number }) {
   )
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-3">
       {actividades.map((act, idx) => (
-        <div key={act.id} className="rounded-lg border border-border overflow-hidden">
-          <button
-            className="w-full flex items-center justify-between px-4 py-3 bg-muted/30 hover:bg-muted/60 transition-colors text-left"
-            onClick={() => setExpanded(expanded === idx ? null : idx)}
-          >
-            <div className="flex items-center gap-3 min-w-0">
-              <span className="text-xs font-mono text-primary shrink-0">
-                {act.id_plan_accion ?? `Actividad ${idx + 1}`}
-              </span>
-              <span className="text-sm text-foreground truncate">
+        <div key={act.id} className="rounded-xl border border-border bg-card overflow-hidden">
+
+          {/* Cabecera: número + título + estado */}
+          <div className="flex items-start gap-3 px-4 py-3 bg-muted/30 border-b border-border/60">
+            <span className="shrink-0 w-6 h-6 rounded-full bg-primary/15 text-primary text-[11px] font-bold flex items-center justify-center mt-0.5">
+              {idx + 1}
+            </span>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-foreground leading-snug">
                 {act.nombre_plan_accion ?? act.descripcion ?? '—'}
-              </span>
-            </div>
-            <div className="flex items-center gap-2 shrink-0 ml-2">
-              {act.estado_plan_accion && <StatusBadge value={act.estado_plan_accion} />}
-              {expanded === idx
-                ? <ChevronUp className="w-4 h-4 text-muted-foreground" />
-                : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
-            </div>
-          </button>
-          {expanded === idx && (
-            <div className="p-4 grid grid-cols-2 gap-x-6 gap-y-3 border-t border-border bg-background">
-              <DetailField label="ID Plan" value={act.id_plan_accion} />
-              <DetailField label="Estado plan" value={act.estado_plan_accion} />
-              <DetailField label="Responsable plan" value={act.responsable} />
-              <DetailField label="Estado acción" value={act.estado_accion} />
-              <DetailField label="Responsable acción" value={act.responsable_accion} />
-              <DetailField label="Fecha compromiso" value={formatDate(act.fecha_compromiso)} />
-              <DetailField label="Prórroga" value={act.prorroga} />
-              <DetailField label="Fecha prórroga" value={formatDate(act.fecha_prorroga)} />
-              {act.descripcion && (
-                <div className="col-span-2">
-                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">Descripción</p>
-                  <p className="text-sm text-foreground bg-muted/50 rounded-lg p-3">{act.descripcion}</p>
-                </div>
+              </p>
+              {act.id_plan_accion && (
+                <p className="text-[11px] text-muted-foreground font-mono mt-0.5">{act.id_plan_accion}</p>
               )}
-              {act.observaciones && (
-                <div className="col-span-2">
-                  <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">Observaciones</p>
-                  <p className="text-sm text-foreground bg-muted/50 rounded-lg p-3">{act.observaciones}</p>
-                </div>
-              )}
+            </div>
+            {act.estado_plan_accion && (
+              <div className="shrink-0 mt-0.5">
+                <StatusBadge value={act.estado_plan_accion} />
+              </div>
+            )}
+          </div>
+
+          {/* Campos: solo los que tienen valor */}
+          <div className="px-4 py-3 grid grid-cols-2 gap-x-6 gap-y-3">
+            {act.responsable         && <DetailField label="Responsable plan"   value={act.responsable} />}
+            {act.estado_accion       && <DetailField label="Estado acción"       value={act.estado_accion} />}
+            {act.responsable_accion  && <DetailField label="Responsable acción"  value={act.responsable_accion} />}
+            {act.fecha_compromiso    && <DetailField label="Fecha compromiso"    value={formatDate(act.fecha_compromiso)} />}
+            {act.prorroga            && <DetailField label="Prórroga"            value={act.prorroga} />}
+            {act.fecha_prorroga      && <DetailField label="Fecha prórroga"      value={formatDate(act.fecha_prorroga)} />}
+          </div>
+
+          {/* Descripción (si es diferente al título) */}
+          {act.descripcion && act.descripcion !== act.nombre_plan_accion && (
+            <div className="px-4 pb-3">
+              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">Descripción</p>
+              <p className="text-sm text-foreground bg-muted/40 rounded-lg p-3 leading-relaxed">{act.descripcion}</p>
+            </div>
+          )}
+
+          {act.observaciones && (
+            <div className="px-4 pb-3">
+              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">Observaciones</p>
+              <p className="text-sm text-foreground bg-muted/40 rounded-lg p-3 leading-relaxed">{act.observaciones}</p>
             </div>
           )}
         </div>
@@ -726,6 +728,11 @@ export default function HallazgosPage() {
                         <p className="truncate text-muted-foreground text-xs" title={h.responsable_plan_accion ?? ''}>
                           {h.responsable_plan_accion ?? '—'}
                         </p>
+                        {h.vinculado_via_actividad && (
+                          <span className="inline-block mt-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400 leading-none">
+                            vía act.
+                          </span>
+                        )}
                       </TableCell>
                       <TableCell className="whitespace-nowrap">
                         <StatusBadge value={h.estado_plan_accion} />
@@ -765,20 +772,34 @@ export default function HallazgosPage() {
                   >
                     ‹
                   </Button>
-                  {Array.from({ length: Math.min(5, meta.pages) }, (_, i) => {
-                    const p = i + 1
-                    return (
-                      <Button
-                        key={p}
-                        variant={p === page ? 'default' : 'ghost'}
-                        size="icon"
-                        className="w-7 h-7 text-xs"
-                        onClick={() => setPage(p)}
-                      >
-                        {p}
-                      </Button>
+                  {(() => {
+                    const window = 2
+                    let start = Math.max(1, page - window)
+                    let end = Math.min(meta.pages, page + window)
+                    if (end - start < window * 2) {
+                      if (start === 1) end = Math.min(meta.pages, start + window * 2)
+                      else start = Math.max(1, end - window * 2)
+                    }
+                    const pages: (number | '...')[] = []
+                    if (start > 1) { pages.push(1); if (start > 2) pages.push('...') }
+                    for (let p = start; p <= end; p++) pages.push(p)
+                    if (end < meta.pages) { if (end < meta.pages - 1) pages.push('...'); pages.push(meta.pages) }
+                    return pages.map((p, i) =>
+                      p === '...' ? (
+                        <span key={`ellipsis-${i}`} className="w-7 h-7 flex items-center justify-center text-xs text-muted-foreground">…</span>
+                      ) : (
+                        <Button
+                          key={p}
+                          variant={p === page ? 'default' : 'ghost'}
+                          size="icon"
+                          className="w-7 h-7 text-xs"
+                          onClick={() => setPage(p)}
+                        >
+                          {p}
+                        </Button>
+                      )
                     )
-                  })}
+                  })()}
                   <Button
                     variant="outline"
                     size="icon"
