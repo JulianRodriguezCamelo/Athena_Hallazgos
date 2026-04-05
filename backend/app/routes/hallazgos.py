@@ -29,6 +29,18 @@ def _apply_role_filter(query, user):
         # Sin restricciones configuradas: ve todo
         return query
 
+    if user.rol == "gestor":
+        # Ve hallazgos de su dependencia + donde es responsable
+        nombre = user.nombre
+        conditions = []
+        if user.dependencia:
+            conditions.append(
+                Hallazgo.dependencia_reporta_ero == user.dependencia
+            )
+        conditions.append(Hallazgo.responsable_plan_accion.ilike(f"%{nombre}%"))
+        conditions.append(Hallazgo.responsable_accion.ilike(f"%{nombre}%"))
+        return query.filter(db.or_(*conditions))
+
     return query.filter(db.false())
 
 
@@ -103,6 +115,21 @@ def list_hallazgos():
         try:
             dt = datetime.strptime(fecha_cierre_hasta, "%Y-%m-%d").replace(tzinfo=timezone.utc)
             query = query.filter(Hallazgo.fecha_cierre_proyectada <= dt)
+        except ValueError:
+            pass
+
+    fecha_inicial_desde = request.args.get("fecha_inicial_desde")
+    fecha_inicial_hasta = request.args.get("fecha_inicial_hasta")
+    if fecha_inicial_desde:
+        try:
+            dt = datetime.strptime(fecha_inicial_desde, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+            query = query.filter(Hallazgo.fecha_inicial_evento >= dt)
+        except ValueError:
+            pass
+    if fecha_inicial_hasta:
+        try:
+            dt = datetime.strptime(fecha_inicial_hasta, "%Y-%m-%d").replace(tzinfo=timezone.utc)
+            query = query.filter(Hallazgo.fecha_inicial_evento <= dt)
         except ValueError:
             pass
 
@@ -184,6 +211,66 @@ def get_actividades(hallazgo_id):
 
     actividades = Actividad.query.filter_by(hallazgo_id=hallazgo_id).all()
     return jsonify({"actividades": [a.to_dict() for a in actividades]}), 200
+
+
+@hallazgos_bp.route("/actividades", methods=["GET"])
+@jwt_required()
+def list_all_actividades():
+    """Lista todas las actividades accesibles con filtros y paginación."""
+    user = get_current_user()
+    accessible_ids = _apply_role_filter(Hallazgo.query, user).with_entities(Hallazgo.id)
+
+    query = Actividad.query.filter(Actividad.hallazgo_id.in_(accessible_ids))
+
+    search = request.args.get("search")
+    responsable = request.args.get("responsable")
+    estado_plan = request.args.get("estado_plan_accion")
+    estado_accion = request.args.get("estado_accion")
+    vencido = request.args.get("vencido")
+    con_prorroga = request.args.get("con_prorroga")
+    page = int(request.args.get("page", 1))
+    per_page = int(request.args.get("per_page", 20))
+
+    if search:
+        query = query.filter(
+            db.or_(
+                Actividad.nombre_plan_accion.ilike(f"%{search}%"),
+                Actividad.descripcion.ilike(f"%{search}%"),
+                Actividad.codigo_del_hallazgo.ilike(f"%{search}%"),
+            )
+        )
+    if responsable:
+        query = query.filter(
+            db.or_(
+                Actividad.responsable.ilike(f"%{responsable}%"),
+                Actividad.responsable_accion.ilike(f"%{responsable}%"),
+            )
+        )
+    if estado_plan:
+        query = query.filter(Actividad.estado_plan_accion.ilike(f"%{estado_plan}%"))
+    if estado_accion:
+        query = query.filter(Actividad.estado_accion.ilike(f"%{estado_accion}%"))
+    if vencido == "true":
+        query = query.filter(
+            Actividad.fecha_compromiso < datetime.now(timezone.utc),
+            ~Actividad.estado_accion.ilike("%cerrado%"),
+        )
+    if con_prorroga == "true":
+        query = query.filter(
+            Actividad.prorroga.isnot(None),
+            Actividad.prorroga != "",
+        )
+
+    query = query.order_by(Actividad.hallazgo_id, Actividad.orden)
+    paginated = query.paginate(page=page, per_page=per_page, error_out=False)
+
+    return jsonify({
+        "actividades": [a.to_dict() for a in paginated.items],
+        "total": paginated.total,
+        "pages": paginated.pages,
+        "page": paginated.page,
+        "per_page": paginated.per_page,
+    }), 200
 
 
 @hallazgos_bp.route("/estados", methods=["GET"])

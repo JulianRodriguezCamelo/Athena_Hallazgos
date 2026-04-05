@@ -30,6 +30,17 @@ def create_app(config_name: str = "default") -> Flask:
     with app.app_context():
         # Importar modelos para que SQLAlchemy los registre antes de create_all
         from app.models import hallazgo, actividad, user, upload_history  # noqa: F401
+
+        # Asegurar que el valor 'gestor' exista en el ENUM de PostgreSQL
+        from sqlalchemy import text
+        try:
+            db.session.execute(
+                text("ALTER TYPE rol_enum ADD VALUE IF NOT EXISTS 'gestor'")
+            )
+            db.session.commit()
+        except Exception:
+            db.session.rollback()
+
         db.create_all()
         _seed_admin()
 

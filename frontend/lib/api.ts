@@ -107,6 +107,12 @@ export const hallazgosApi = {
   vicepresidencias: () => request('/api/hallazgos/vicepresidencias'),
 }
 
+// ── Actividades ───────────────────────────────────────────────────────────────
+export const actividadesApi = {
+  list: (params?: Record<string, unknown>) =>
+    request('/api/hallazgos/actividades', { params }),
+}
+
 // ── Uploads ───────────────────────────────────────────────────────────────────
 export const uploadsApi = {
   upload: (file: File) => {
@@ -123,6 +129,21 @@ export const uploadsApi = {
     request('/api/uploads/history', { params }),
   detail: (id: number) => request(`/api/uploads/history/${id}`),
   delete: (id: number) => request(`/api/uploads/history/${id}`, { method: 'DELETE' }),
+}
+
+// ── Dashboard Gestor ──────────────────────────────────────────────────────────
+export const gestorApi = {
+  misMetricas: () => request('/api/dashboard/gestor/mis-metricas'),
+  porEstado: () => request('/api/dashboard/gestor/por-estado'),
+  porEstadoPlan: () => request('/api/dashboard/gestor/por-estado-plan'),
+  porSemaforo: () => request('/api/dashboard/gestor/por-semaforo'),
+  hallazgos: (page = 1, perPage = 50) =>
+    request('/api/dashboard/gestor/hallazgos', { params: { page, per_page: perPage } }),
+  actividades: (page = 1, perPage = 100) =>
+    request('/api/dashboard/gestor/actividades', { params: { page, per_page: perPage } }),
+  responsablesCriticos: () => request('/api/dashboard/gestor/responsables-criticos'),
+  bitacora: () => request('/api/dashboard/gestor/bitacora'),
+  tiempoPromedio: () => request('/api/dashboard/gestor/tiempo-promedio'),
 }
 
 // ── Users ─────────────────────────────────────────────────────────────────────

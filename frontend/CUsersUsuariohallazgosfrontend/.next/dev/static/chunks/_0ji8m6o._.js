@@ -3,12 +3,16 @@
 "use strict";
 
 __turbopack_context__.s([
+    "actividadesApi",
+    ()=>actividadesApi,
     "authApi",
     ()=>authApi,
     "dashboardApi",
     ()=>dashboardApi,
     "directivoApi",
     ()=>directivoApi,
+    "gestorApi",
+    ()=>gestorApi,
     "hallazgosApi",
     ()=>hallazgosApi,
     "uploadsApi",
@@ -129,6 +133,11 @@ const hallazgosApi = {
     estadosPlan: ()=>request('/api/hallazgos/estados_plan'),
     vicepresidencias: ()=>request('/api/hallazgos/vicepresidencias')
 };
+const actividadesApi = {
+    list: (params)=>request('/api/hallazgos/actividades', {
+            params
+        })
+};
 const uploadsApi = {
     upload: (file)=>{
         const form = new FormData();
@@ -155,6 +164,27 @@ const uploadsApi = {
     delete: (id)=>request(`/api/uploads/history/${id}`, {
             method: 'DELETE'
         })
+};
+const gestorApi = {
+    misMetricas: ()=>request('/api/dashboard/gestor/mis-metricas'),
+    porEstado: ()=>request('/api/dashboard/gestor/por-estado'),
+    porEstadoPlan: ()=>request('/api/dashboard/gestor/por-estado-plan'),
+    porSemaforo: ()=>request('/api/dashboard/gestor/por-semaforo'),
+    hallazgos: (page = 1, perPage = 50)=>request('/api/dashboard/gestor/hallazgos', {
+            params: {
+                page,
+                per_page: perPage
+            }
+        }),
+    actividades: (page = 1, perPage = 100)=>request('/api/dashboard/gestor/actividades', {
+            params: {
+                page,
+                per_page: perPage
+            }
+        }),
+    responsablesCriticos: ()=>request('/api/dashboard/gestor/responsables-criticos'),
+    bitacora: ()=>request('/api/dashboard/gestor/bitacora'),
+    tiempoPromedio: ()=>request('/api/dashboard/gestor/tiempo-promedio')
 };
 const usersApi = {
     list: ()=>request('/api/users/'),
@@ -239,12 +269,13 @@ function AuthProvider({ children }) {
             logout,
             isVice: user?.rol === 'vicepresidente',
             isDirectivo: user?.rol === 'directivo',
-            isTecnico: user?.rol === 'tecnico'
+            isTecnico: user?.rol === 'tecnico',
+            isGestor: user?.rol === 'gestor'
         },
         children: children
     }, void 0, false, {
         fileName: "[project]/lib/auth.tsx",
-        lineNumber: 71,
+        lineNumber: 72,
         columnNumber: 5
     }, this);
 }

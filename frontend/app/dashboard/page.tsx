@@ -24,6 +24,7 @@ import {
 import { dashboardApi } from '@/lib/api'
 import { useAuth } from '@/lib/auth'
 import DirectivoDashboard from './DirectivoDashboard'
+import GestorDashboard from './GestorDashboard'
 import { formatDateTime } from '@/lib/utils'
 import DashboardShell from '@/components/layout/DashboardShell'
 import { PageLoader } from '@/components/ui/Spinner'
@@ -84,7 +85,7 @@ interface UploadItem {
 // ─── Component ────────────────────────────────────────────────────────────────
 export default function DashboardPage() {
   const pathname = usePathname()
-  const { isVice, isDirectivo } = useAuth()
+  const { isVice, isDirectivo, isGestor } = useAuth()
 
   const [metrics, setMetrics] = useState<Metrics | null>(null)
   const [porEstado, setPorEstado] = useState<ChartItem[]>([])
@@ -181,6 +182,14 @@ export default function DashboardPage() {
     return (
       <DashboardShell pathname={pathname}>
         <DirectivoDashboard />
+      </DashboardShell>
+    )
+  }
+
+  if (isGestor) {
+    return (
+      <DashboardShell pathname={pathname}>
+        <GestorDashboard />
       </DashboardShell>
     )
   }

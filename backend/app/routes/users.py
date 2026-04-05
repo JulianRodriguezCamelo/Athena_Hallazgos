@@ -45,7 +45,7 @@ def create_user():
         if not data.get(field):
             return jsonify({"error": f"El campo '{field}' es requerido"}), 400
 
-    if data["rol"] not in ("vicepresidente", "directivo", "tecnico"):
+    if data["rol"] not in ("vicepresidente", "directivo", "tecnico", "gestor"):
         return jsonify({"error": "Rol inválido"}), 400
 
     if User.query.filter_by(email=data["email"].lower().strip()).first():
@@ -81,7 +81,7 @@ def update_user(user_id):
             return jsonify({"error": "El email ya está en uso"}), 409
         user.email = data["email"].lower().strip()
     if "rol" in data:
-        if data["rol"] not in ("vicepresidente", "directivo", "tecnico"):
+        if data["rol"] not in ("vicepresidente", "directivo", "tecnico", "gestor"):
             return jsonify({"error": "Rol inválido"}), 400
         user.rol = data["rol"]
     if "vicepresidencia" in data:

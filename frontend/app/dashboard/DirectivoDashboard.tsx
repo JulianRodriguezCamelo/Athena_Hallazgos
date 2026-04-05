@@ -12,8 +12,13 @@ import {
   ChevronLeft,
   ChevronRight,
   Layers,
-  UserCheck,
-  Bell,
+  ChevronDown,
+  CheckCircle2,
+  Circle,
+  TrendingUp,
+  TrendingDown,
+  AlertTriangle,
+  type LucideIcon,
 } from 'lucide-react'
 import { directivoApi, dashboardApi } from '@/lib/api'
 import { useAuth } from '@/lib/auth'
@@ -22,6 +27,7 @@ import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
+import { Progress } from '@/components/ui/progress'
 import {
   ChartContainer,
   ChartTooltip,
@@ -30,7 +36,6 @@ import {
 import {
   Bar,
   BarChart,
-  CartesianGrid,
   Cell,
   Pie,
   PieChart,
@@ -38,6 +43,7 @@ import {
   RadialBarChart,
   XAxis,
   YAxis,
+  LabelList,
 } from 'recharts'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -67,6 +73,7 @@ interface HallazgoRow {
 
 interface ActividadRow {
   id: number
+  hallazgo_id?: number
   codigo_del_hallazgo: string
   nombre_plan_accion: string | null
   descripcion: string | null
@@ -80,30 +87,72 @@ interface ActividadRow {
 interface PagedHallazgos { hallazgos: HallazgoRow[]; total: number; page: number; pages: number }
 interface PagedActividades { actividades: ActividadRow[]; total: number; page: number; pages: number }
 
-const CHART_COLORS = [
-  'var(--color-chart-1)',
-  'var(--color-chart-2)',
-  'var(--color-chart-3)',
-  'var(--color-chart-4)',
-  'var(--color-chart-5)',
+interface HallazgoWithActividades {
+  id: number
+  codigo: string
+  descripcion: string
+  estado: string
+  actividades: ActividadRow[]
+  completadas: number
+  total: number
+}
+
+// ─── Constants ────────────────────────────────────────────────────────────────
+const CHART_COLORS_HEX = [
+  '#3b82f6',
+  '#22c55e',
+  '#f59e0b',
+  '#ef4444',
+  '#8b5cf6',
 ]
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+function groupActivitiesByHallazgo(actividades: ActividadRow[]): HallazgoWithActividades[] {
+  const grouped = new Map<string, HallazgoWithActividades>()
+
+  actividades.forEach((act) => {
+    const codigo = act.codigo_del_hallazgo
+    if (!grouped.has(codigo)) {
+      grouped.set(codigo, {
+        id: act.hallazgo_id ?? act.id,
+        codigo,
+        descripcion: act.nombre_plan_accion ?? 'Plan de acción',
+        estado: act.estado_plan_accion ?? 'Pendiente',
+        actividades: [],
+        completadas: 0,
+        total: 0,
+      })
+    }
+    const group = grouped.get(codigo)!
+    group.actividades.push(act)
+    group.total++
+    const lower = act.estado_accion?.toLowerCase() ?? ''
+    if (lower.includes('cerrado') || lower.includes('completado') || lower.includes('cumplido')) {
+      group.completadas++
+    }
+  })
+
+  return Array.from(grouped.values())
+}
 
 function estadoBadge(estado: string | null) {
   if (!estado) return <Badge variant="outline">—</Badge>
   const lower = estado.toLowerCase()
-  if (lower.includes('cerrado')) return <Badge variant="success">{estado}</Badge>
-  if (lower.includes('vencido') || lower.includes('atraso')) return <Badge variant="destructive">{estado}</Badge>
-  return <Badge variant="warning">{estado}</Badge>
+  if (lower.includes('cerrado') || lower.includes('completado') || lower.includes('cumplido'))
+    return <Badge className="bg-green-500/10 text-green-600 border-green-500/20">{estado}</Badge>
+  if (lower.includes('vencido') || lower.includes('atraso'))
+    return <Badge variant="destructive">{estado}</Badge>
+  return <Badge className="bg-amber-500/10 text-amber-600 border-amber-500/20">{estado}</Badge>
 }
 
 function Pagination({ page, pages, onChange }: { page: number; pages: number; onChange: (p: number) => void }) {
   if (pages <= 1) return null
-  const window = 2
-  let start = Math.max(1, page - window)
-  let end = Math.min(pages, page + window)
-  if (end - start < window * 2) {
-    if (start === 1) end = Math.min(pages, start + window * 2)
-    else start = Math.max(1, end - window * 2)
+  const windowSize = 2
+  let start = Math.max(1, page - windowSize)
+  let end = Math.min(pages, page + windowSize)
+  if (end - start < windowSize * 2) {
+    if (start === 1) end = Math.min(pages, start + windowSize * 2)
+    else start = Math.max(1, end - windowSize * 2)
   }
   const nums: (number | '...')[] = []
   if (start > 1) { nums.push(1); if (start > 2) nums.push('...') }
@@ -140,8 +189,216 @@ function EmptyChart() {
   )
 }
 
-function EmptyTable() {
-  return <p className="text-xs text-muted-foreground text-center py-8">Sin registros</p>
+// ─── KPI Tile ─────────────────────────────────────────────────────────────────
+function KpiTile({
+  title, value, icon: Icon, variant = 'default', trend,
+}: {
+  title: string; value: number | string; icon: LucideIcon
+  variant?: 'default' | 'success' | 'warning' | 'danger'
+  trend?: number
+}) {
+  const variantStyles: Record<string, string> = {
+    default: 'bg-card',
+    success: 'bg-green-500/5 border-green-500/20',
+    warning: 'bg-amber-500/5 border-amber-500/20',
+    danger: 'bg-destructive/5 border-destructive/20',
+  }
+  const iconStyles: Record<string, string> = {
+    default: 'text-muted-foreground',
+    success: 'text-green-500',
+    warning: 'text-amber-500',
+    danger: 'text-destructive',
+  }
+  return (
+    <Card className={cn('overflow-hidden', variantStyles[variant])}>
+      <CardContent className="p-4">
+        <div className="flex items-center justify-between">
+          <div className="space-y-1">
+            <p className="text-xs text-muted-foreground font-medium">{title}</p>
+            <div className="flex items-center gap-2">
+              <p className="text-2xl font-bold tracking-tight">{value}</p>
+              {trend !== undefined && (
+                <span className={cn('flex items-center text-xs font-medium', trend > 0 ? 'text-green-500' : 'text-destructive')}>
+                  {trend > 0 ? <TrendingUp className="h-3 w-3 mr-0.5" /> : <TrendingDown className="h-3 w-3 mr-0.5" />}
+                  {Math.abs(trend)}%
+                </span>
+              )}
+            </div>
+          </div>
+          <div className={cn('h-10 w-10 rounded-lg flex items-center justify-center bg-muted/50', iconStyles[variant])}>
+            <Icon className="h-5 w-5" />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ─── Enhanced Donut Card ──────────────────────────────────────────────────────
+function EnhancedDonutCard({
+  title, description, data, centerLabel, centerSubLabel,
+}: {
+  title: string; description: string; data: ChartItem[]
+  centerLabel: string; centerSubLabel: string
+}) {
+  if (!data.length) return (
+    <Card>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-medium">{title}</CardTitle>
+        <CardDescription className="text-xs">{description}</CardDescription>
+      </CardHeader>
+      <CardContent><EmptyChart /></CardContent>
+    </Card>
+  )
+
+  const total = data.reduce((acc, d) => acc + d.value, 0)
+  const chartConfig = data.reduce((acc, item, i) => {
+    acc[item.name] = { label: item.name, color: CHART_COLORS_HEX[i % CHART_COLORS_HEX.length] }
+    return acc
+  }, {} as Record<string, { label: string; color: string }>)
+
+  return (
+    <Card className="overflow-hidden">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-medium">{title}</CardTitle>
+        <CardDescription className="text-xs">{description}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <div className="relative">
+          <ChartContainer config={chartConfig} className="mx-auto aspect-square h-[180px]">
+            <PieChart>
+              <ChartTooltip content={<ChartTooltipContent />} />
+              <Pie
+                data={data.map((d, i) => ({ ...d, fill: CHART_COLORS_HEX[i % CHART_COLORS_HEX.length] }))}
+                dataKey="value" nameKey="name"
+                innerRadius={50} outerRadius={75}
+                paddingAngle={2} strokeWidth={0}
+              >
+                {data.map((_, i) => <Cell key={i} fill={CHART_COLORS_HEX[i % CHART_COLORS_HEX.length]} />)}
+              </Pie>
+            </PieChart>
+          </ChartContainer>
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <span className="text-3xl font-bold">{centerLabel}</span>
+            <span className="text-xs text-muted-foreground">{centerSubLabel}</span>
+          </div>
+        </div>
+        <div className="flex flex-wrap justify-center gap-3 mt-2">
+          {data.map((d, i) => (
+            <div key={d.name} className="flex items-center gap-1.5 text-xs">
+              <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: CHART_COLORS_HEX[i % CHART_COLORS_HEX.length] }} />
+              <span className="text-muted-foreground">{d.name}</span>
+              <span className="font-medium">{Math.round((d.value / total) * 100)}%</span>
+            </div>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+// ─── Checklist Item ───────────────────────────────────────────────────────────
+function ChecklistItem({ actividad }: { actividad: ActividadRow }) {
+  const lower = actividad.estado_accion?.toLowerCase() ?? ''
+  const isCompleted = lower.includes('cerrado') || lower.includes('completado') || lower.includes('cumplido')
+  const isOverdue = lower.includes('vencido') || lower.includes('atraso')
+
+  return (
+    <div className={cn(
+      'flex items-start gap-3 p-3 rounded-lg border transition-all',
+      isCompleted && 'bg-green-500/5 border-green-500/20',
+      isOverdue && 'bg-destructive/5 border-destructive/20',
+      !isCompleted && !isOverdue && 'bg-muted/30 border-border hover:bg-muted/50',
+    )}>
+      <div className="pt-0.5">
+        {isCompleted
+          ? <CheckCircle2 className="h-4 w-4 text-green-500" />
+          : isOverdue
+            ? <AlertTriangle className="h-4 w-4 text-destructive" />
+            : <Circle className="h-4 w-4 text-muted-foreground" />
+        }
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className={cn('text-sm font-medium leading-tight', isCompleted && 'line-through text-muted-foreground')}>
+          {actividad.descripcion ?? actividad.nombre_plan_accion ?? 'Actividad sin descripción'}
+        </p>
+        <div className="flex flex-wrap items-center gap-2 mt-1.5">
+          {estadoBadge(actividad.estado_accion)}
+          {actividad.responsable_accion && (
+            <span className="text-[10px] text-muted-foreground">{actividad.responsable_accion}</span>
+          )}
+          {actividad.fecha_compromiso && (
+            <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+              <Calendar className="h-3 w-3" />
+              {formatDateTime(actividad.fecha_compromiso)}
+            </span>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── Hallazgo Checklist Card ──────────────────────────────────────────────────
+function HallazgoChecklistCard({ hallazgo }: { hallazgo: HallazgoWithActividades }) {
+  const [isOpen, setIsOpen] = useState(false)
+  const progressPercent = hallazgo.total > 0 ? Math.round((hallazgo.completadas / hallazgo.total) * 100) : 0
+
+  return (
+    <Card className="overflow-hidden">
+      <button
+        type="button"
+        className="w-full text-left px-4 py-3 hover:bg-muted/30 transition-colors"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className={cn(
+              'h-10 w-10 rounded-full flex items-center justify-center text-xs font-bold shrink-0',
+              progressPercent === 100 && 'bg-green-500/10 text-green-600',
+              progressPercent > 50 && progressPercent < 100 && 'bg-amber-500/10 text-amber-600',
+              progressPercent <= 50 && 'bg-destructive/10 text-destructive',
+            )}>
+              {progressPercent}%
+            </div>
+            <div className="min-w-0">
+              <div className="flex items-center gap-2">
+                <span className="font-mono text-xs text-primary font-semibold">{hallazgo.codigo}</span>
+                {estadoBadge(hallazgo.estado)}
+              </div>
+              <p className="text-sm text-muted-foreground truncate mt-0.5" title={hallazgo.descripcion}>
+                {hallazgo.descripcion}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-3 shrink-0">
+            <div className="text-right hidden sm:block">
+              <p className="text-xs text-muted-foreground">Actividades</p>
+              <p className="text-sm font-semibold">{hallazgo.completadas}/{hallazgo.total}</p>
+            </div>
+            <ChevronDown className={cn('h-4 w-4 text-muted-foreground transition-transform', isOpen && 'rotate-180')} />
+          </div>
+        </div>
+        <Progress value={progressPercent} className="mt-3 h-1.5" />
+      </button>
+      {isOpen && (
+        <>
+          <Separator />
+          <CardContent className="p-4">
+            {hallazgo.actividades.length === 0 ? (
+              <p className="text-xs text-muted-foreground text-center py-4">Sin actividades registradas</p>
+            ) : (
+              <div className="space-y-2">
+                {hallazgo.actividades.map((actividad, idx) => (
+                  <ChecklistItem key={actividad.id ?? idx} actividad={actividad} />
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </>
+      )}
+    </Card>
+  )
 }
 
 // ─── Main component ───────────────────────────────────────────────────────────
@@ -159,9 +416,6 @@ export default function DirectivoDashboard() {
   const [actividades, setActividades] = useState<PagedActividades | null>(null)
   const [aPage, setAPage] = useState(1)
 
-  const [menciones, setMenciones] = useState<PagedHallazgos | null>(null)
-  const [mPage, setMPage] = useState(1)
-
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
 
@@ -175,13 +429,13 @@ export default function DirectivoDashboard() {
     setMetricas(met.data as Metricas)
 
     const accData = (acc.data as { data: { estado: string; total: number }[] }).data
-    setPorEstadoAccion(accData.map((d, i) => ({ name: d.estado, value: d.total, fill: CHART_COLORS[i % 5] })))
+    setPorEstadoAccion(accData.map((d, i) => ({ name: d.estado, value: d.total, fill: CHART_COLORS_HEX[i % 5] })))
 
     const estadoData = (estado.data as { data: { estado: string; total: number }[] }).data
-    setPorEstado(estadoData.map((d, i) => ({ name: d.estado, value: d.total, fill: CHART_COLORS[i % 5] })))
+    setPorEstado(estadoData.map((d, i) => ({ name: d.estado, value: d.total, fill: CHART_COLORS_HEX[i % 5] })))
 
     const planData = (plan.data as { data: { estado_plan: string; total: number }[] }).data
-    setPorEstadoPlan(planData.map((d, i) => ({ name: d.estado_plan, value: d.total, fill: CHART_COLORS[i % 5] })))
+    setPorEstadoPlan(planData.map((d, i) => ({ name: d.estado_plan, value: d.total, fill: CHART_COLORS_HEX[i % 5] })))
   }, [])
 
   const loadHallazgos = useCallback(async (p: number) => {
@@ -198,13 +452,6 @@ export default function DirectivoDashboard() {
     } catch { /* silent */ }
   }, [])
 
-  const loadMenciones = useCallback(async (p: number) => {
-    try {
-      const res = await directivoApi.menciones(p)
-      setMenciones(res.data as PagedHallazgos)
-    } catch { /* silent */ }
-  }, [])
-
   async function load(refresh = false) {
     if (refresh) setRefreshing(true)
     else setLoading(true)
@@ -213,28 +460,29 @@ export default function DirectivoDashboard() {
         loadCharts(),
         loadHallazgos(1),
         loadActividades(1),
-        loadMenciones(1),
       ])
     } catch { /* silent */ } finally {
       setLoading(false); setRefreshing(false)
     }
   }
 
-  // Initial load
   useEffect(() => { load() }, []) // eslint-disable-line
 
-  // Pagination changes (skip initial mount since load() already handles page 1)
   const didMount = useRef(false)
   useEffect(() => {
     if (!didMount.current) { didMount.current = true; return }
     loadHallazgos(hPage)
   }, [hPage, loadHallazgos])
-  useEffect(() => { loadActividades(aPage) }, [aPage, loadActividades]) // eslint-disable-line
-  useEffect(() => { loadMenciones(mPage) }, [mPage, loadMenciones]) // eslint-disable-line
+
+  useEffect(() => { loadActividades(aPage) }, [aPage, loadActividades])
 
   const total = metricas?.total ?? 0
   const cerradas = metricas?.cerradas ?? 0
   const cumplimiento = total > 0 ? Math.round((cerradas / total) * 100) : 0
+
+  const hallazgosConActividades = actividades
+    ? groupActivitiesByHallazgo(actividades.actividades)
+    : []
 
   if (loading) {
     return (
@@ -275,13 +523,25 @@ export default function DirectivoDashboard() {
         <KpiTile title="Índice cierre" value={`${cumplimiento}%`} icon={Target} variant={cumplimiento >= 70 ? 'success' : 'danger'} />
       </div>
 
-      {/* ── Charts ───────────────────────────────────────────────────────── */}
+      {/* ── Charts Row 1 ─────────────────────────────────────────────────── */}
       <div className="grid gap-4 lg:grid-cols-3">
-        <DonutCard title="Estado de Hallazgos" description="Distribución de mis hallazgos" data={porEstado} />
-        <DonutCard title="Estado del Plan" description="Estado de mis planes de acción" data={porEstadoPlan} />
+        <EnhancedDonutCard
+          title="Estado de Hallazgos"
+          description="Distribución de mis hallazgos"
+          data={porEstado}
+          centerLabel={total.toString()}
+          centerSubLabel="Total"
+        />
+        <EnhancedDonutCard
+          title="Estado del Plan"
+          description="Estado de mis planes de acción"
+          data={porEstadoPlan}
+          centerLabel={porEstadoPlan.reduce((acc, d) => acc + d.value, 0).toString()}
+          centerSubLabel="Planes"
+        />
 
         {/* Índice cierre radial */}
-        <Card>
+        <Card className="overflow-hidden">
           <CardHeader className="pb-2">
             <div className="flex items-center justify-between">
               <div>
@@ -292,30 +552,54 @@ export default function DirectivoDashboard() {
             </div>
           </CardHeader>
           <CardContent>
-            <ChartContainer config={{ value: { label: 'Cierre' } }} className="mx-auto aspect-square h-[180px]">
-              <RadialBarChart
-                data={[{ name: 'Cumplimiento', value: cumplimiento, fill: 'var(--color-chart-1)' }]}
-                startAngle={180} endAngle={0}
-                innerRadius={70} outerRadius={100}
-                cx="50%" cy="65%"
-              >
-                <RadialBar dataKey="value" cornerRadius={10} fill="var(--color-chart-1)" background={{ fill: 'var(--muted)' }} />
-              </RadialBarChart>
-            </ChartContainer>
-            <div className="text-center -mt-12">
-              <span className="text-4xl font-bold">{cumplimiento}%</span>
-              <p className="text-xs text-muted-foreground mt-1">
-                {cumplimiento >= 70
-                  ? <span className="text-green-500">Buen desempeño</span>
-                  : <span className="text-amber-500">Requiere atención</span>
-                }
-              </p>
+            <div className="relative">
+              <ChartContainer config={{ value: { label: 'Cierre' } }} className="mx-auto aspect-square h-[180px]">
+                <RadialBarChart
+                  data={[{
+                    name: 'Cumplimiento',
+                    value: cumplimiento,
+                    fill: cumplimiento >= 70 ? '#22c55e' : cumplimiento >= 40 ? '#f59e0b' : '#ef4444',
+                  }]}
+                  startAngle={90}
+                  endAngle={90 - (cumplimiento * 3.6)}
+                  innerRadius={60}
+                  outerRadius={85}
+                  cx="50%"
+                  cy="50%"
+                >
+                  <RadialBar dataKey="value" cornerRadius={10} background={{ fill: 'hsl(var(--muted))' }} />
+                </RadialBarChart>
+              </ChartContainer>
+              <div className="absolute inset-0 flex flex-col items-center justify-center">
+                <span className={cn(
+                  'text-4xl font-bold',
+                  cumplimiento >= 70 && 'text-green-500',
+                  cumplimiento >= 40 && cumplimiento < 70 && 'text-amber-500',
+                  cumplimiento < 40 && 'text-destructive',
+                )}>
+                  {cumplimiento}%
+                </span>
+                <p className="text-xs text-muted-foreground mt-1">{cerradas} de {total}</p>
+              </div>
+            </div>
+            <div className="flex items-center justify-center gap-2 mt-2">
+              {cumplimiento >= 70 ? (
+                <>
+                  <TrendingUp className="h-4 w-4 text-green-500" />
+                  <span className="text-xs text-green-600 font-medium">Buen desempeño</span>
+                </>
+              ) : (
+                <>
+                  <TrendingDown className="h-4 w-4 text-amber-500" />
+                  <span className="text-xs text-amber-600 font-medium">Requiere atención</span>
+                </>
+              )}
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Estado de acciones bar chart */}
+      {/* ── Estado de Acciones bar chart ─────────────────────────────────── */}
       <Card>
         <CardHeader className="pb-2">
           <div className="flex items-center justify-between">
@@ -328,19 +612,27 @@ export default function DirectivoDashboard() {
         </CardHeader>
         <CardContent>
           {porEstadoAccion.length === 0 ? <EmptyChart /> : (
-            <ChartContainer config={{ value: { label: 'Hallazgos', color: 'var(--chart-1)' } }} className="h-[200px] w-full">
-              <BarChart data={porEstadoAccion} layout="vertical" margin={{ top: 0, right: 20, left: 0, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" horizontal={false} />
-                <XAxis type="number" tickLine={false} axisLine={false} fontSize={11} stroke="var(--muted-foreground)" />
-                <YAxis type="category" dataKey="name" tickLine={false} axisLine={false} fontSize={10} width={120}
-                  stroke="var(--muted-foreground)"
+            <ChartContainer
+              config={porEstadoAccion.reduce((acc, item, i) => {
+                acc[item.name] = { label: item.name, color: CHART_COLORS_HEX[i % CHART_COLORS_HEX.length] }
+                return acc
+              }, {} as Record<string, { label: string; color: string }>)}
+              className="h-[200px] w-full"
+            >
+              <BarChart data={porEstadoAccion} layout="vertical" margin={{ left: 0, right: 40 }}>
+                <XAxis type="number" hide />
+                <YAxis
+                  type="category" dataKey="name" width={120}
+                  tickLine={false} axisLine={false}
+                  fontSize={10} stroke="var(--muted-foreground)"
                   tickFormatter={(v: string) => v.length > 16 ? `${v.slice(0, 16)}…` : v}
                 />
                 <ChartTooltip content={<ChartTooltipContent />} />
                 <Bar dataKey="value" radius={[0, 4, 4, 0]} barSize={18}>
                   {porEstadoAccion.map((entry, i) => (
-                    <Cell key={i} fill={entry.fill ?? 'var(--color-chart-1)'} />
+                    <Cell key={i} fill={entry.fill ?? CHART_COLORS_HEX[i % CHART_COLORS_HEX.length]} />
                   ))}
+                  <LabelList dataKey="value" position="right" className="fill-foreground text-xs font-medium" />
                 </Bar>
               </BarChart>
             </ChartContainer>
@@ -348,21 +640,46 @@ export default function DirectivoDashboard() {
         </CardContent>
       </Card>
 
-      {/* ── Mis Hallazgos ────────────────────────────────────────────────── */}
+      {/* ── Checklist de Actividades ─────────────────────────────────────── */}
+      {hallazgosConActividades.length > 0 && (
+        <div>
+          <div className="flex items-center gap-2 mb-4">
+            <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+              <CheckCircle2 className="h-4 w-4 text-primary" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold">Mis Actividades</h3>
+              <p className="text-xs text-muted-foreground">Actividades asignadas agrupadas por hallazgo</p>
+            </div>
+          </div>
+          <div className="space-y-3">
+            {hallazgosConActividades.map((h) => (
+              <HallazgoChecklistCard key={h.id} hallazgo={h} />
+            ))}
+          </div>
+          {actividades && actividades.pages > 1 && (
+            <div className="mt-3">
+              <Pagination page={aPage} pages={actividades.pages} onChange={setAPage} />
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── Mis Hallazgos Table ──────────────────────────────────────────── */}
       <Card className="overflow-hidden">
         <CardHeader className="px-5 py-3.5">
           <div className="flex items-center justify-between">
-            <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <UserCheck className="w-4 h-4 text-primary" />
-              Mis Hallazgos
-            </CardTitle>
+            <div>
+              <CardTitle className="text-sm font-medium">Mis Hallazgos</CardTitle>
+              <CardDescription className="text-xs">Hallazgos asignados a mi cargo</CardDescription>
+            </div>
             {hallazgos && <Badge variant="secondary">{hallazgos.total} registros</Badge>}
           </div>
         </CardHeader>
         <Separator />
         <CardContent className="p-0">
           {!hallazgos || hallazgos.hallazgos.length === 0 ? (
-            <EmptyTable />
+            <p className="text-xs text-muted-foreground text-center py-8">Sin registros</p>
           ) : (
             <>
               <div className="overflow-x-auto">
@@ -373,6 +690,7 @@ export default function DirectivoDashboard() {
                       <th className="px-4 py-2.5 text-left font-semibold text-muted-foreground">Descripción</th>
                       <th className="px-4 py-2.5 text-left font-semibold text-muted-foreground">Estado</th>
                       <th className="px-4 py-2.5 text-left font-semibold text-muted-foreground">Plan</th>
+                      <th className="px-4 py-2.5 text-left font-semibold text-muted-foreground">Responsable</th>
                       <th className="px-4 py-2.5 text-left font-semibold text-muted-foreground">Cierre proyectado</th>
                     </tr>
                   </thead>
@@ -387,6 +705,7 @@ export default function DirectivoDashboard() {
                         </td>
                         <td className="px-4 py-2.5">{estadoBadge(h.estado)}</td>
                         <td className="px-4 py-2.5">{estadoBadge(h.estado_plan_accion)}</td>
+                        <td className="px-4 py-2.5 text-muted-foreground">{h.responsable_plan_accion ?? '—'}</td>
                         <td className="px-4 py-2.5 text-muted-foreground whitespace-nowrap">
                           {h.fecha_cierre_proyectada ? formatDateTime(h.fecha_cierre_proyectada) : '—'}
                         </td>
@@ -403,197 +722,6 @@ export default function DirectivoDashboard() {
         </CardContent>
       </Card>
 
-      {/* ── Mis Actividades ──────────────────────────────────────────────── */}
-      <Card className="overflow-hidden">
-        <CardHeader className="px-5 py-3.5">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <Activity className="w-4 h-4 text-primary" />
-              Mis Actividades
-            </CardTitle>
-            {actividades && <Badge variant="secondary">{actividades.total} registros</Badge>}
-          </div>
-        </CardHeader>
-        <Separator />
-        <CardContent className="p-0">
-          {!actividades || actividades.actividades.length === 0 ? (
-            <EmptyTable />
-          ) : (
-            <>
-              <div className="overflow-x-auto">
-                <table className="w-full text-xs">
-                  <thead>
-                    <tr className="border-b border-border bg-muted/40">
-                      <th className="px-4 py-2.5 text-left font-semibold text-muted-foreground">Código</th>
-                      <th className="px-4 py-2.5 text-left font-semibold text-muted-foreground">Plan</th>
-                      <th className="px-4 py-2.5 text-left font-semibold text-muted-foreground">Descripción</th>
-                      <th className="px-4 py-2.5 text-left font-semibold text-muted-foreground">Estado acción</th>
-                      <th className="px-4 py-2.5 text-left font-semibold text-muted-foreground">Fecha compromiso</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border">
-                    {actividades.actividades.map((a) => (
-                      <tr key={a.id} className="hover:bg-muted/20 transition-colors">
-                        <td className="px-4 py-2.5 font-mono text-[11px] text-primary whitespace-nowrap">
-                          {a.codigo_del_hallazgo}
-                        </td>
-                        <td className="px-4 py-2.5 max-w-[160px] truncate" title={a.nombre_plan_accion ?? ''}>
-                          {a.nombre_plan_accion ?? '—'}
-                        </td>
-                        <td className="px-4 py-2.5 max-w-xs truncate text-foreground/80" title={a.descripcion ?? ''}>
-                          {a.descripcion ?? '—'}
-                        </td>
-                        <td className="px-4 py-2.5">{estadoBadge(a.estado_accion)}</td>
-                        <td className="px-4 py-2.5 text-muted-foreground whitespace-nowrap">
-                          {a.fecha_compromiso ? formatDateTime(a.fecha_compromiso) : '—'}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              <div className="px-4 pb-3">
-                <Pagination page={aPage} pages={actividades.pages} onChange={setAPage} />
-              </div>
-            </>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* ── Menciones en otras áreas ─────────────────────────────────────── */}
-      <Card className="overflow-hidden">
-        <CardHeader className="px-5 py-3.5">
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                <Bell className="w-4 h-4 text-primary" />
-                Me mencionan en otras áreas
-              </CardTitle>
-              <CardDescription className="text-xs mt-0.5">
-                Hallazgos de otras dependencias donde apareces como responsable
-              </CardDescription>
-            </div>
-            {menciones && <Badge variant="secondary">{menciones.total} registros</Badge>}
-          </div>
-        </CardHeader>
-        <Separator />
-        <CardContent className="p-0">
-          {!menciones || menciones.hallazgos.length === 0 ? (
-            <EmptyTable />
-          ) : (
-            <>
-              <div className="overflow-x-auto">
-                <table className="w-full text-xs">
-                  <thead>
-                    <tr className="border-b border-border bg-muted/40">
-                      <th className="px-4 py-2.5 text-left font-semibold text-muted-foreground">Código</th>
-                      <th className="px-4 py-2.5 text-left font-semibold text-muted-foreground">Descripción</th>
-                      <th className="px-4 py-2.5 text-left font-semibold text-muted-foreground">Dependencia</th>
-                      <th className="px-4 py-2.5 text-left font-semibold text-muted-foreground">Estado</th>
-                      <th className="px-4 py-2.5 text-left font-semibold text-muted-foreground">Cierre proyectado</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border">
-                    {menciones.hallazgos.map((h) => (
-                      <tr key={h.id} className="hover:bg-muted/20 transition-colors">
-                        <td className="px-4 py-2.5 font-mono text-[11px] text-primary whitespace-nowrap">
-                          {h.codigo_del_hallazgo}
-                        </td>
-                        <td className="px-4 py-2.5 max-w-xs truncate text-foreground/80" title={h.descripcion}>
-                          {h.descripcion}
-                        </td>
-                        <td className="px-4 py-2.5 text-muted-foreground max-w-[140px] truncate" title={h.dependencia_reporta_ero ?? ''}>
-                          {h.dependencia_reporta_ero ?? '—'}
-                        </td>
-                        <td className="px-4 py-2.5">{estadoBadge(h.estado)}</td>
-                        <td className="px-4 py-2.5 text-muted-foreground whitespace-nowrap">
-                          {h.fecha_cierre_proyectada ? formatDateTime(h.fecha_cierre_proyectada) : '—'}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              <div className="px-4 pb-3">
-                <Pagination page={mPage} pages={menciones.pages} onChange={setMPage} />
-              </div>
-            </>
-          )}
-        </CardContent>
-      </Card>
-
     </div>
-  )
-}
-
-// ─── Small helpers ────────────────────────────────────────────────────────────
-function KpiTile({
-  title, value, icon: Icon, variant = 'default',
-}: {
-  title: string; value: number | string; icon: React.ElementType
-  variant?: 'default' | 'success' | 'warning' | 'danger'
-}) {
-  const variantCls: Record<string, string> = {
-    default: '',
-    success: 'border-green-500/30 bg-green-500/5',
-    warning: 'border-amber-500/30 bg-amber-500/5',
-    danger:  'border-destructive/30 bg-destructive/5',
-  }
-  const iconCls: Record<string, string> = {
-    default: 'text-primary',
-    success: 'text-green-600 dark:text-green-400',
-    warning: 'text-amber-600 dark:text-amber-400',
-    danger:  'text-destructive',
-  }
-  return (
-    <Card className={cn('transition-all hover:shadow-md', variantCls[variant])}>
-      <CardContent className="p-4 flex items-center gap-3">
-        <div className="rounded-lg bg-secondary p-2 shrink-0">
-          <Icon className={cn('h-4 w-4', iconCls[variant])} />
-        </div>
-        <div className="min-w-0">
-          <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide truncate">{title}</p>
-          <p className="text-xl font-bold">{value}</p>
-        </div>
-      </CardContent>
-    </Card>
-  )
-}
-
-function DonutCard({ title, description, data }: { title: string; description: string; data: ChartItem[] }) {
-  return (
-    <Card>
-      <CardHeader className="pb-2">
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="text-sm font-medium">{title}</CardTitle>
-            <CardDescription className="text-xs">{description}</CardDescription>
-          </div>
-        </div>
-      </CardHeader>
-      <CardContent>
-        {data.length === 0 ? <EmptyChart /> : (
-          <>
-            <ChartContainer config={{ value: { label: 'Cantidad' } }} className="mx-auto aspect-square h-[180px]">
-              <PieChart>
-                <Pie data={data} dataKey="value" nameKey="name" cx="50%" cy="50%" innerRadius={50} outerRadius={75} strokeWidth={2} stroke="var(--background)">
-                  {data.map((entry, i) => <Cell key={i} fill={entry.fill ?? CHART_COLORS[i % 5]} />)}
-                </Pie>
-                <ChartTooltip content={<ChartTooltipContent />} />
-              </PieChart>
-            </ChartContainer>
-            <div className="mt-3 flex flex-wrap justify-center gap-2">
-              {data.map((item) => (
-                <div key={item.name} className="flex items-center gap-1.5">
-                  <div className="h-2 w-2 rounded-full" style={{ backgroundColor: item.fill }} />
-                  <span className="text-[10px] text-muted-foreground">{item.name}</span>
-                  <span className="text-[10px] font-semibold">{item.value}</span>
-                </div>
-              ))}
-            </div>
-          </>
-        )}
-      </CardContent>
-    </Card>
   )
 }

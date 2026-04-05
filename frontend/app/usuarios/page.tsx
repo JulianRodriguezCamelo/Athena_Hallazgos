@@ -52,6 +52,7 @@ const ROL_OPTIONS = [
   { value: 'vicepresidente', label: 'Vicepresidente' },
   { value: 'directivo',      label: 'Directivo' },
   { value: 'tecnico',        label: 'Técnico' },
+  { value: 'gestor',         label: 'Gestor' },
 ]
 
 const ROL_BADGE: Record<string, 'default' | 'accent' | 'ghost'> = {

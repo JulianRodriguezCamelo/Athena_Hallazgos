@@ -1,24 +1,32 @@
 'use client'
 
-import { useEffect, useState, useCallback, useRef } from 'react'
+import { useEffect, useState, useCallback, useRef, type ElementType } from 'react'
 import { usePathname } from 'next/navigation'
 import {
   Search, X, Eye, ChevronDown, ChevronUp,
   FileSpreadsheet, AlertTriangle, Clock, Calendar, Upload,
+  SlidersHorizontal, ListChecks, ClipboardList,
+  User, Building2, XCircle, RotateCcw,
+  ChevronLeft, ChevronRight,
 } from 'lucide-react'
-import { hallazgosApi, uploadsApi } from '@/lib/api'
 import { formatDate, getEstadoColor, cn } from '@/lib/utils'
 import DashboardShell from '@/components/layout/DashboardShell'
 import { Button } from '@/components/ui/button'
 import Modal from '@/components/ui/Modal'
 import { PageLoader } from '@/components/ui/Spinner'
-import { Card, CardContent } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import Select from '@/components/ui/Select'
 import { Separator } from '@/components/ui/separator'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
+import { Badge } from '@/components/ui/Badge'
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table'
+import {
+  Collapsible, CollapsibleContent, CollapsibleTrigger,
+} from '@/components/ui/collapsible'
+import { hallazgosApi, actividadesApi, uploadsApi } from '@/lib/api'
 
 // ─── Interfaces ───────────────────────────────────────────────────────────────
 
@@ -29,6 +37,7 @@ interface Hallazgo {
   fecha_inicial_evento: string | null
   fecha_cierre_proyectada: string | null
   dependencia_reporta_ero: string | null
+  vicepresidencia: string | null
   estado: string | null
   reportado_por: string | null
   responsable_plan_accion: string | null
@@ -49,6 +58,9 @@ interface Hallazgo {
 
 interface Actividad {
   id: number
+  hallazgo_id: number | null
+  codigo_del_hallazgo: string | null
+  orden: number | null
   id_plan_accion: string | null
   nombre_plan_accion: string | null
   descripcion: string | null
@@ -80,7 +92,7 @@ interface AnalysisResult {
 function StatusBadge({ value }: { value: string | null }) {
   if (!value) return <span className="text-muted-foreground text-xs">—</span>
   return (
-    <span className={cn('px-2 py-0.5 rounded-full text-xs font-medium', getEstadoColor(value))}>
+    <span className={cn('px-2.5 py-1 rounded-full text-xs font-medium', getEstadoColor(value))}>
       {value}
     </span>
   )
@@ -88,9 +100,9 @@ function StatusBadge({ value }: { value: string | null }) {
 
 function DetailField({ label, value }: { label: string; value: string | null | undefined }) {
   return (
-    <div>
-      <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide">{label}</p>
-      <p className="text-sm text-foreground mt-0.5">{value ?? '—'}</p>
+    <div className="space-y-1">
+      <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">{label}</p>
+      <p className="text-sm text-foreground">{value ?? '—'}</p>
     </div>
   )
 }
@@ -98,66 +110,120 @@ function DetailField({ label, value }: { label: string; value: string | null | u
 function BarRow({ label, value, max }: { label: string; value: number; max: number }) {
   const pct = max > 0 ? Math.round((value / max) * 100) : 0
   return (
-    <div className="flex items-center gap-2 text-xs">
-      <span className="w-36 truncate text-muted-foreground shrink-0" title={label}>{label}</span>
-      <div className="flex-1 bg-muted rounded-full h-1.5 min-w-0">
-        <div className="h-1.5 rounded-full bg-primary transition-all" style={{ width: `${pct}%` }} />
+    <div className="flex items-center gap-3 text-xs">
+      <span className="w-32 truncate text-muted-foreground shrink-0" title={label}>{label}</span>
+      <div className="flex-1 bg-muted rounded-full h-2 min-w-0">
+        <div className="h-2 rounded-full bg-primary transition-all duration-500" style={{ width: `${pct}%` }} />
       </div>
-      <span className="w-6 text-right font-semibold text-foreground shrink-0">{value}</span>
+      <span className="w-8 text-right font-semibold text-foreground shrink-0">{value}</span>
     </div>
   )
 }
 
-function StatCard({ label, value, color }: { label: string; value: number; color?: string }) {
+function StatCard({ label, value, color, icon: Icon }: { label: string; value: number; color?: string; icon?: ElementType }) {
   return (
     <div className={cn(
-      'rounded-lg border p-3 text-center',
-      color === 'red' ? 'border-red-200 bg-red-50 dark:border-red-900/50 dark:bg-red-950/20'
-        : color === 'amber' ? 'border-amber-200 bg-amber-50 dark:border-amber-900/50 dark:bg-amber-950/20'
-        : 'border-border bg-muted/30'
+      'rounded-xl border p-4 transition-all hover:shadow-md',
+      color === 'red' ? 'border-red-200 bg-gradient-to-br from-red-50 to-red-100/50 dark:border-red-900/50 dark:from-red-950/30 dark:to-red-950/10'
+        : color === 'amber' ? 'border-amber-200 bg-gradient-to-br from-amber-50 to-amber-100/50 dark:border-amber-900/50 dark:from-amber-950/30 dark:to-amber-950/10'
+        : color === 'emerald' ? 'border-emerald-200 bg-gradient-to-br from-emerald-50 to-emerald-100/50 dark:border-emerald-900/50 dark:from-emerald-950/30 dark:to-emerald-950/10'
+        : 'border-border bg-gradient-to-br from-muted/50 to-muted/20'
     )}>
-      <p className={cn(
-        'text-2xl font-bold',
-        color === 'red' ? 'text-red-600 dark:text-red-400'
-          : color === 'amber' ? 'text-amber-600 dark:text-amber-400'
-          : 'text-foreground'
-      )}>{value}</p>
-      <p className="text-[11px] text-muted-foreground mt-0.5">{label}</p>
+      <div className="flex items-start justify-between">
+        <div>
+          <p className={cn(
+            'text-3xl font-bold tracking-tight',
+            color === 'red' ? 'text-red-600 dark:text-red-400'
+              : color === 'amber' ? 'text-amber-600 dark:text-amber-400'
+              : color === 'emerald' ? 'text-emerald-600 dark:text-emerald-400'
+              : 'text-foreground'
+          )}>{value}</p>
+          <p className="text-xs text-muted-foreground mt-1 font-medium">{label}</p>
+        </div>
+        {Icon && (
+          <div className={cn(
+            'p-2 rounded-lg',
+            color === 'red' ? 'bg-red-100 dark:bg-red-900/30'
+              : color === 'amber' ? 'bg-amber-100 dark:bg-amber-900/30'
+              : color === 'emerald' ? 'bg-emerald-100 dark:bg-emerald-900/30'
+              : 'bg-muted'
+          )}>
+            <Icon className={cn(
+              'w-4 h-4',
+              color === 'red' ? 'text-red-600 dark:text-red-400'
+                : color === 'amber' ? 'text-amber-600 dark:text-amber-400'
+                : color === 'emerald' ? 'text-emerald-600 dark:text-emerald-400'
+                : 'text-muted-foreground'
+            )} />
+          </div>
+        )}
+      </div>
     </div>
   )
 }
 
-// ─── ActividadesTab ───────────────────────────────────────────────────────────
+function FilterPill({
+  label, active, onClick, variant = 'default', icon: Icon,
+}: {
+  label: string; active: boolean; onClick: () => void
+  variant?: 'default' | 'danger' | 'warning'
+  icon?: ElementType
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={cn(
+        'flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium border transition-all duration-200',
+        active
+          ? variant === 'danger'
+            ? 'bg-red-500/10 border-red-400/40 text-red-600 dark:text-red-400 shadow-sm'
+            : variant === 'warning'
+            ? 'bg-amber-500/10 border-amber-400/40 text-amber-600 dark:text-amber-400 shadow-sm'
+            : 'bg-primary/10 border-primary/40 text-primary shadow-sm'
+          : 'border-border text-muted-foreground hover:bg-muted hover:text-foreground hover:border-border/80'
+      )}
+    >
+      {Icon && <Icon className="w-3.5 h-3.5" />}
+      {label}
+    </button>
+  )
+}
 
-function ActividadesTab({ hallazgoId }: { hallazgoId: number }) {
+// ─── ActividadesTab (for modal) ───────────────────────────────────────────────
+
+function ActividadesModalTab({ hallazgoId }: { hallazgoId: number }) {
   const [actividades, setActividades] = useState<Actividad[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    let cancelled = false
     hallazgosApi.actividades(hallazgoId)
-      .then((r) => {
-        const d = r.data as { actividades: Actividad[] }
-        setActividades(d.actividades)
+      .then((res) => {
+        if (cancelled) return
+        const data = res.data as { actividades: Actividad[] }
+        setActividades(data.actividades ?? [])
       })
-      .catch(() => {})
-      .finally(() => setLoading(false))
+      .catch(() => { if (!cancelled) setError('No se pudieron cargar las actividades') })
+      .finally(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
   }, [hallazgoId])
 
-  if (loading) return <div className="py-6 text-center text-sm text-muted-foreground">Cargando actividades…</div>
+  if (loading) return <div className="py-8 text-center text-sm text-muted-foreground">Cargando actividades…</div>
+  if (error) return <div className="py-8 text-center text-sm text-destructive">{error}</div>
   if (actividades.length === 0) return (
-    <div className="py-8 text-center text-sm text-muted-foreground">
-      No hay actividades registradas para este hallazgo.
+    <div className="py-12 text-center">
+      <ListChecks className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
+      <p className="text-sm text-muted-foreground">No hay actividades registradas para este hallazgo.</p>
     </div>
   )
 
   return (
     <div className="space-y-3">
       {actividades.map((act, idx) => (
-        <div key={act.id} className="rounded-xl border border-border bg-card overflow-hidden">
-
-          {/* Cabecera: número + título + estado */}
+        <div key={act.id} className="rounded-xl border border-border bg-card overflow-hidden transition-all hover:shadow-sm">
           <div className="flex items-start gap-3 px-4 py-3 bg-muted/30 border-b border-border/60">
-            <span className="shrink-0 w-6 h-6 rounded-full bg-primary/15 text-primary text-[11px] font-bold flex items-center justify-center mt-0.5">
+            <span className="shrink-0 w-7 h-7 rounded-full bg-primary/10 text-primary text-xs font-bold flex items-center justify-center mt-0.5">
               {idx + 1}
             </span>
             <div className="flex-1 min-w-0">
@@ -168,31 +234,22 @@ function ActividadesTab({ hallazgoId }: { hallazgoId: number }) {
                 <p className="text-[11px] text-muted-foreground font-mono mt-0.5">{act.id_plan_accion}</p>
               )}
             </div>
-            {act.estado_plan_accion && (
-              <div className="shrink-0 mt-0.5">
-                <StatusBadge value={act.estado_plan_accion} />
-              </div>
-            )}
+            {act.estado_plan_accion && <StatusBadge value={act.estado_plan_accion} />}
           </div>
-
-          {/* Campos: solo los que tienen valor */}
           <div className="px-4 py-3 grid grid-cols-2 gap-x-6 gap-y-3">
-            {act.responsable         && <DetailField label="Responsable plan"   value={act.responsable} />}
-            {act.estado_accion       && <DetailField label="Estado acción"       value={act.estado_accion} />}
-            {act.responsable_accion  && <DetailField label="Responsable acción"  value={act.responsable_accion} />}
-            {act.fecha_compromiso    && <DetailField label="Fecha compromiso"    value={formatDate(act.fecha_compromiso)} />}
-            {act.prorroga            && <DetailField label="Prórroga"            value={act.prorroga} />}
-            {act.fecha_prorroga      && <DetailField label="Fecha prórroga"      value={formatDate(act.fecha_prorroga)} />}
+            {act.responsable && <DetailField label="Responsable plan" value={act.responsable} />}
+            {act.estado_accion && <DetailField label="Estado acción" value={act.estado_accion} />}
+            {act.responsable_accion && <DetailField label="Responsable acción" value={act.responsable_accion} />}
+            {act.fecha_compromiso && <DetailField label="Fecha compromiso" value={formatDate(act.fecha_compromiso)} />}
+            {act.prorroga && <DetailField label="Prórroga" value={act.prorroga} />}
+            {act.fecha_prorroga && <DetailField label="Fecha prórroga" value={formatDate(act.fecha_prorroga)} />}
           </div>
-
-          {/* Descripción (si es diferente al título) */}
           {act.descripcion && act.descripcion !== act.nombre_plan_accion && (
             <div className="px-4 pb-3">
               <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">Descripción</p>
               <p className="text-sm text-foreground bg-muted/40 rounded-lg p-3 leading-relaxed">{act.descripcion}</p>
             </div>
           )}
-
           {act.observaciones && (
             <div className="px-4 pb-3">
               <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">Observaciones</p>
@@ -224,9 +281,9 @@ function ExcelAnalyzer({ onClose }: { onClose: () => void }) {
     try {
       const res = await uploadsApi.analyze(file)
       setResult(res.data as AnalysisResult)
-    } catch (e: unknown) {
-      const err = e as { message?: string }
-      setError(err?.message ?? 'Error al analizar el archivo')
+    } catch (err: unknown) {
+      const msg = (err as { message?: string })?.message ?? 'Error al analizar el archivo'
+      setError(msg)
     } finally {
       setAnalyzing(false)
     }
@@ -257,31 +314,34 @@ function ExcelAnalyzer({ onClose }: { onClose: () => void }) {
   const maxEst = result ? Math.max(...result.por_estado.map(e => e.total), 1) : 1
 
   return (
-    <Card className="border-primary/20 bg-primary/[0.02]">
-      <CardContent className="p-5">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <FileSpreadsheet className="w-4 h-4 text-primary" />
-            <span className="text-sm font-semibold text-foreground">Analizador de Excel</span>
-            {fileName && !analyzing && (
-              <span className="text-xs text-muted-foreground">— {fileName}</span>
-            )}
+    <Card className="border-primary/20 bg-gradient-to-br from-primary/[0.02] to-transparent">
+      <CardHeader className="pb-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-primary/10">
+              <FileSpreadsheet className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <CardTitle className="text-base">Analizador de Excel</CardTitle>
+              {fileName && !analyzing && (
+                <CardDescription className="mt-0.5">{fileName}</CardDescription>
+              )}
+            </div>
           </div>
           <div className="flex items-center gap-2">
             {result && (
-              <Button variant="ghost" size="sm" onClick={reset} className="text-xs h-7">
-                <Upload className="w-3 h-3 mr-1" />
+              <Button variant="outline" size="sm" onClick={reset} className="text-xs">
+                <Upload className="w-3.5 h-3.5 mr-1.5" />
                 Nuevo archivo
               </Button>
             )}
-            <Button variant="ghost" size="icon" onClick={onClose} className="w-7 h-7">
+            <Button variant="ghost" size="icon" onClick={onClose} className="w-8 h-8">
               <X className="w-4 h-4" />
             </Button>
           </div>
         </div>
-
-        {/* Drop zone (shown when no result) */}
+      </CardHeader>
+      <CardContent className="pt-0">
         {!result && !analyzing && (
           <div
             onDragOver={(e) => { e.preventDefault(); setDragging(true) }}
@@ -289,9 +349,9 @@ function ExcelAnalyzer({ onClose }: { onClose: () => void }) {
             onDrop={handleDrop}
             onClick={() => inputRef.current?.click()}
             className={cn(
-              'border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-colors',
+              'border-2 border-dashed rounded-xl p-12 text-center cursor-pointer transition-all duration-200',
               dragging
-                ? 'border-primary bg-primary/5'
+                ? 'border-primary bg-primary/5 scale-[1.02]'
                 : 'border-border hover:border-primary/50 hover:bg-muted/30'
             )}
           >
@@ -302,28 +362,24 @@ function ExcelAnalyzer({ onClose }: { onClose: () => void }) {
               className="hidden"
               onChange={handleChange}
             />
-            <FileSpreadsheet className="w-8 h-8 text-muted-foreground mx-auto mb-3" />
-            <p className="text-sm font-medium text-foreground">
-              Arrastra un archivo Excel aquí
-            </p>
-            <p className="text-xs text-muted-foreground mt-1">
-              o haz clic para seleccionar · .xlsx / .xls
-            </p>
+            <div className="w-14 h-14 rounded-full bg-muted/80 flex items-center justify-center mx-auto mb-4">
+              <FileSpreadsheet className="w-7 h-7 text-muted-foreground" />
+            </div>
+            <p className="text-sm font-medium text-foreground">Arrastra un archivo Excel aquí</p>
+            <p className="text-xs text-muted-foreground mt-1.5">o haz clic para seleccionar · .xlsx / .xls</p>
           </div>
         )}
 
-        {/* Loading */}
         {analyzing && (
-          <div className="flex flex-col items-center justify-center py-10 gap-3">
-            <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+          <div className="flex flex-col items-center justify-center py-12 gap-4">
+            <div className="w-10 h-10 border-2 border-primary border-t-transparent rounded-full animate-spin" />
             <p className="text-sm text-muted-foreground">Analizando archivo…</p>
           </div>
         )}
 
-        {/* Error */}
         {error && (
-          <div className="rounded-lg bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/50 p-4 flex items-start gap-3">
-            <AlertTriangle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+          <div className="rounded-xl bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-900/50 p-4 flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
             <div>
               <p className="text-sm font-medium text-red-700 dark:text-red-400">Error al procesar el archivo</p>
               <p className="text-xs text-red-600/80 dark:text-red-400/80 mt-1">{error}</p>
@@ -331,43 +387,35 @@ function ExcelAnalyzer({ onClose }: { onClose: () => void }) {
           </div>
         )}
 
-        {/* Results */}
         {result && (
-          <div className="space-y-5">
-            {/* Stat cards */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <StatCard label="Hallazgos" value={result.total} />
-              <StatCard label="Actividades" value={result.total_actividades} />
-              <StatCard label="Vencidos" value={result.vencidos} color="red" />
-              <StatCard label="Con prórroga" value={result.con_prorroga} color="amber" />
+          <div className="space-y-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <StatCard label="Hallazgos" value={result.total} icon={ClipboardList} />
+              <StatCard label="Actividades" value={result.total_actividades} icon={ListChecks} />
+              <StatCard label="Vencidos" value={result.vencidos} color="red" icon={XCircle} />
+              <StatCard label="Con prórroga" value={result.con_prorroga} color="amber" icon={Clock} />
             </div>
 
-            {/* Charts row */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-              {/* Por estado */}
-              <div className="space-y-2">
-                <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Por estado</p>
-                <div className="space-y-1.5">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="space-y-3">
+                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Por estado</h4>
+                <div className="space-y-2">
                   {result.por_estado.map(e => (
                     <BarRow key={e.estado} label={e.estado} value={e.total} max={maxEst} />
                   ))}
                 </div>
               </div>
-
-              {/* Por dependencia */}
-              <div className="space-y-2">
-                <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Top dependencias</p>
-                <div className="space-y-1.5">
+              <div className="space-y-3">
+                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Top dependencias</h4>
+                <div className="space-y-2">
                   {result.por_dependencia.map(d => (
                     <BarRow key={d.nombre} label={d.nombre} value={d.total} max={maxDep} />
                   ))}
                 </div>
               </div>
-
-              {/* Por responsable */}
-              <div className="space-y-2">
-                <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">Top responsables</p>
-                <div className="space-y-1.5">
+              <div className="space-y-3">
+                <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Top responsables</h4>
+                <div className="space-y-2">
                   {result.por_responsable.map(r => (
                     <BarRow key={r.nombre} label={r.nombre} value={r.total} max={maxResp} />
                   ))}
@@ -375,31 +423,27 @@ function ExcelAnalyzer({ onClose }: { onClose: () => void }) {
               </div>
             </div>
 
-            {/* Errors */}
             {result.errores.length > 0 && (
-              <div className="rounded-lg border border-amber-200 dark:border-amber-900/50 overflow-hidden">
-                <button
-                  onClick={() => setShowErrors(!showErrors)}
-                  className="w-full flex items-center justify-between px-4 py-2.5 bg-amber-50 dark:bg-amber-950/20 text-left"
-                >
-                  <div className="flex items-center gap-2">
-                    <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
-                    <span className="text-xs font-medium text-amber-700 dark:text-amber-400">
-                      {result.errores.length} error{result.errores.length !== 1 ? 'es' : ''} de parseo
-                    </span>
-                  </div>
-                  {showErrors
-                    ? <ChevronUp className="w-3.5 h-3.5 text-amber-500" />
-                    : <ChevronDown className="w-3.5 h-3.5 text-amber-500" />}
-                </button>
-                {showErrors && (
-                  <div className="p-3 space-y-1">
+              <Collapsible open={showErrors} onOpenChange={setShowErrors}>
+                <CollapsibleTrigger asChild>
+                  <button className="w-full flex items-center justify-between px-4 py-3 rounded-lg border border-amber-200 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-950/20 text-left transition-colors hover:bg-amber-100/50">
+                    <div className="flex items-center gap-2">
+                      <AlertTriangle className="w-4 h-4 text-amber-500" />
+                      <span className="text-sm font-medium text-amber-700 dark:text-amber-400">
+                        {result.errores.length} error{result.errores.length !== 1 ? 'es' : ''} de parseo
+                      </span>
+                    </div>
+                    {showErrors ? <ChevronUp className="w-4 h-4 text-amber-500" /> : <ChevronDown className="w-4 h-4 text-amber-500" />}
+                  </button>
+                </CollapsibleTrigger>
+                <CollapsibleContent className="mt-2">
+                  <div className="p-4 rounded-lg bg-muted/50 space-y-1.5">
                     {result.errores.map((e, i) => (
                       <p key={i} className="text-xs text-muted-foreground font-mono">{e}</p>
                     ))}
                   </div>
-                )}
-              </div>
+                </CollapsibleContent>
+              </Collapsible>
             )}
           </div>
         )}
@@ -408,17 +452,560 @@ function ExcelAnalyzer({ onClose }: { onClose: () => void }) {
   )
 }
 
+// ─── Pagination ───────────────────────────────────────────────────────────────
+
+function Pagination({ page, meta, setPage }: { page: number; meta: Meta; setPage: (p: number) => void }) {
+  if (meta.pages <= 1) return null
+  const windowSize = 2
+  let start = Math.max(1, page - windowSize)
+  let end = Math.min(meta.pages, page + windowSize)
+  if (end - start < windowSize * 2) {
+    if (start === 1) end = Math.min(meta.pages, start + windowSize * 2)
+    else start = Math.max(1, end - windowSize * 2)
+  }
+  const nums: (number | '...')[] = []
+  if (start > 1) { nums.push(1); if (start > 2) nums.push('...') }
+  for (let p = start; p <= end; p++) nums.push(p)
+  if (end < meta.pages) { if (end < meta.pages - 1) nums.push('...'); nums.push(meta.pages) }
+
+  return (
+    <div className="flex items-center justify-between px-4 py-3">
+      <p className="text-xs text-muted-foreground">
+        Página <span className="font-medium text-foreground">{meta.page}</span> de{' '}
+        <span className="font-medium text-foreground">{meta.pages}</span>
+      </p>
+      <div className="flex items-center gap-1">
+        <Button variant="outline" size="icon" className="w-8 h-8" disabled={page <= 1} onClick={() => setPage(page - 1)}>
+          <ChevronLeft className="w-3.5 h-3.5" />
+        </Button>
+        {nums.map((n, i) =>
+          n === '...' ? (
+            <span key={`e-${i}`} className="w-8 h-8 flex items-center justify-center text-xs text-muted-foreground">…</span>
+          ) : (
+            <Button key={n} variant={n === page ? 'default' : 'ghost'} size="icon" className="w-8 h-8 text-xs" onClick={() => setPage(n)}>
+              {n}
+            </Button>
+          )
+        )}
+        <Button variant="outline" size="icon" className="w-8 h-8" disabled={page >= meta.pages} onClick={() => setPage(page + 1)}>
+          <ChevronRight className="w-3.5 h-3.5" />
+        </Button>
+      </div>
+    </div>
+  )
+}
+
+// ─── Filters Panel ────────────────────────────────────────────────────────────
+
+interface FiltersPanelProps {
+  search: string; setSearch: (v: string) => void
+  estado: string; setEstado: (v: string) => void
+  dependencia: string; setDependencia: (v: string) => void
+  vicepresidencia: string; setVicepresidencia: (v: string) => void
+  responsable: string; setResponsable: (v: string) => void
+  estadoPlan: string; setEstadoPlan: (v: string) => void
+  vencido: boolean; setVencido: (v: boolean) => void
+  conProrroga: boolean; setConProrroga: (v: boolean) => void
+  fechaCierreDesde: string; setFechaCierreDesde: (v: string) => void
+  fechaCierreHasta: string; setFechaCierreHasta: (v: string) => void
+  fechaInicialDesde: string; setFechaInicialDesde: (v: string) => void
+  fechaInicialHasta: string; setFechaInicialHasta: (v: string) => void
+  estados: string[]; dependencias: string[]; vicepresidencias: string[]
+  responsables: string[]; estadosPlan: string[]
+  hasFilters: boolean; clearAll: () => void; total: number
+}
+
+function FiltersPanel({
+  search, setSearch,
+  estado, setEstado,
+  dependencia, setDependencia,
+  vicepresidencia, setVicepresidencia,
+  responsable, setResponsable,
+  estadoPlan, setEstadoPlan,
+  vencido, setVencido,
+  conProrroga, setConProrroga,
+  fechaCierreDesde, setFechaCierreDesde,
+  fechaCierreHasta, setFechaCierreHasta,
+  fechaInicialDesde, setFechaInicialDesde,
+  fechaInicialHasta, setFechaInicialHasta,
+  estados, dependencias, vicepresidencias, responsables, estadosPlan,
+  hasFilters, clearAll, total,
+}: FiltersPanelProps) {
+  const [isExpanded, setIsExpanded] = useState(false)
+
+  const estadoOptions = estados.map((e) => ({ value: e, label: e }))
+  const depOptions = dependencias.map((d) => ({ value: d, label: d }))
+  const vpOptions = vicepresidencias.map((v) => ({ value: v, label: v }))
+  const respOptions = responsables.map((r) => ({ value: r, label: r }))
+  const estadoPlanOptions = estadosPlan.map((e) => ({ value: e, label: e }))
+
+  const activeFiltersCount = [
+    estado, dependencia, vicepresidencia, responsable, estadoPlan,
+    fechaCierreDesde, fechaCierreHasta, fechaInicialDesde, fechaInicialHasta,
+  ].filter(Boolean).length + (vencido ? 1 : 0) + (conProrroga ? 1 : 0)
+
+  return (
+    <Card className="overflow-hidden">
+      <CardContent className="p-0">
+        {/* Main search bar */}
+        <div className="p-4 border-b border-border/50">
+          <div className="flex items-center gap-3">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+              <Input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Buscar por código, descripción, plan de acción…"
+                className="pl-10 h-10 bg-muted/30 border-muted-foreground/20 focus:bg-background"
+              />
+            </div>
+            <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
+              <CollapsibleTrigger asChild>
+                <Button variant={isExpanded ? 'secondary' : 'outline'} className="gap-2 h-10">
+                  <SlidersHorizontal className="w-4 h-4" />
+                  Filtros
+                  {activeFiltersCount > 0 && (
+                    <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-[10px] bg-primary text-primary-foreground">
+                      {activeFiltersCount}
+                    </Badge>
+                  )}
+                  <ChevronDown className={cn('w-4 h-4 transition-transform', isExpanded && 'rotate-180')} />
+                </Button>
+              </CollapsibleTrigger>
+            </Collapsible>
+            <div className="flex items-center gap-2 pl-2 border-l border-border">
+              <span className="text-sm text-muted-foreground font-medium tabular-nums">
+                {total.toLocaleString()} {total === 1 ? 'registro' : 'registros'}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Quick filters */}
+        <div className="px-4 py-3 bg-muted/20 border-b border-border/50">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-xs font-medium text-muted-foreground mr-1">Acceso rápido:</span>
+            <FilterPill label="Vencidos" active={vencido} onClick={() => setVencido(!vencido)} variant="danger" icon={AlertTriangle} />
+            <FilterPill label="Con prórroga" active={conProrroga} onClick={() => setConProrroga(!conProrroga)} variant="warning" icon={Clock} />
+            <Separator orientation="vertical" className="h-5 mx-1" />
+            <div className="flex items-center gap-2">
+              <div className="min-w-36">
+                <Select value={estado} onChange={(e) => setEstado(e.target.value)} options={estadoOptions} placeholder="Estado" />
+              </div>
+              <div className="min-w-40">
+                <Select value={estadoPlan} onChange={(e) => setEstadoPlan(e.target.value)} options={estadoPlanOptions} placeholder="Estado plan" />
+              </div>
+            </div>
+            {hasFilters && (
+              <Button variant="ghost" size="sm" onClick={clearAll} className="ml-auto h-8 text-xs text-muted-foreground hover:text-foreground">
+                <RotateCcw className="w-3 h-3 mr-1.5" />
+                Limpiar filtros
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {/* Expanded filters */}
+        <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
+          <CollapsibleContent>
+            <div className="p-4 bg-muted/10 space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {/* Organización */}
+                <div className="space-y-3">
+                  <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                    <Building2 className="w-3.5 h-3.5" />
+                    Organización
+                  </h4>
+                  <div className="space-y-2">
+                    <Select value={dependencia} onChange={(e) => setDependencia(e.target.value)} options={depOptions} placeholder="Dependencia" />
+                    {vicepresidencias.length > 0 && (
+                      <Select value={vicepresidencia} onChange={(e) => setVicepresidencia(e.target.value)} options={vpOptions} placeholder="Vicepresidencia" />
+                    )}
+                  </div>
+                </div>
+
+                {/* Responsables */}
+                <div className="space-y-3">
+                  <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                    <User className="w-3.5 h-3.5" />
+                    Responsable
+                  </h4>
+                  <div className="space-y-2">
+                    <Select value={responsable} onChange={(e) => setResponsable(e.target.value)} options={respOptions} placeholder="Responsable" />
+                  </div>
+                </div>
+
+                {/* Fechas */}
+                <div className="space-y-3">
+                  <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-2">
+                    <Calendar className="w-3.5 h-3.5" />
+                    Fechas
+                  </h4>
+                  <div className="space-y-3">
+                    <div>
+                      <label className="text-[10px] text-muted-foreground uppercase tracking-wide">Fecha cierre proyectada</label>
+                      <div className="flex items-center gap-2 mt-1">
+                        <input
+                          type="date"
+                          value={fechaCierreDesde}
+                          onChange={(e) => setFechaCierreDesde(e.target.value)}
+                          className="flex-1 h-9 px-2.5 text-xs rounded-md border border-input bg-background text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                        />
+                        <span className="text-xs text-muted-foreground">→</span>
+                        <input
+                          type="date"
+                          value={fechaCierreHasta}
+                          onChange={(e) => setFechaCierreHasta(e.target.value)}
+                          className="flex-1 h-9 px-2.5 text-xs rounded-md border border-input bg-background text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                        />
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-[10px] text-muted-foreground uppercase tracking-wide">Fecha inicial evento</label>
+                      <div className="flex items-center gap-2 mt-1">
+                        <input
+                          type="date"
+                          value={fechaInicialDesde}
+                          onChange={(e) => setFechaInicialDesde(e.target.value)}
+                          className="flex-1 h-9 px-2.5 text-xs rounded-md border border-input bg-background text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                        />
+                        <span className="text-xs text-muted-foreground">→</span>
+                        <input
+                          type="date"
+                          value={fechaInicialHasta}
+                          onChange={(e) => setFechaInicialHasta(e.target.value)}
+                          className="flex-1 h-9 px-2.5 text-xs rounded-md border border-input bg-background text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CollapsibleContent>
+        </Collapsible>
+
+        {/* Active filters chips */}
+        {hasFilters && (
+          <div className="px-4 py-3 border-t border-border/50 flex flex-wrap gap-2">
+            {estado && (
+              <Badge variant="secondary" className="gap-1.5 pr-1.5">
+                Estado: {estado}
+                <button onClick={() => setEstado('')} className="hover:bg-muted-foreground/20 rounded-full p-0.5"><X className="w-3 h-3" /></button>
+              </Badge>
+            )}
+            {dependencia && (
+              <Badge variant="secondary" className="gap-1.5 pr-1.5">
+                {dependencia.length > 20 ? dependencia.slice(0, 20) + '…' : dependencia}
+                <button onClick={() => setDependencia('')} className="hover:bg-muted-foreground/20 rounded-full p-0.5"><X className="w-3 h-3" /></button>
+              </Badge>
+            )}
+            {vicepresidencia && (
+              <Badge variant="secondary" className="gap-1.5 pr-1.5">
+                VP: {vicepresidencia.length > 16 ? vicepresidencia.slice(0, 16) + '…' : vicepresidencia}
+                <button onClick={() => setVicepresidencia('')} className="hover:bg-muted-foreground/20 rounded-full p-0.5"><X className="w-3 h-3" /></button>
+              </Badge>
+            )}
+            {responsable && (
+              <Badge variant="secondary" className="gap-1.5 pr-1.5">
+                {responsable.length > 16 ? responsable.slice(0, 16) + '…' : responsable}
+                <button onClick={() => setResponsable('')} className="hover:bg-muted-foreground/20 rounded-full p-0.5"><X className="w-3 h-3" /></button>
+              </Badge>
+            )}
+            {estadoPlan && (
+              <Badge variant="secondary" className="gap-1.5 pr-1.5">
+                Plan: {estadoPlan}
+                <button onClick={() => setEstadoPlan('')} className="hover:bg-muted-foreground/20 rounded-full p-0.5"><X className="w-3 h-3" /></button>
+              </Badge>
+            )}
+            {vencido && (
+              <Badge variant="destructive" className="gap-1.5 pr-1.5">
+                Vencidos
+                <button onClick={() => setVencido(false)} className="hover:bg-red-400/20 rounded-full p-0.5"><X className="w-3 h-3" /></button>
+              </Badge>
+            )}
+            {conProrroga && (
+              <Badge className="gap-1.5 pr-1.5 bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 hover:bg-amber-200">
+                Con prórroga
+                <button onClick={() => setConProrroga(false)} className="hover:bg-amber-300/30 rounded-full p-0.5"><X className="w-3 h-3" /></button>
+              </Badge>
+            )}
+            {(fechaCierreDesde || fechaCierreHasta) && (
+              <Badge variant="secondary" className="gap-1.5 pr-1.5">
+                Cierre: {fechaCierreDesde || '…'} → {fechaCierreHasta || '…'}
+                <button onClick={() => { setFechaCierreDesde(''); setFechaCierreHasta('') }} className="hover:bg-muted-foreground/20 rounded-full p-0.5"><X className="w-3 h-3" /></button>
+              </Badge>
+            )}
+            {(fechaInicialDesde || fechaInicialHasta) && (
+              <Badge variant="secondary" className="gap-1.5 pr-1.5">
+                Inicial: {fechaInicialDesde || '…'} → {fechaInicialHasta || '…'}
+                <button onClick={() => { setFechaInicialDesde(''); setFechaInicialHasta('') }} className="hover:bg-muted-foreground/20 rounded-full p-0.5"><X className="w-3 h-3" /></button>
+              </Badge>
+            )}
+          </div>
+        )}
+      </CardContent>
+    </Card>
+  )
+}
+
+// ─── Hallazgos Table ──────────────────────────────────────────────────────────
+
+function HallazgosTable({
+  hallazgos, loading, meta, page, setPage, onSelect,
+}: {
+  hallazgos: Hallazgo[]; loading: boolean; meta: Meta
+  page: number; setPage: (p: number) => void; onSelect: (h: Hallazgo) => void
+}) {
+  if (loading) return <PageLoader />
+
+  if (hallazgos.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
+        <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mb-4">
+          <Search className="w-8 h-8 opacity-40" />
+        </div>
+        <p className="text-sm font-medium">No se encontraron hallazgos</p>
+        <p className="text-xs text-muted-foreground mt-1">Intenta ajustar los filtros de búsqueda</p>
+      </div>
+    )
+  }
+
+  return (
+    <>
+      <div className="overflow-x-auto">
+        <Table>
+          <TableHeader>
+            <TableRow className="bg-muted/50 hover:bg-muted/50">
+              <TableHead className="font-semibold text-xs">Código</TableHead>
+              <TableHead className="font-semibold text-xs">Descripción</TableHead>
+              <TableHead className="font-semibold text-xs">Dependencia</TableHead>
+              <TableHead className="font-semibold text-xs">Estado</TableHead>
+              <TableHead className="font-semibold text-xs">F. Inicial</TableHead>
+              <TableHead className="font-semibold text-xs">F. Cierre</TableHead>
+              <TableHead className="font-semibold text-xs">Responsable</TableHead>
+              <TableHead className="font-semibold text-xs">Estado Plan</TableHead>
+              <TableHead className="w-12"></TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {hallazgos.map((h) => (
+              <TableRow key={h.id} className="group hover:bg-muted/30 transition-colors">
+                <TableCell className="font-mono text-xs font-semibold text-primary whitespace-nowrap">
+                  {h.codigo_del_hallazgo ?? '—'}
+                </TableCell>
+                <TableCell className="max-w-xs">
+                  <p className="truncate text-foreground text-sm" title={h.descripcion ?? ''}>
+                    {h.descripcion ?? '—'}
+                  </p>
+                </TableCell>
+                <TableCell className="whitespace-nowrap text-muted-foreground text-xs max-w-[140px]">
+                  <p className="truncate" title={h.dependencia_reporta_ero ?? ''}>{h.dependencia_reporta_ero ?? '—'}</p>
+                </TableCell>
+                <TableCell className="whitespace-nowrap">
+                  <StatusBadge value={h.estado} />
+                </TableCell>
+                <TableCell className="whitespace-nowrap text-muted-foreground text-xs">
+                  {formatDate(h.fecha_inicial_evento)}
+                </TableCell>
+                <TableCell className="whitespace-nowrap text-muted-foreground text-xs">
+                  {formatDate(h.fecha_cierre_proyectada)}
+                </TableCell>
+                <TableCell className="max-w-[160px]">
+                  <p className="truncate text-muted-foreground text-xs" title={h.responsable_plan_accion ?? ''}>
+                    {h.responsable_plan_accion ?? '—'}
+                  </p>
+                  {h.vinculado_via_actividad && (
+                    <Badge variant="secondary" className="mt-1 text-[10px] px-1.5 py-0 h-4 bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400">
+                      vía act.
+                    </Badge>
+                  )}
+                </TableCell>
+                <TableCell className="whitespace-nowrap">
+                  <StatusBadge value={h.estado_plan_accion} />
+                </TableCell>
+                <TableCell>
+                  <Button
+                    variant="ghost" size="icon"
+                    onClick={() => onSelect(h)}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity w-8 h-8 text-primary hover:bg-primary/10"
+                  >
+                    <Eye className="w-4 h-4" />
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+      {meta.pages > 1 && (
+        <>
+          <Separator />
+          <Pagination page={page} meta={meta} setPage={setPage} />
+        </>
+      )}
+    </>
+  )
+}
+
+// ─── Actividades Table ────────────────────────────────────────────────────────
+
+function ActividadesTable({
+  actividades, loading, meta, page, setPage, onSelect,
+}: {
+  actividades: Actividad[]; loading: boolean; meta: Meta
+  page: number; setPage: (p: number) => void; onSelect: (a: Actividad) => void
+}) {
+  if (loading) return <PageLoader />
+
+  if (actividades.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
+        <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mb-4">
+          <ListChecks className="w-8 h-8 opacity-40" />
+        </div>
+        <p className="text-sm font-medium">No se encontraron actividades</p>
+        <p className="text-xs text-muted-foreground mt-1">Intenta ajustar los filtros de búsqueda</p>
+      </div>
+    )
+  }
+
+  return (
+    <>
+      <div className="overflow-x-auto">
+        <Table>
+          <TableHeader>
+            <TableRow className="bg-muted/50 hover:bg-muted/50">
+              <TableHead className="font-semibold text-xs">Hallazgo</TableHead>
+              <TableHead className="font-semibold text-xs">Nombre</TableHead>
+              <TableHead className="font-semibold text-xs">Responsable</TableHead>
+              <TableHead className="font-semibold text-xs">Estado Plan</TableHead>
+              <TableHead className="font-semibold text-xs">Estado Acción</TableHead>
+              <TableHead className="font-semibold text-xs">F. Compromiso</TableHead>
+              <TableHead className="font-semibold text-xs">Prórroga</TableHead>
+              <TableHead className="w-12"></TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {actividades.map((a) => (
+              <TableRow key={a.id} className="group hover:bg-muted/30 transition-colors">
+                <TableCell className="font-mono text-xs font-semibold text-primary whitespace-nowrap">
+                  {a.codigo_del_hallazgo ?? '—'}
+                </TableCell>
+                <TableCell className="max-w-xs">
+                  <p className="truncate text-foreground text-sm" title={a.nombre_plan_accion ?? ''}>
+                    {a.nombre_plan_accion ?? a.descripcion ?? '—'}
+                  </p>
+                  {a.id_plan_accion && (
+                    <p className="text-[10px] text-muted-foreground font-mono mt-0.5">{a.id_plan_accion}</p>
+                  )}
+                </TableCell>
+                <TableCell className="whitespace-nowrap text-muted-foreground text-xs max-w-[140px]">
+                  <p className="truncate" title={a.responsable ?? ''}>{a.responsable ?? '—'}</p>
+                </TableCell>
+                <TableCell className="whitespace-nowrap">
+                  <StatusBadge value={a.estado_plan_accion} />
+                </TableCell>
+                <TableCell className="whitespace-nowrap">
+                  <StatusBadge value={a.estado_accion} />
+                </TableCell>
+                <TableCell className="whitespace-nowrap text-muted-foreground text-xs">
+                  {formatDate(a.fecha_compromiso)}
+                </TableCell>
+                <TableCell className="whitespace-nowrap text-muted-foreground text-xs">
+                  {a.prorroga === 'Si' || a.prorroga === 'Sí' ? (
+                    <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 text-[10px]">
+                      {formatDate(a.fecha_prorroga) || 'Sí'}
+                    </Badge>
+                  ) : '—'}
+                </TableCell>
+                <TableCell>
+                  <Button
+                    variant="ghost" size="icon"
+                    onClick={() => onSelect(a)}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity w-8 h-8 text-primary hover:bg-primary/10"
+                  >
+                    <Eye className="w-4 h-4" />
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
+      {meta.pages > 1 && (
+        <>
+          <Separator />
+          <Pagination page={page} meta={meta} setPage={setPage} />
+        </>
+      )}
+    </>
+  )
+}
+
+// ─── Actividad Detail Modal ───────────────────────────────────────────────────
+
+function ActividadDetailModal({ actividad, onClose }: { actividad: Actividad | null; onClose: () => void }) {
+  if (!actividad) return null
+  return (
+    <Modal open={!!actividad} onClose={onClose} title={`Actividad: ${actividad.id_plan_accion ?? 'Sin ID'}`} size="lg">
+      <div className="space-y-5 max-h-[65vh] overflow-y-auto pr-1">
+        {actividad.nombre_plan_accion && (
+          <div>
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Nombre del Plan</p>
+            <p className="text-sm text-foreground bg-muted/50 rounded-lg p-3">{actividad.nombre_plan_accion}</p>
+          </div>
+        )}
+        <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+          <DetailField label="Hallazgo" value={actividad.codigo_del_hallazgo} />
+          <DetailField label="ID Plan de Acción" value={actividad.id_plan_accion} />
+          <DetailField label="Estado Plan" value={actividad.estado_plan_accion} />
+          <DetailField label="Responsable" value={actividad.responsable} />
+          <DetailField label="Estado Acción" value={actividad.estado_accion} />
+          <DetailField label="Responsable Acción" value={actividad.responsable_accion} />
+          <DetailField label="Fecha Compromiso" value={formatDate(actividad.fecha_compromiso)} />
+          <DetailField label="Prórroga" value={actividad.prorroga} />
+          <DetailField label="Fecha Prórroga" value={formatDate(actividad.fecha_prorroga)} />
+        </div>
+        {actividad.descripcion && (
+          <div>
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Descripción</p>
+            <p className="text-sm text-foreground bg-muted/50 rounded-lg p-3 leading-relaxed">{actividad.descripcion}</p>
+          </div>
+        )}
+        {actividad.observaciones && (
+          <div>
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Observaciones</p>
+            <p className="text-sm text-foreground bg-muted/50 rounded-lg p-3 leading-relaxed">{actividad.observaciones}</p>
+          </div>
+        )}
+      </div>
+    </Modal>
+  )
+}
+
 // ─── Main page ────────────────────────────────────────────────────────────────
 
 export default function HallazgosPage() {
   const pathname = usePathname()
 
-  // Table state
+  const [activeMainTab, setActiveMainTab] = useState<'hallazgos' | 'actividades'>('hallazgos')
+
+  // Hallazgos state
   const [hallazgos, setHallazgos] = useState<Hallazgo[]>([])
-  const [meta, setMeta] = useState<Meta>({ total: 0, pages: 1, page: 1 })
-  const [loading, setLoading] = useState(true)
-  const [selected, setSelected] = useState<Hallazgo | null>(null)
-  const [activeTab, setActiveTab] = useState<'info' | 'actividades'>('info')
+  const [hallazgosMeta, setHallazgosMeta] = useState<Meta>({ total: 0, pages: 1, page: 1 })
+  const [hallazgosLoading, setHallazgosLoading] = useState(true)
+  const [selectedHallazgo, setSelectedHallazgo] = useState<Hallazgo | null>(null)
+  const [hallazgosPage, setHallazgosPage] = useState(1)
+
+  // Actividades state
+  const [actividades, setActividades] = useState<Actividad[]>([])
+  const [actividadesMeta, setActividadesMeta] = useState<Meta>({ total: 0, pages: 1, page: 1 })
+  const [actividadesLoading, setActividadesLoading] = useState(true)
+  const [selectedActividad, setSelectedActividad] = useState<Actividad | null>(null)
+  const [actividadesPage, setActividadesPage] = useState(1)
+
+  const [activeDetailTab, setActiveDetailTab] = useState<'info' | 'actividades'>('info')
 
   // Filters
   const [search, setSearch] = useState('')
@@ -431,406 +1018,227 @@ export default function HallazgosPage() {
   const [conProrroga, setConProrroga] = useState(false)
   const [fechaCierreDesde, setFechaCierreDesde] = useState('')
   const [fechaCierreHasta, setFechaCierreHasta] = useState('')
+  const [fechaInicialDesde, setFechaInicialDesde] = useState('')
+  const [fechaInicialHasta, setFechaInicialHasta] = useState('')
 
-  // Options
+  // Filter options
   const [estados, setEstados] = useState<string[]>([])
   const [dependencias, setDependencias] = useState<string[]>([])
   const [vicepresidencias, setVicepresidencias] = useState<string[]>([])
   const [responsables, setResponsables] = useState<string[]>([])
   const [estadosPlan, setEstadosPlan] = useState<string[]>([])
-  const [page, setPage] = useState(1)
 
-  // Analyzer
   const [showAnalyzer, setShowAnalyzer] = useState(false)
+
+  // Debounce search
+  const searchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const [debouncedSearch, setDebouncedSearch] = useState('')
+  useEffect(() => {
+    if (searchTimeout.current) clearTimeout(searchTimeout.current)
+    searchTimeout.current = setTimeout(() => setDebouncedSearch(search), 400)
+    return () => { if (searchTimeout.current) clearTimeout(searchTimeout.current) }
+  }, [search])
 
   const clearAll = () => {
     setSearch(''); setEstado(''); setDependencia(''); setVicepresidencia('')
     setResponsable(''); setEstadoPlan(''); setVencido(false); setConProrroga(false)
-    setFechaCierreDesde(''); setFechaCierreHasta('')
+    setFechaCierreDesde(''); setFechaCierreHasta(''); setFechaInicialDesde(''); setFechaInicialHasta('')
   }
 
-  const load = useCallback(async (p = 1) => {
-    setLoading(true)
+  const hasFilters = !!search || !!estado || !!dependencia || !!vicepresidencia || !!responsable ||
+    !!estadoPlan || vencido || conProrroga || !!fechaCierreDesde || !!fechaCierreHasta ||
+    !!fechaInicialDesde || !!fechaInicialHasta
+
+  // Load filter options once
+  useEffect(() => {
+    Promise.allSettled([
+      hallazgosApi.estados(),
+      hallazgosApi.dependencias(),
+      hallazgosApi.vicepresidencias(),
+      hallazgosApi.responsables(),
+      hallazgosApi.estadosPlan(),
+    ]).then(([est, dep, vp, resp, plan]) => {
+      if (est.status === 'fulfilled') setEstados((est.value.data as { estados: string[] }).estados)
+      if (dep.status === 'fulfilled') setDependencias((dep.value.data as { dependencias: string[] }).dependencias)
+      if (vp.status === 'fulfilled') setVicepresidencias((vp.value.data as { vicepresidencias: string[] }).vicepresidencias)
+      if (resp.status === 'fulfilled') setResponsables((resp.value.data as { responsables: string[] }).responsables)
+      if (plan.status === 'fulfilled') setEstadosPlan((plan.value.data as { estados_plan_accion: string[] }).estados_plan_accion)
+    })
+  }, [])
+
+  const loadHallazgos = useCallback(async (p: number) => {
+    setHallazgosLoading(true)
     try {
       const res = await hallazgosApi.list({
         page: p,
         per_page: 15,
-        ...(search && { search }),
-        ...(estado && { estado }),
-        ...(dependencia && { dependencia }),
-        ...(vicepresidencia && { vicepresidencia }),
-        ...(responsable && { responsable }),
-        ...(estadoPlan && { estado_plan_accion: estadoPlan }),
-        ...(vencido && { vencido: 'true' }),
-        ...(conProrroga && { con_prorroga: 'true' }),
-        ...(fechaCierreDesde && { fecha_cierre_desde: fechaCierreDesde }),
-        ...(fechaCierreHasta && { fecha_cierre_hasta: fechaCierreHasta }),
+        search: debouncedSearch || undefined,
+        estado: estado || undefined,
+        dependencia: dependencia || undefined,
+        vicepresidencia: vicepresidencia || undefined,
+        responsable: responsable || undefined,
+        estado_plan_accion: estadoPlan || undefined,
+        vencido: vencido ? 'true' : undefined,
+        con_prorroga: conProrroga ? 'true' : undefined,
+        fecha_cierre_desde: fechaCierreDesde || undefined,
+        fecha_cierre_hasta: fechaCierreHasta || undefined,
+        fecha_inicial_desde: fechaInicialDesde || undefined,
+        fecha_inicial_hasta: fechaInicialHasta || undefined,
       })
-      const d = res.data as {
-        hallazgos: Hallazgo[]
-        total: number
-        pages: number
-        page: number
-      }
-      setHallazgos(d.hallazgos)
-      setMeta({ total: d.total, pages: d.pages, page: d.page })
-    } finally {
-      setLoading(false)
+      const data = res.data as { hallazgos: Hallazgo[]; total: number; pages: number; page: number }
+      setHallazgos(data.hallazgos)
+      setHallazgosMeta({ total: data.total, pages: data.pages, page: data.page })
+    } catch { /* silent */ } finally {
+      setHallazgosLoading(false)
     }
-  }, [search, estado, dependencia, vicepresidencia, responsable, estadoPlan, vencido, conProrroga, fechaCierreDesde, fechaCierreHasta])
+  }, [debouncedSearch, estado, dependencia, vicepresidencia, responsable, estadoPlan, vencido, conProrroga, fechaCierreDesde, fechaCierreHasta, fechaInicialDesde, fechaInicialHasta])
 
+  const loadActividades = useCallback(async (p: number) => {
+    setActividadesLoading(true)
+    try {
+      const res = await actividadesApi.list({
+        page: p,
+        per_page: 15,
+        search: debouncedSearch || undefined,
+        responsable: responsable || undefined,
+        estado_plan_accion: estadoPlan || undefined,
+        vencido: vencido ? 'true' : undefined,
+        con_prorroga: conProrroga ? 'true' : undefined,
+      })
+      const data = res.data as { actividades: Actividad[]; total: number; pages: number; page: number }
+      setActividades(data.actividades)
+      setActividadesMeta({ total: data.total, pages: data.pages, page: data.page })
+    } catch { /* silent */ } finally {
+      setActividadesLoading(false)
+    }
+  }, [debouncedSearch, responsable, estadoPlan, vencido, conProrroga])
+
+  // Reset pages when filters change
+  const didMountFilters = useRef(false)
   useEffect(() => {
-    hallazgosApi.estados().then((r) => setEstados((r.data as { estados: string[] }).estados)).catch(() => {})
-    hallazgosApi.dependencias().then((r) => setDependencias((r.data as { dependencias: string[] }).dependencias)).catch(() => {})
-    hallazgosApi.vicepresidencias().then((r) => setVicepresidencias((r.data as { vicepresidencias: string[] }).vicepresidencias)).catch(() => {})
-    hallazgosApi.responsables().then((r) => setResponsables((r.data as { responsables: string[] }).responsables)).catch(() => {})
-    hallazgosApi.estadosPlan().then((r) => setEstadosPlan((r.data as { estados_plan_accion: string[] }).estados_plan_accion)).catch(() => {})
-  }, [])
+    if (!didMountFilters.current) { didMountFilters.current = true; return }
+    setHallazgosPage(1)
+    setActividadesPage(1)
+  }, [debouncedSearch, estado, dependencia, vicepresidencia, responsable, estadoPlan, vencido, conProrroga, fechaCierreDesde, fechaCierreHasta, fechaInicialDesde, fechaInicialHasta])
 
-  useEffect(() => { load(page) }, [page]) // eslint-disable-line
-  useEffect(() => { setPage(1); load(1) }, [search, estado, dependencia, vicepresidencia, responsable, estadoPlan, vencido, conProrroga, fechaCierreDesde, fechaCierreHasta]) // eslint-disable-line
-
-  const hasFilters = !!search || !!estado || !!dependencia || !!vicepresidencia || !!responsable || !!estadoPlan || vencido || conProrroga || !!fechaCierreDesde || !!fechaCierreHasta
-
-  const estadoOptions = estados.map((e) => ({ value: e, label: e }))
-  const depOptions = dependencias.map((d) => ({ value: d, label: d }))
-  const vpOptions = vicepresidencias.map((v) => ({ value: v, label: v }))
-  const respOptions = responsables.map((r) => ({ value: r, label: r }))
-  const estadoPlanOptions = estadosPlan.map((e) => ({ value: e, label: e }))
+  useEffect(() => { loadHallazgos(hallazgosPage) }, [hallazgosPage, loadHallazgos])
+  useEffect(() => { loadActividades(actividadesPage) }, [actividadesPage, loadActividades])
 
   return (
     <DashboardShell pathname={pathname}>
-      <div className="space-y-3">
+      <div className="space-y-6">
+        {/* Page Header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight text-foreground">Gestión de Hallazgos</h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              Administra y da seguimiento a los hallazgos y actividades del sistema
+            </p>
+          </div>
+          <Button
+            variant={showAnalyzer ? 'secondary' : 'outline'}
+            onClick={() => setShowAnalyzer(!showAnalyzer)}
+            className="gap-2"
+          >
+            <FileSpreadsheet className="w-4 h-4" />
+            Analizar Excel
+          </Button>
+        </div>
 
-        {/* ── Toolbar ─────────────────────────────────────────────── */}
-        <Card>
-          <CardContent className="p-4 space-y-3">
-
-            {/* Row 1: Search + main selects + analyzer button */}
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="relative flex-1 min-w-52">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
-                <Input
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Buscar por código, descripción…"
-                  className="pl-9"
-                />
-              </div>
-
-              <div className="min-w-40">
-                <Select value={estado} onChange={(e) => setEstado(e.target.value)} options={estadoOptions} placeholder="Estado" />
-              </div>
-
-              <div className="min-w-44">
-                <Select value={dependencia} onChange={(e) => setDependencia(e.target.value)} options={depOptions} placeholder="Dependencia" />
-              </div>
-
-              {vicepresidencias.length > 0 && (
-                <div className="min-w-44">
-                  <Select value={vicepresidencia} onChange={(e) => setVicepresidencia(e.target.value)} options={vpOptions} placeholder="Vicepresidencia" />
-                </div>
-              )}
-
-              <div className="min-w-44">
-                <Select value={estadoPlan} onChange={(e) => setEstadoPlan(e.target.value)} options={estadoPlanOptions} placeholder="Estado plan" />
-              </div>
-
-              <Button
-                variant={showAnalyzer ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setShowAnalyzer(!showAnalyzer)}
-                className="ml-auto shrink-0"
-              >
-                <FileSpreadsheet className="w-3.5 h-3.5 mr-1.5" />
-                Analizar Excel
-              </Button>
-            </div>
-
-            {/* Row 2: Responsable + quick filters + date range */}
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="min-w-52">
-                <Select value={responsable} onChange={(e) => setResponsable(e.target.value)} options={respOptions} placeholder="Responsable" />
-              </div>
-
-              <div className="w-px h-5 bg-border mx-1 shrink-0" />
-
-              {/* Quick pills */}
-              <button
-                onClick={() => setVencido(!vencido)}
-                className={cn(
-                  'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors shrink-0',
-                  vencido
-                    ? 'bg-red-500/10 border-red-400/40 text-red-600 dark:text-red-400'
-                    : 'border-border text-muted-foreground hover:bg-muted hover:text-foreground'
-                )}
-              >
-                <AlertTriangle className="w-3 h-3" />
-                Vencidos
-              </button>
-
-              <button
-                onClick={() => setConProrroga(!conProrroga)}
-                className={cn(
-                  'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-colors shrink-0',
-                  conProrroga
-                    ? 'bg-amber-500/10 border-amber-400/40 text-amber-600 dark:text-amber-400'
-                    : 'border-border text-muted-foreground hover:bg-muted hover:text-foreground'
-                )}
-              >
-                <Clock className="w-3 h-3" />
-                Con prórroga
-              </button>
-
-              <div className="w-px h-5 bg-border mx-1 shrink-0" />
-
-              {/* Date range */}
-              <div className="flex items-center gap-1.5 flex-wrap">
-                <Calendar className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
-                <span className="text-xs text-muted-foreground shrink-0">Cierre:</span>
-                <input
-                  type="date"
-                  value={fechaCierreDesde}
-                  onChange={(e) => setFechaCierreDesde(e.target.value)}
-                  className="h-8 px-2 text-xs rounded-md border border-input bg-background text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                />
-                <span className="text-xs text-muted-foreground shrink-0">→</span>
-                <input
-                  type="date"
-                  value={fechaCierreHasta}
-                  onChange={(e) => setFechaCierreHasta(e.target.value)}
-                  className="h-8 px-2 text-xs rounded-md border border-input bg-background text-foreground shadow-sm focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                />
-              </div>
-
-              <div className="ml-auto flex items-center gap-2 shrink-0">
-                {hasFilters && (
-                  <Button variant="ghost" size="sm" onClick={clearAll} className="h-7 text-xs">
-                    <X className="w-3 h-3 mr-1" />
-                    Limpiar
-                  </Button>
-                )}
-                <span className="text-xs text-muted-foreground whitespace-nowrap">
-                  {meta.total} registro{meta.total !== 1 ? 's' : ''}
-                </span>
-              </div>
-            </div>
-
-            {/* Row 3: Active filter chips */}
-            {hasFilters && (
-              <div className="flex flex-wrap gap-1.5 pt-1 border-t border-border/60">
-                {estado && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-muted text-xs font-medium">
-                    Estado: {estado}
-                    <button onClick={() => setEstado('')} className="hover:text-foreground text-muted-foreground ml-0.5"><X className="w-2.5 h-2.5" /></button>
-                  </span>
-                )}
-                {dependencia && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-muted text-xs font-medium">
-                    {dependencia.length > 24 ? dependencia.slice(0, 24) + '…' : dependencia}
-                    <button onClick={() => setDependencia('')} className="hover:text-foreground text-muted-foreground ml-0.5"><X className="w-2.5 h-2.5" /></button>
-                  </span>
-                )}
-                {vicepresidencia && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-muted text-xs font-medium">
-                    VP: {vicepresidencia.length > 20 ? vicepresidencia.slice(0, 20) + '…' : vicepresidencia}
-                    <button onClick={() => setVicepresidencia('')} className="hover:text-foreground text-muted-foreground ml-0.5"><X className="w-2.5 h-2.5" /></button>
-                  </span>
-                )}
-                {responsable && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-muted text-xs font-medium">
-                    {responsable.length > 20 ? responsable.slice(0, 20) + '…' : responsable}
-                    <button onClick={() => setResponsable('')} className="hover:text-foreground text-muted-foreground ml-0.5"><X className="w-2.5 h-2.5" /></button>
-                  </span>
-                )}
-                {estadoPlan && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-muted text-xs font-medium">
-                    Plan: {estadoPlan}
-                    <button onClick={() => setEstadoPlan('')} className="hover:text-foreground text-muted-foreground ml-0.5"><X className="w-2.5 h-2.5" /></button>
-                  </span>
-                )}
-                {vencido && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-950/30 text-red-700 dark:text-red-400 text-xs font-medium">
-                    Vencidos
-                    <button onClick={() => setVencido(false)} className="hover:opacity-70 ml-0.5"><X className="w-2.5 h-2.5" /></button>
-                  </span>
-                )}
-                {conProrroga && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-950/30 text-amber-700 dark:text-amber-400 text-xs font-medium">
-                    Con prórroga
-                    <button onClick={() => setConProrroga(false)} className="hover:opacity-70 ml-0.5"><X className="w-2.5 h-2.5" /></button>
-                  </span>
-                )}
-                {(fechaCierreDesde || fechaCierreHasta) && (
-                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-muted text-xs font-medium">
-                    Cierre: {fechaCierreDesde || '…'} → {fechaCierreHasta || '…'}
-                    <button onClick={() => { setFechaCierreDesde(''); setFechaCierreHasta('') }} className="hover:text-foreground text-muted-foreground ml-0.5"><X className="w-2.5 h-2.5" /></button>
-                  </span>
-                )}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* ── Excel Analyzer ──────────────────────────────────────── */}
+        {/* Excel Analyzer */}
         {showAnalyzer && (
           <ExcelAnalyzer onClose={() => setShowAnalyzer(false)} />
         )}
 
-        {/* ── Table ───────────────────────────────────────────────── */}
-        <Card className="overflow-hidden">
-          {loading ? (
-            <PageLoader />
-          ) : hallazgos.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
-              <Search className="w-8 h-8 mb-2 opacity-30" />
-              <p className="text-sm">No se encontraron hallazgos</p>
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow className="bg-primary hover:bg-primary">
-                    {['Código', 'Descripción', 'Dependencia', 'Estado',
-                      'F. Inicial', 'F. Cierre Proy.', 'Responsable', 'Estado Plan', ''].map((h) => (
-                      <TableHead key={h} className="text-primary-foreground font-semibold text-xs whitespace-nowrap py-3">
-                        {h}
-                      </TableHead>
-                    ))}
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {hallazgos.map((h) => (
-                    <TableRow key={h.id} className="group">
-                      <TableCell className="font-mono text-xs font-semibold text-primary whitespace-nowrap">
-                        {h.codigo_del_hallazgo ?? '—'}
-                      </TableCell>
-                      <TableCell className="max-w-xs">
-                        <p className="truncate text-foreground text-sm" title={h.descripcion ?? ''}>
-                          {h.descripcion ?? '—'}
-                        </p>
-                      </TableCell>
-                      <TableCell className="whitespace-nowrap text-muted-foreground text-xs max-w-[120px]">
-                        <p className="truncate" title={h.dependencia_reporta_ero ?? ''}>
-                          {h.dependencia_reporta_ero ?? '—'}
-                        </p>
-                      </TableCell>
-                      <TableCell className="whitespace-nowrap">
-                        <StatusBadge value={h.estado} />
-                      </TableCell>
-                      <TableCell className="whitespace-nowrap text-muted-foreground text-xs">
-                        {formatDate(h.fecha_inicial_evento)}
-                      </TableCell>
-                      <TableCell className="whitespace-nowrap text-muted-foreground text-xs">
-                        {formatDate(h.fecha_cierre_proyectada)}
-                      </TableCell>
-                      <TableCell className="max-w-[140px]">
-                        <p className="truncate text-muted-foreground text-xs" title={h.responsable_plan_accion ?? ''}>
-                          {h.responsable_plan_accion ?? '—'}
-                        </p>
-                        {h.vinculado_via_actividad && (
-                          <span className="inline-block mt-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400 leading-none">
-                            vía act.
-                          </span>
-                        )}
-                      </TableCell>
-                      <TableCell className="whitespace-nowrap">
-                        <StatusBadge value={h.estado_plan_accion} />
-                      </TableCell>
-                      <TableCell>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => { setSelected(h); setActiveTab('info') }}
-                          className="opacity-0 group-hover:opacity-100 w-7 h-7 text-primary hover:bg-primary/10"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          )}
+        {/* Main Tabs */}
+        <Tabs value={activeMainTab} onValueChange={(v) => setActiveMainTab(v as 'hallazgos' | 'actividades')}>
+          <div className="flex items-center justify-between">
+            <TabsList className="h-11">
+              <TabsTrigger value="hallazgos" className="gap-2 px-4">
+                <ClipboardList className="w-4 h-4" />
+                Hallazgos
+                <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-[10px]">
+                  {hallazgosMeta.total}
+                </Badge>
+              </TabsTrigger>
+              <TabsTrigger value="actividades" className="gap-2 px-4">
+                <ListChecks className="w-4 h-4" />
+                Actividades
+                <Badge variant="secondary" className="ml-1 h-5 px-1.5 text-[10px]">
+                  {actividadesMeta.total}
+                </Badge>
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
-          {/* Pagination */}
-          {meta.pages > 1 && (
-            <>
-              <Separator />
-              <div className="flex items-center justify-between px-4 py-3">
-                <p className="text-xs text-muted-foreground">
-                  Página {meta.page} de {meta.pages}
-                </p>
-                <div className="flex items-center gap-1">
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="w-7 h-7"
-                    disabled={page <= 1}
-                    onClick={() => setPage(page - 1)}
-                  >
-                    ‹
-                  </Button>
-                  {(() => {
-                    const window = 2
-                    let start = Math.max(1, page - window)
-                    let end = Math.min(meta.pages, page + window)
-                    if (end - start < window * 2) {
-                      if (start === 1) end = Math.min(meta.pages, start + window * 2)
-                      else start = Math.max(1, end - window * 2)
-                    }
-                    const pages: (number | '...')[] = []
-                    if (start > 1) { pages.push(1); if (start > 2) pages.push('...') }
-                    for (let p = start; p <= end; p++) pages.push(p)
-                    if (end < meta.pages) { if (end < meta.pages - 1) pages.push('...'); pages.push(meta.pages) }
-                    return pages.map((p, i) =>
-                      p === '...' ? (
-                        <span key={`ellipsis-${i}`} className="w-7 h-7 flex items-center justify-center text-xs text-muted-foreground">…</span>
-                      ) : (
-                        <Button
-                          key={p}
-                          variant={p === page ? 'default' : 'ghost'}
-                          size="icon"
-                          className="w-7 h-7 text-xs"
-                          onClick={() => setPage(p)}
-                        >
-                          {p}
-                        </Button>
-                      )
-                    )
-                  })()}
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    className="w-7 h-7"
-                    disabled={page >= meta.pages}
-                    onClick={() => setPage(page + 1)}
-                  >
-                    ›
-                  </Button>
-                </div>
-              </div>
-            </>
-          )}
-        </Card>
+          <div className="mt-4">
+            <FiltersPanel
+              search={search} setSearch={setSearch}
+              estado={estado} setEstado={setEstado}
+              dependencia={dependencia} setDependencia={setDependencia}
+              vicepresidencia={vicepresidencia} setVicepresidencia={setVicepresidencia}
+              responsable={responsable} setResponsable={setResponsable}
+              estadoPlan={estadoPlan} setEstadoPlan={setEstadoPlan}
+              vencido={vencido} setVencido={setVencido}
+              conProrroga={conProrroga} setConProrroga={setConProrroga}
+              fechaCierreDesde={fechaCierreDesde} setFechaCierreDesde={setFechaCierreDesde}
+              fechaCierreHasta={fechaCierreHasta} setFechaCierreHasta={setFechaCierreHasta}
+              fechaInicialDesde={fechaInicialDesde} setFechaInicialDesde={setFechaInicialDesde}
+              fechaInicialHasta={fechaInicialHasta} setFechaInicialHasta={setFechaInicialHasta}
+              estados={estados}
+              dependencias={dependencias}
+              vicepresidencias={vicepresidencias}
+              responsables={responsables}
+              estadosPlan={estadosPlan}
+              hasFilters={hasFilters}
+              clearAll={clearAll}
+              total={activeMainTab === 'hallazgos' ? hallazgosMeta.total : actividadesMeta.total}
+            />
+          </div>
+
+          <TabsContent value="hallazgos" className="mt-4">
+            <Card className="overflow-hidden">
+              <HallazgosTable
+                hallazgos={hallazgos}
+                loading={hallazgosLoading}
+                meta={hallazgosMeta}
+                page={hallazgosPage}
+                setPage={setHallazgosPage}
+                onSelect={(h) => { setSelectedHallazgo(h); setActiveDetailTab('info') }}
+              />
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="actividades" className="mt-4">
+            <Card className="overflow-hidden">
+              <ActividadesTable
+                actividades={actividades}
+                loading={actividadesLoading}
+                meta={actividadesMeta}
+                page={actividadesPage}
+                setPage={setActividadesPage}
+                onSelect={setSelectedActividad}
+              />
+            </Card>
+          </TabsContent>
+        </Tabs>
       </div>
 
-      {/* Detail modal */}
+      {/* Hallazgo Detail Modal */}
       <Modal
-        open={!!selected}
-        onClose={() => setSelected(null)}
-        title={`Hallazgo ${selected?.codigo_del_hallazgo ?? ''}`}
+        open={!!selectedHallazgo}
+        onClose={() => setSelectedHallazgo(null)}
+        title={`Hallazgo ${selectedHallazgo?.codigo_del_hallazgo ?? ''}`}
         size="2xl"
       >
-        {selected && (
+        {selectedHallazgo && (
           <div className="space-y-4">
             <div className="flex border-b border-border">
               <button
-                onClick={() => setActiveTab('info')}
+                onClick={() => setActiveDetailTab('info')}
                 className={cn(
-                  'px-4 py-2 text-sm font-medium border-b-2 transition-colors',
-                  activeTab === 'info'
+                  'px-4 py-2.5 text-sm font-medium border-b-2 transition-colors',
+                  activeDetailTab === 'info'
                     ? 'border-primary text-primary'
                     : 'border-transparent text-muted-foreground hover:text-foreground'
                 )}
@@ -838,10 +1246,10 @@ export default function HallazgosPage() {
                 Información
               </button>
               <button
-                onClick={() => setActiveTab('actividades')}
+                onClick={() => setActiveDetailTab('actividades')}
                 className={cn(
-                  'px-4 py-2 text-sm font-medium border-b-2 transition-colors',
-                  activeTab === 'actividades'
+                  'px-4 py-2.5 text-sm font-medium border-b-2 transition-colors',
+                  activeDetailTab === 'actividades'
                     ? 'border-primary text-primary'
                     : 'border-transparent text-muted-foreground hover:text-foreground'
                 )}
@@ -850,78 +1258,71 @@ export default function HallazgosPage() {
               </button>
             </div>
 
-            {activeTab === 'info' && (
+            {activeDetailTab === 'info' && (
               <div className="space-y-5 max-h-[65vh] overflow-y-auto pr-1">
                 <div>
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">
-                    Descripción
-                  </p>
-                  <p className="text-sm text-foreground bg-muted/50 rounded-lg p-3">
-                    {selected.descripcion ?? '—'}
-                  </p>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Descripción</p>
+                  <p className="text-sm text-foreground bg-muted/50 rounded-lg p-4">{selectedHallazgo.descripcion ?? '—'}</p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-x-6 gap-y-4">
-                  <DetailField label="Código del evento"       value={selected.codigo_del_hallazgo} />
-                  <DetailField label="Estado"                  value={selected.estado} />
-                  <DetailField label="Dependencia ERO"         value={selected.dependencia_reporta_ero} />
-                  <DetailField label="Reportado para"          value={selected.reportado_para} />
-                  <DetailField label="Reportado por"           value={selected.reportado_por} />
-                  <DetailField label="Aplicativo afecta ERO"   value={selected.aplicativo_afecta_ero} />
-                  <DetailField label="Fecha inicial"           value={formatDate(selected.fecha_inicial_evento)} />
-                  <DetailField label="Fecha finalización"      value={formatDate(selected.fecha_finalizacion_evento)} />
-                  <DetailField label="Fecha cierre proyectada" value={formatDate(selected.fecha_cierre_proyectada)} />
-                  <DetailField label="Prórroga"                value={selected.prorroga} />
-                  <DetailField label="Fecha cierre prórroga"   value={formatDate(selected.fecha_cierre_final_prorroga)} />
+                  <DetailField label="Código del hallazgo" value={selectedHallazgo.codigo_del_hallazgo} />
+                  <DetailField label="Estado" value={selectedHallazgo.estado} />
+                  <DetailField label="Dependencia ERO" value={selectedHallazgo.dependencia_reporta_ero} />
+                  <DetailField label="Vicepresidencia" value={selectedHallazgo.vicepresidencia} />
+                  <DetailField label="Reportado para" value={selectedHallazgo.reportado_para} />
+                  <DetailField label="Reportado por" value={selectedHallazgo.reportado_por} />
+                  <DetailField label="Aplicativo afecta ERO" value={selectedHallazgo.aplicativo_afecta_ero} />
+                  <DetailField label="Fecha inicial" value={formatDate(selectedHallazgo.fecha_inicial_evento)} />
+                  <DetailField label="Fecha finalización" value={formatDate(selectedHallazgo.fecha_finalizacion_evento)} />
+                  <DetailField label="Fecha cierre proyectada" value={formatDate(selectedHallazgo.fecha_cierre_proyectada)} />
+                  <DetailField label="Prórroga" value={selectedHallazgo.prorroga} />
+                  <DetailField label="Fecha cierre prórroga" value={formatDate(selectedHallazgo.fecha_cierre_final_prorroga)} />
                 </div>
 
-                <div className="rounded-lg border border-border overflow-hidden">
-                  <div className="bg-muted/50 px-4 py-2.5 border-b border-border">
-                    <p className="text-xs font-semibold text-primary uppercase tracking-wide">
-                      Plan de acción principal
-                    </p>
+                <div className="rounded-xl border border-border overflow-hidden">
+                  <div className="bg-muted/50 px-4 py-3 border-b border-border">
+                    <p className="text-xs font-semibold text-primary uppercase tracking-wider">Plan de acción</p>
                   </div>
                   <div className="p-4 grid grid-cols-2 gap-x-6 gap-y-4">
-                    <DetailField label="ID Plan"            value={selected.id_plan_accion} />
-                    <DetailField label="Estado plan"        value={selected.estado_plan_accion} />
-                    <DetailField label="Responsable plan"   value={selected.responsable_plan_accion} />
-                    <DetailField label="Estado acción"      value={selected.estado_accion} />
-                    <DetailField label="Responsable acción" value={selected.responsable_accion} />
-                    <DetailField label="Nombre del plan"    value={selected.nombre_plan_accion} />
+                    <DetailField label="ID Plan" value={selectedHallazgo.id_plan_accion} />
+                    <DetailField label="Estado plan" value={selectedHallazgo.estado_plan_accion} />
+                    <DetailField label="Responsable plan" value={selectedHallazgo.responsable_plan_accion} />
+                    <DetailField label="Estado acción" value={selectedHallazgo.estado_accion} />
+                    <DetailField label="Responsable acción" value={selectedHallazgo.responsable_accion} />
+                    <DetailField label="Nombre del plan" value={selectedHallazgo.nombre_plan_accion} />
                   </div>
-                  {selected.descripcion_plan_accion && (
+                  {selectedHallazgo.descripcion_plan_accion && (
                     <div className="px-4 pb-4">
-                      <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">
-                        Descripción del plan
-                      </p>
-                      <p className="text-sm text-foreground bg-muted/50 rounded-lg p-3">
-                        {selected.descripcion_plan_accion}
-                      </p>
+                      <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">Descripción del plan</p>
+                      <p className="text-sm text-foreground bg-muted/50 rounded-lg p-3">{selectedHallazgo.descripcion_plan_accion}</p>
                     </div>
                   )}
                 </div>
 
-                {selected.observaciones && (
+                {selectedHallazgo.observaciones && (
                   <div>
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1">
-                      Observaciones
-                    </p>
-                    <p className="text-sm text-foreground bg-muted/50 rounded-lg p-3">
-                      {selected.observaciones}
-                    </p>
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Observaciones</p>
+                    <p className="text-sm text-foreground bg-muted/50 rounded-lg p-4">{selectedHallazgo.observaciones}</p>
                   </div>
                 )}
               </div>
             )}
 
-            {activeTab === 'actividades' && (
+            {activeDetailTab === 'actividades' && (
               <div className="max-h-[65vh] overflow-y-auto pr-1">
-                <ActividadesTab hallazgoId={selected.id} />
+                <ActividadesModalTab hallazgoId={selectedHallazgo.id} />
               </div>
             )}
           </div>
         )}
       </Modal>
+
+      {/* Actividad Detail Modal */}
+      <ActividadDetailModal
+        actividad={selectedActividad}
+        onClose={() => setSelectedActividad(null)}
+      />
     </DashboardShell>
   )
 }

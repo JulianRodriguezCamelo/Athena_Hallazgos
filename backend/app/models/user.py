@@ -11,7 +11,7 @@ class User(db.Model):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
     rol = db.Column(
-        db.Enum("vicepresidente", "directivo", "tecnico", name="rol_enum"),
+        db.Enum("vicepresidente", "directivo", "tecnico", "gestor", name="rol_enum"),
         nullable=False,
         default="tecnico",
     )
