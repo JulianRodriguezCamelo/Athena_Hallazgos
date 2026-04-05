@@ -249,14 +249,8 @@ def prorrogas():
 
 
 def _mis_hallazgos_q(user):
-    """Hallazgos donde el usuario es responsable (plan o acción)."""
-    nombre = user.nombre
-    return Hallazgo.query.filter(
-        db.or_(
-            Hallazgo.responsable_plan_accion.ilike(f"%{nombre}%"),
-            Hallazgo.responsable_accion.ilike(f"%{nombre}%"),
-        )
-    )
+    """Hallazgos del área del directivo (por vicepresidencia o dependencia)."""
+    return _base_query(user)
 
 
 @dashboard_bp.route("/directivo/mis-metricas", methods=["GET"])
@@ -278,12 +272,9 @@ def directivo_mis_metricas():
         Hallazgo.prorroga != "",
     ).count()
 
-    nombre = user.nombre
+    hallazgo_ids = q.with_entities(Hallazgo.id)
     mis_actividades = Actividad.query.filter(
-        db.or_(
-            Actividad.responsable.ilike(f"%{nombre}%"),
-            Actividad.responsable_accion.ilike(f"%{nombre}%"),
-        )
+        Actividad.hallazgo_id.in_(hallazgo_ids)
     ).count()
 
     return jsonify({
@@ -318,15 +309,12 @@ def directivo_mis_hallazgos():
 @jwt_required()
 def directivo_mis_actividades():
     user = get_current_user()
-    nombre = user.nombre
     page = request.args.get("page", 1, type=int)
     per_page = request.args.get("per_page", 10, type=int)
 
+    hallazgo_ids = _mis_hallazgos_q(user).with_entities(Hallazgo.id)
     q = Actividad.query.filter(
-        db.or_(
-            Actividad.responsable.ilike(f"%{nombre}%"),
-            Actividad.responsable_accion.ilike(f"%{nombre}%"),
-        )
+        Actividad.hallazgo_id.in_(hallazgo_ids)
     ).order_by(Actividad.fecha_compromiso.asc())
     pag = q.paginate(page=page, per_page=per_page, error_out=False)
 
