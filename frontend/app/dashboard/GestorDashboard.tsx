@@ -629,7 +629,7 @@ function BitacoraCard({ entries }: { entries: BitacoraEntry[] }) {
   )
 }
 
-// ─── Responsables Críticos ────────────────────────────────────────────────────
+//
 function ResponsablesCriticosCard({ responsables }: { responsables: ResponsableCritico[] }) {
   return (
     <Card>
