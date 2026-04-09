@@ -20,6 +20,7 @@ import {
   Shield,
   FileWarning,
   Zap,
+  ListChecks,
 } from 'lucide-react'
 import { dashboardApi } from '@/lib/api'
 import { useAuth } from '@/lib/auth'
@@ -59,6 +60,7 @@ import {
 // ─── Types ────────────────────────────────────────────────────────────────────
 interface Metrics {
   total_hallazgos: number
+  total_actividades: number
   abiertas: number
   cerradas: number
   cerradas_hoy: number
@@ -255,7 +257,12 @@ export default function DashboardPage() {
             </div>
 
             {/* ── KPI Row 2 ────────────────────────────────────────────────── */}
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+              <KpiCardMini
+                title="Total Actividades"
+                value={metrics?.total_actividades ?? 0}
+                icon={ListChecks}
+              />
               <KpiCardMini
                 title="Con Prórroga"
                 value={metrics?.con_prorroga ?? 0}

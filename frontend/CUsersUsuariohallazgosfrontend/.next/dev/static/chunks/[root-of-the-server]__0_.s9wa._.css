@@ -160,11 +160,8 @@
     --color-emerald-900: #004e3b;
     --color-emerald-950: #002c22;
     --color-blue-100: #dbeafe;
-    --color-blue-400: #54a2ff;
     --color-blue-500: #3080ff;
-    --color-blue-700: #1447e6;
     --color-blue-800: #193cb8;
-    --color-blue-950: #162456;
     --color-purple-100: #f3e8ff;
     --color-purple-500: #ac4bff;
     --color-purple-600: #9810fa;
@@ -268,11 +265,8 @@
       --color-emerald-900: lab(28.8637% -26.9249 5.45986);
       --color-emerald-950: lab(15.0582% -17.9507 2.38369);
       --color-blue-100: lab(92.0301% -2.24757 -11.6453);
-      --color-blue-400: lab(65.0361% -1.42065 -56.9802);
       --color-blue-500: lab(54.1736% 13.3369 -74.6839);
-      --color-blue-700: lab(36.9089% 35.0961 -85.6872);
       --color-blue-800: lab(30.2514% 27.7853 -70.2699);
-      --color-blue-950: lab(15.6723% 8.86232 -32.2945);
       --color-purple-100: lab(93.3333% 6.97437 -9.83434);
       --color-purple-500: lab(52.0183% 66.11 -78.2316);
       --color-purple-600: lab(43.0295% 75.21 -86.5669);
@@ -1181,10 +1175,6 @@
 
   .max-w-\[140px\] {
     max-width: 140px;
-  }
-
-  .max-w-\[160px\] {
-    max-width: 160px;
   }
 
   .max-w-\[calc\(100\%-2rem\)\] {
@@ -2373,10 +2363,6 @@
     padding-inline: calc(var(--spacing) * 6);
   }
 
-  .py-0 {
-    padding-block: calc(var(--spacing) * 0);
-  }
-
   .py-0\.5 {
     padding-block: calc(var(--spacing) * .5);
   }
@@ -2676,10 +2662,6 @@
 
   .text-blue-500 {
     color: var(--color-blue-500);
-  }
-
-  .text-blue-700 {
-    color: var(--color-blue-700);
   }
 
   .text-blue-800 {
@@ -4430,16 +4412,6 @@
     }
   }
 
-  .dark\:bg-blue-950\/40:is(.dark *) {
-    background-color: #16245666;
-  }
-
-  @supports (color: color-mix(in lab, red, red)) {
-    .dark\:bg-blue-950\/40:is(.dark *) {
-      background-color: color-mix(in oklab, var(--color-blue-950) 40%, transparent);
-    }
-  }
-
   .dark\:bg-emerald-900\/30:is(.dark *) {
     background-color: #004e3b4d;
   }
@@ -4566,10 +4538,6 @@
 
   .dark\:text-amber-400:is(.dark *) {
     color: var(--color-amber-400);
-  }
-
-  .dark\:text-blue-400:is(.dark *) {
-    color: var(--color-blue-400);
   }
 
   .dark\:text-emerald-400:is(.dark *) {

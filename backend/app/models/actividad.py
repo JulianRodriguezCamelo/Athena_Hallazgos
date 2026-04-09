@@ -14,8 +14,6 @@ class Actividad(db.Model):
     orden = db.Column(db.Integer, default=0)
 
     # Datos del plan / acción
-    id_plan_accion = db.Column(db.String(100), nullable=True)
-    nombre_plan_accion = db.Column(db.String(300), nullable=True)
     descripcion = db.Column(db.Text, nullable=True)
     estado_plan_accion = db.Column(db.String(100), nullable=True)
     responsable = db.Column(db.String(200), nullable=True)
@@ -34,8 +32,6 @@ class Actividad(db.Model):
             "hallazgo_id": self.hallazgo_id,
             "codigo_del_hallazgo": self.codigo_del_hallazgo,
             "orden": self.orden,
-            "id_plan_accion": self.id_plan_accion,
-            "nombre_plan_accion": self.nombre_plan_accion,
             "descripcion": self.descripcion,
             "estado_plan_accion": self.estado_plan_accion,
             "responsable": self.responsable,
@@ -52,4 +48,4 @@ class Actividad(db.Model):
         }
 
     def __repr__(self):
-        return f"<Actividad hallazgo={self.hallazgo_id} plan={self.id_plan_accion}>"
+        return f"<Actividad hallazgo={self.hallazgo_id} orden={self.orden}>"

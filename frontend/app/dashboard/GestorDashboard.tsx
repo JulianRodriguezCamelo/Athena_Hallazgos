@@ -117,7 +117,6 @@ interface ActividadRow {
   id: number
   hallazgo_id?: number
   codigo_del_hallazgo: string
-  nombre_plan_accion: string | null
   descripcion: string | null
   estado_plan_accion: string | null
   responsable: string | null
@@ -198,7 +197,7 @@ function groupActivitiesByHallazgo(actividades: ActividadRow[], hallazgos: Halla
       grouped.set(codigo, {
         id: act.hallazgo_id ?? act.id,
         codigo,
-        descripcion: act.nombre_plan_accion ?? 'Plan de acción',
+        descripcion: act.descripcion ?? 'Plan de acción',
         estado: act.estado_plan_accion ?? 'Pendiente',
         prioridad: hallazgoInfo?.prioridad ?? 'media',
         dias_restantes: hallazgoInfo?.dias_restantes ?? 0,
@@ -474,7 +473,7 @@ function ChecklistItem({ actividad }: { actividad: ActividadRow }) {
       </div>
       <div className="flex-1 min-w-0">
         <p className={cn('text-sm font-medium leading-tight', isCompleted && 'line-through text-muted-foreground')}>
-          {actividad.descripcion ?? actividad.nombre_plan_accion ?? 'Actividad sin descripción'}
+          {actividad.descripcion ?? 'Actividad sin descripción'}
         </p>
         <div className="flex flex-wrap items-center gap-2 mt-1.5">
           {estadoBadge(actividad.estado_accion)}

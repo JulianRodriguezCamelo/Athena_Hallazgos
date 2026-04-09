@@ -48,6 +48,10 @@ def metrics():
     q = _base_query(user)
 
     total = q.count()
+    hallazgo_ids = [h.id for h in q.with_entities(Hallazgo.id)]
+    total_actividades = Actividad.query.filter(
+        Actividad.hallazgo_id.in_(hallazgo_ids)
+    ).count() if hallazgo_ids else 0
     abiertas = q.filter(Hallazgo.estado.ilike("%abierto%")).count()
     cerradas = q.filter(Hallazgo.estado.ilike("%cerrado%")).count()
 
@@ -70,6 +74,7 @@ def metrics():
 
     return jsonify({
         "total_hallazgos": total,
+        "total_actividades": total_actividades,
         "abiertas": abiertas,
         "cerradas": cerradas,
         "cerradas_hoy": cerradas_hoy,

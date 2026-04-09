@@ -1,6 +1,5 @@
 import re
 from datetime import datetime
-from collections import defaultdict
 import pandas as pd
 
 
@@ -8,11 +7,10 @@ import pandas as pd
 COLUMN_MAP = {
     # ── Identificación ────────────────────────────────────────────────────────
     r"c[oó]digo.*evento":              "codigo_del_hallazgo",
-    r"^num(ero)?$":                    "codigo_del_hallazgo", # columna "Num"
+    r"^num(ero)?$":                    "codigo_del_hallazgo",  # columna "Num"
 
     # ── Descripción / tipo ────────────────────────────────────────────────────
     r"^descripci[oó]n$":               "descripcion",
-    r"^tipo$":                         "descripcion",         # columna "Tipo" → descripcion
 
     # ── Vicepresidencia ───────────────────────────────────────────────────────
     r"vicepresidencia":                "vicepresidencia",
@@ -47,9 +45,7 @@ COLUMN_MAP = {
     r"sistema.*gesti[oó]n":            "aplicativo_afecta_ero",  # "Sistema Gestión"
 
     # ── Plan de acción ────────────────────────────────────────────────────────
-    r"id.*plan.*acci[oó]n":            "id_plan_accion",
-    r"nombre.*plan.*acci[oó]n":        "nombre_plan_accion",
-    r"descripci[oó]n.*plan.*acci[oó]n":"descripcion_plan_accion",
+    r"descripci[oó]n.*plan.*acci[oó]n": "descripcion_plan_accion",
     r"^actividad$":                    "descripcion_plan_accion",  # "Actividad"
     r"estado.*plan.*acci[oó]n":        "estado_plan_accion",
     r"^eficacia.*global$":             "estado_plan_accion",   # "Eficacia Global"
@@ -64,7 +60,6 @@ COLUMN_MAP = {
     r"observaci[oó]n|observaciones":   "observaciones",
     r"^seguimiento$":                  "observaciones",        # "Seguimiento"
     r"causa.*raiz":                    "observaciones",        # "Causa Raiz"
-    r"^indicador$":                    "observaciones",        # "Indicador"
 }
 
 DATE_FIELDS = {
@@ -74,26 +69,12 @@ DATE_FIELDS = {
     "fecha_cierre_final_prorroga",
 }
 
-# Campos de la actividad (tomados del record parseado)
-ACTIVIDAD_FIELDS = {
-    "id_plan_accion",
-    "nombre_plan_accion",
-    "descripcion_plan_accion",
-    "estado_plan_accion",
-    "responsable_plan_accion",
-    "estado_accion",
-    "responsable_accion",
-    "fecha_cierre_proyectada",
-    "prorroga",
-    "fecha_cierre_final_prorroga",
-    "observaciones",
-}
-
-# Campos que identifican al hallazgo (no deben copiarse como actividad pura)
-HALLAZGO_ONLY_FIELDS = {
-    "codigo_del_hallazgo", "descripcion", "fecha_inicial_evento",
-    "fecha_finalizacion_evento", "vicepresidencia", "dependencia_reporta_ero",
-    "reportado_para", "estado", "reportado_por", "aplicativo_afecta_ero",
+# Campos que pertenecen al hallazgo "padre" (se propagan por forward-fill)
+HALLAZGO_FIELDS = {
+    "codigo_del_hallazgo", "descripcion", "vicepresidencia",
+    "dependencia_reporta_ero", "fecha_inicial_evento",
+    "fecha_finalizacion_evento", "estado", "reportado_para",
+    "reportado_por", "aplicativo_afecta_ero",
 }
 
 
@@ -146,20 +127,11 @@ def _clean(value) -> str | None:
     return s if s and s.lower() not in ("nan", "none", "nat") else None
 
 
-def _is_data_row(row: pd.Series, col_mapping: dict) -> bool:
-    """Retorna False si la fila es una fila de sub-encabezado (>80% valores nulos)."""
-    values = [row.get(col) for col in col_mapping]
-    non_null = sum(1 for v in values if _clean(v) is not None)
-    return non_null > max(1, len(values) * 0.2)
-
-
 def _record_to_actividad(record: dict, codigo_del_hallazgo: str | None, orden: int = 1) -> dict:
     """Convierte un record de Excel en un dict de actividad."""
     return {
         "codigo_del_hallazgo": codigo_del_hallazgo,
         "orden": orden,
-        "id_plan_accion": record.get("id_plan_accion"),
-        "nombre_plan_accion": record.get("nombre_plan_accion"),
         "descripcion": record.get("descripcion_plan_accion"),
         "estado_plan_accion": record.get("estado_plan_accion"),
         "responsable": record.get("responsable_plan_accion"),
@@ -175,48 +147,92 @@ def _record_to_actividad(record: dict, codigo_del_hallazgo: str | None, orden: i
 def _actividad_tiene_datos(act: dict) -> bool:
     """Retorna True si la actividad tiene al menos un campo relevante con valor."""
     campos = {
-        "id_plan_accion", "nombre_plan_accion", "descripcion",
-        "estado_plan_accion", "responsable", "estado_accion",
-        "responsable_accion", "fecha_compromiso", "observaciones",
+        "descripcion", "estado_plan_accion", "responsable",
+        "estado_accion", "responsable_accion", "fecha_compromiso", "observaciones",
     }
     return any(act.get(c) for c in campos)
 
 
-def parse_excel(file_path: str) -> tuple[list[dict], list[dict], list[str]]:
+def _is_header_like(row: pd.Series) -> bool:
+    """Retorna True si la fila parece ser una fila de encabezado (mayoría de valores no numéricos)."""
+    vals = [str(v).strip() for v in row if str(v).strip()]
+    if not vals:
+        return False
+    numeric_count = sum(
+        1 for v in vals
+        if v.replace(".", "").replace("-", "").replace("/", "").isdigit()
+    )
+    return numeric_count < len(vals) * 0.5
+
+
+def _read_all_sheets(file_path: str) -> tuple[pd.DataFrame | None, str | None]:
     """
-    Parsea el archivo Excel.
-    Retorna (hallazgos, actividades, errores).
-    - Agrupa filas por codigo_del_hallazgo.
-    - La primera fila de cada grupo = hallazgo.
-    - Las filas adicionales del mismo codigo_del_hallazgo = actividades.
-    - Filas sin codigo_del_hallazgo: cada una es un hallazgo independiente.
+    Lee todas las hojas del Excel con header=None para manejar doble encabezado.
+    Detecta si hay una segunda fila de encabezado y las combina.
+    Retorna (df, error_str). Si falla, retorna (None, mensaje_error).
     """
     try:
-        df = pd.read_excel(file_path, dtype=str, header=0)
+        sheets: dict = pd.read_excel(file_path, dtype=str, header=None, sheet_name=None)
     except Exception as e:
-        return [], [], [f"No se pudo leer el archivo: {str(e)}"]
+        return None, f"No se pudo leer el archivo: {str(e)}"
 
-    # Limpiar filas y columnas completamente vacías
-    df = df.dropna(how="all").reset_index(drop=True)
-    df = df.loc[:, df.columns.notna()]
-    df.columns = [str(c) for c in df.columns]
+    frames: list[pd.DataFrame] = []
+    for sheet_name, df_sheet in sheets.items():
+        if df_sheet.empty:
+            continue
 
-    # FIX 1: Recuperar sub-encabezados de columnas sin nombre (Unnamed)
-    # Cuando el Excel tiene doble fila de encabezado, pandas deja las columnas
-    # secundarias como "Unnamed: N". La primera fila de datos puede contener
-    # los nombres reales de esas columnas (ej: "Responsable", "Fecha Compromiso").
-    unnamed_cols = [c for c in df.columns if c.startswith("Unnamed:")]
-    if unnamed_cols and len(df) > 0:
-        first_row = df.iloc[0]
-        renamed = {}
-        for col in unnamed_cols:
-            val = _clean(first_row.get(col))
-            # Solo renombrar si el valor parece un encabezado (texto, no número ni fecha)
-            if val and not val.replace(".", "").replace("-", "").replace("/", "").isdigit():
-                renamed[col] = val
-        if renamed:
-            df = df.rename(columns=renamed)
-            df = df.iloc[1:].reset_index(drop=True)
+        df_sheet = df_sheet.dropna(how="all").reset_index(drop=True)
+
+        if len(df_sheet) < 2:
+            continue
+
+        row0 = df_sheet.iloc[0].fillna("")
+        row1 = df_sheet.iloc[1].fillna("")
+
+        if _is_header_like(row1):
+            # Doble encabezado: combinar filas 0 y 1
+            # Preferir fila 0; usar fila 1 solo donde fila 0 esté vacía o sea "Unnamed"
+            combined_headers = []
+            for c0, c1 in zip(row0, row1):
+                c0s = str(c0).strip()
+                c1s = str(c1).strip()
+                if c0s and not c0s.startswith("Unnamed"):
+                    combined_headers.append(c0s)
+                elif c1s and not c1s.startswith("Unnamed"):
+                    combined_headers.append(c1s)
+                else:
+                    combined_headers.append(c0s or c1s or "")
+            df_sheet.columns = combined_headers
+            df_sheet = df_sheet.iloc[2:].reset_index(drop=True)
+        else:
+            # Encabezado simple
+            df_sheet.columns = [str(c).strip() for c in row0]
+            df_sheet = df_sheet.iloc[1:].reset_index(drop=True)
+
+        df_sheet = df_sheet.dropna(how="all")
+        frames.append(df_sheet)
+
+    if not frames:
+        return None, "El archivo no contiene hojas con datos."
+
+    df_all = pd.concat(frames, ignore_index=True, sort=False)
+    return df_all, None
+
+
+def parse_excel(file_path: str) -> tuple[list[dict], list[tuple[int, dict]], list[str]]:
+    """
+    Parsea el archivo Excel (todas las hojas) con soporte para estructura jerárquica.
+
+    El Excel tiene filas "padre" (hallazgo + primera actividad) seguidas de filas
+    "hijas" (actividades adicionales con NaN en columnas del hallazgo). Se aplica
+    forward-fill para propagar los datos del padre a las filas hijas antes de parsear.
+
+    Retorna (hallazgos, actividades, errores).
+    - actividades = list[(hallazgo_index, actividad_dict)], enlazadas por índice posicional.
+    """
+    df, read_error = _read_all_sheets(file_path)
+    if read_error:
+        return [], [], [read_error]
 
     col_mapping = _map_columns(list(df.columns))
 
@@ -226,18 +242,28 @@ def parse_excel(file_path: str) -> tuple[list[dict], list[dict], list[str]]:
             "Verifique que la primera fila contenga los encabezados."
         ]
 
-    # Parsear todas las filas a records planos
-    flat_records: list[tuple[int, dict]] = []  # (row_num, record)
+    # ── Forward-fill de campos del hallazgo padre ─────────────────────────────
+    # Propagar valores de hallazgo hacia filas hijas (que tienen NaN en esas columnas)
+    hallazgo_cols = [col for col, field in col_mapping.items() if field in HALLAZGO_FIELDS]
+    for col in hallazgo_cols:
+        last_val = None
+        for idx in df.index:
+            val = _clean(df.at[idx, col])
+            if val is not None:
+                last_val = val
+            elif last_val is not None:
+                df.at[idx, col] = last_val
+
+    hallazgos: list[dict] = []
+    actividades_data: list[tuple[int, dict]] = []
+    seen_codigos: dict[str, int] = {}
     errors: list[str] = []
 
     for idx, row in df.iterrows():
-        row_num = int(idx) + 2  # +2: encabezado + índice base 0
+        row_num = int(idx) + 2  # +2: encabezados + índice base 0
 
-        if not _is_data_row(row, col_mapping):
-            continue
-
-        record: dict = {}
         try:
+            record: dict = {}
             for excel_col, model_field in col_mapping.items():
                 raw = row.get(excel_col)
                 if model_field in DATE_FIELDS:
@@ -248,38 +274,31 @@ def parse_excel(file_path: str) -> tuple[list[dict], list[dict], list[str]]:
                         record[model_field] = f"{record[model_field]} | {val}"
                     else:
                         record[model_field] = val
-            flat_records.append((row_num, record))
-        except Exception as e:
-            errors.append(f"Fila {row_num}: {str(e)}")
 
-    # Agrupar por codigo_del_hallazgo
-    # Orden preservado: dict en Python 3.7+
-    groups: dict[str, list[dict]] = {}  # codigo_del_hallazgo -> [records]
-    no_code_records: list[dict] = []    # filas sin codigo_del_hallazgo
+            # Descartar filas completamente vacías
+            if not any(v for v in record.values() if v is not None):
+                continue
 
-    for _row_num, record in flat_records:
-        codigo = record.get("codigo_del_hallazgo")
-        if not codigo:
-            no_code_records.append(record)
-        else:
-            if codigo not in groups:
-                groups[codigo] = []
-            groups[codigo].append(record)
+            codigo = record.get("codigo_del_hallazgo")
 
-    hallazgos: list[dict] = []
-    actividades_data: list[tuple[str, dict]] = []  # (codigo_del_hallazgo, actividad_dict)
+            if codigo and codigo not in seen_codigos:
+                # Nueva fila padre: crear hallazgo
+                hallazgo_idx = len(hallazgos)
+                seen_codigos[codigo] = hallazgo_idx
+                hallazgos.append(record)
+            elif codigo:
+                # Fila hija: hallazgo ya existe
+                hallazgo_idx = seen_codigos[codigo]
+            else:
+                # Sin código: no se puede enlazar
+                continue
 
-    # Grupos con codigo_del_hallazgo: primer registro = hallazgo, todos los registros = actividades
-    # FIX 2: La primera fila también puede contener datos de la primera actividad,
-    # por eso se itera desde records[0] y no desde records[1:].
-    for codigo, records in groups.items():
-        hallazgos.append(records[0])
-        for orden, record in enumerate(records, start=1):
+            orden = sum(1 for h_idx, _ in actividades_data if h_idx == hallazgo_idx) + 1
             act = _record_to_actividad(record, codigo, orden)
             if _actividad_tiene_datos(act):
-                actividades_data.append((codigo, act))
+                actividades_data.append((hallazgo_idx, act))
 
-    # Filas sin codigo_del_hallazgo: cada una es hallazgo independiente
-    hallazgos.extend(no_code_records)
+        except Exception as e:
+            errors.append(f"Fila {row_num}: {str(e)}")
 
     return hallazgos, actividades_data, errors

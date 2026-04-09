@@ -64,30 +64,30 @@ def upload_excel():
     hallazgo_records, actividades_data, errors = parse_excel(save_path)
 
     exitosos = 0
-    # codigo_del_hallazgo -> hallazgo_id para vincular actividades
-    codigo_to_hallazgo: dict[str, int] = {}
+    # Lista de IDs de hallazgos en orden posicional para vincular actividades
+    hallazgo_id_by_index: list[int | None] = []
 
     for record in hallazgo_records:
         try:
             hallazgo = Hallazgo(upload_id=history.id, **record)
             db.session.add(hallazgo)
             db.session.flush()  # Obtener el ID generado
-            codigo = record.get("codigo_del_hallazgo")
-            if codigo:
-                codigo_to_hallazgo[codigo] = hallazgo.id
+            hallazgo_id_by_index.append(hallazgo.id)
             exitosos += 1
         except Exception as e:
             errors.append(f"Error al guardar hallazgo: {str(e)}")
+            hallazgo_id_by_index.append(None)
 
-    # Guardar actividades vinculadas al hallazgo correspondiente
-    for codigo_del_hallazgo, actividad_dict in actividades_data:
-        hallazgo_id = codigo_to_hallazgo.get(codigo_del_hallazgo)
-        if hallazgo_id:
-            try:
-                actividad = Actividad(hallazgo_id=hallazgo_id, **actividad_dict)
-                db.session.add(actividad)
-            except Exception as e:
-                errors.append(f"Error al guardar actividad: {str(e)}")
+    # Guardar actividades vinculadas por índice posicional al hallazgo correspondiente
+    for hallazgo_idx, actividad_dict in actividades_data:
+        if hallazgo_idx < len(hallazgo_id_by_index):
+            hallazgo_id = hallazgo_id_by_index[hallazgo_idx]
+            if hallazgo_id:
+                try:
+                    actividad = Actividad(hallazgo_id=hallazgo_id, **actividad_dict)
+                    db.session.add(actividad)
+                except Exception as e:
+                    errors.append(f"Error al guardar actividad: {str(e)}")
 
     history.total_registros = len(hallazgo_records)
     history.registros_exitosos = exitosos

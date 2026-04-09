@@ -867,7 +867,7 @@ function groupActivitiesByHallazgo(actividades) {
             grouped.set(codigo, {
                 id: act.hallazgo_id ?? act.id,
                 codigo,
-                descripcion: act.nombre_plan_accion ?? 'Plan de acción',
+                descripcion: act.descripcion ?? 'Plan de acción',
                 estado: act.estado_plan_accion ?? 'Pendiente',
                 actividades: [],
                 completadas: 0,
@@ -890,7 +890,7 @@ function estadoBadge(estado) {
         children: "—"
     }, void 0, false, {
         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-        lineNumber: 139,
+        lineNumber: 138,
         columnNumber: 23
     }, this);
     const lower = estado.toLowerCase();
@@ -899,7 +899,7 @@ function estadoBadge(estado) {
         children: estado
     }, void 0, false, {
         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-        lineNumber: 142,
+        lineNumber: 141,
         columnNumber: 12
     }, this);
     if (lower.includes('vencido') || lower.includes('atraso')) return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$Badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
@@ -907,7 +907,7 @@ function estadoBadge(estado) {
         children: estado
     }, void 0, false, {
         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-        lineNumber: 144,
+        lineNumber: 143,
         columnNumber: 12
     }, this);
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$Badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
@@ -915,7 +915,7 @@ function estadoBadge(estado) {
         children: estado
     }, void 0, false, {
         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-        lineNumber: 145,
+        lineNumber: 144,
         columnNumber: 10
     }, this);
 }
@@ -951,12 +951,12 @@ function Pagination({ page, pages, onChange }) {
                     className: "w-3.5 h-3.5"
                 }, void 0, false, {
                     fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                    lineNumber: 165,
+                    lineNumber: 164,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                lineNumber: 164,
+                lineNumber: 163,
                 columnNumber: 7
             }, this),
             nums.map((n, i)=>n === '...' ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -964,7 +964,7 @@ function Pagination({ page, pages, onChange }) {
                     children: "…"
                 }, `e-${i}`, false, {
                     fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                    lineNumber: 169,
+                    lineNumber: 168,
                     columnNumber: 11
                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
                     variant: n === page ? 'default' : 'ghost',
@@ -974,7 +974,7 @@ function Pagination({ page, pages, onChange }) {
                     children: n
                 }, n, false, {
                     fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                    lineNumber: 171,
+                    lineNumber: 170,
                     columnNumber: 11
                 }, this)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -987,18 +987,18 @@ function Pagination({ page, pages, onChange }) {
                     className: "w-3.5 h-3.5"
                 }, void 0, false, {
                     fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                    lineNumber: 177,
+                    lineNumber: 176,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                lineNumber: 176,
+                lineNumber: 175,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-        lineNumber: 163,
+        lineNumber: 162,
         columnNumber: 5
     }, this);
 }
@@ -1011,7 +1011,7 @@ function EmptyChart() {
                 className: "h-7 w-7 mb-2 opacity-30"
             }, void 0, false, {
                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                lineNumber: 186,
+                lineNumber: 185,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1019,13 +1019,13 @@ function EmptyChart() {
                 children: "Sin datos"
             }, void 0, false, {
                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                lineNumber: 187,
+                lineNumber: 186,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-        lineNumber: 185,
+        lineNumber: 184,
         columnNumber: 5
     }, this);
 }
@@ -1059,7 +1059,7 @@ function KpiTile({ title, value, icon: Icon, variant = 'default', trend }) {
                                 children: title
                             }, void 0, false, {
                                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                lineNumber: 217,
+                                lineNumber: 216,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1070,7 +1070,7 @@ function KpiTile({ title, value, icon: Icon, variant = 'default', trend }) {
                                         children: value
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                        lineNumber: 219,
+                                        lineNumber: 218,
                                         columnNumber: 15
                                     }, this),
                                     trend !== undefined && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1080,13 +1080,13 @@ function KpiTile({ title, value, icon: Icon, variant = 'default', trend }) {
                                                 className: "h-3 w-3 mr-0.5"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                                lineNumber: 222,
+                                                lineNumber: 221,
                                                 columnNumber: 32
                                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$trending$2d$down$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TrendingDown$3e$__["TrendingDown"], {
                                                 className: "h-3 w-3 mr-0.5"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                                lineNumber: 222,
+                                                lineNumber: 221,
                                                 columnNumber: 76
                                             }, this),
                                             Math.abs(trend),
@@ -1094,19 +1094,19 @@ function KpiTile({ title, value, icon: Icon, variant = 'default', trend }) {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                        lineNumber: 221,
+                                        lineNumber: 220,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                lineNumber: 218,
+                                lineNumber: 217,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                        lineNumber: 216,
+                        lineNumber: 215,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1115,28 +1115,28 @@ function KpiTile({ title, value, icon: Icon, variant = 'default', trend }) {
                             className: "h-5 w-5"
                         }, void 0, false, {
                             fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                            lineNumber: 229,
+                            lineNumber: 228,
                             columnNumber: 13
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                        lineNumber: 228,
+                        lineNumber: 227,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                lineNumber: 215,
+                lineNumber: 214,
                 columnNumber: 9
             }, this)
         }, void 0, false, {
             fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-            lineNumber: 214,
+            lineNumber: 213,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-        lineNumber: 213,
+        lineNumber: 212,
         columnNumber: 5
     }, this);
 }
@@ -1153,7 +1153,7 @@ function EnhancedDonutCard({ title, description, data, centerLabel, centerSubLab
                         children: title
                     }, void 0, false, {
                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                        lineNumber: 247,
+                        lineNumber: 246,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
@@ -1161,30 +1161,30 @@ function EnhancedDonutCard({ title, description, data, centerLabel, centerSubLab
                         children: description
                     }, void 0, false, {
                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                        lineNumber: 248,
+                        lineNumber: 247,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                lineNumber: 246,
+                lineNumber: 245,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(EmptyChart, {}, void 0, false, {
                     fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                    lineNumber: 250,
+                    lineNumber: 249,
                     columnNumber: 20
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                lineNumber: 250,
+                lineNumber: 249,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-        lineNumber: 245,
+        lineNumber: 244,
         columnNumber: 5
     }, this);
     const total = data.reduce((acc, d)=>acc + d.value, 0);
@@ -1206,7 +1206,7 @@ function EnhancedDonutCard({ title, description, data, centerLabel, centerSubLab
                         children: title
                     }, void 0, false, {
                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                        lineNumber: 263,
+                        lineNumber: 262,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
@@ -1214,13 +1214,13 @@ function EnhancedDonutCard({ title, description, data, centerLabel, centerSubLab
                         children: description
                     }, void 0, false, {
                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                        lineNumber: 264,
+                        lineNumber: 263,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                lineNumber: 262,
+                lineNumber: 261,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -1236,12 +1236,12 @@ function EnhancedDonutCard({ title, description, data, centerLabel, centerSubLab
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$chart$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ChartTooltip"], {
                                             content: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$chart$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ChartTooltipContent"], {}, void 0, false, {
                                                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                                lineNumber: 270,
+                                                lineNumber: 269,
                                                 columnNumber: 38
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                            lineNumber: 270,
+                                            lineNumber: 269,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$polar$2f$Pie$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Pie"], {
@@ -1259,23 +1259,23 @@ function EnhancedDonutCard({ title, description, data, centerLabel, centerSubLab
                                                     fill: CHART_COLORS_HEX[i % CHART_COLORS_HEX.length]
                                                 }, i, false, {
                                                     fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                                    lineNumber: 277,
+                                                    lineNumber: 276,
                                                     columnNumber: 37
                                                 }, this))
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                            lineNumber: 271,
+                                            lineNumber: 270,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                    lineNumber: 269,
+                                    lineNumber: 268,
                                     columnNumber: 13
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                lineNumber: 268,
+                                lineNumber: 267,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1286,7 +1286,7 @@ function EnhancedDonutCard({ title, description, data, centerLabel, centerSubLab
                                         children: centerLabel
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                        lineNumber: 282,
+                                        lineNumber: 281,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1294,19 +1294,19 @@ function EnhancedDonutCard({ title, description, data, centerLabel, centerSubLab
                                         children: centerSubLabel
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                        lineNumber: 283,
+                                        lineNumber: 282,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                lineNumber: 281,
+                                lineNumber: 280,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                        lineNumber: 267,
+                        lineNumber: 266,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1321,7 +1321,7 @@ function EnhancedDonutCard({ title, description, data, centerLabel, centerSubLab
                                         }
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                        lineNumber: 289,
+                                        lineNumber: 288,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1329,7 +1329,7 @@ function EnhancedDonutCard({ title, description, data, centerLabel, centerSubLab
                                         children: d.name
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                        lineNumber: 290,
+                                        lineNumber: 289,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1340,30 +1340,30 @@ function EnhancedDonutCard({ title, description, data, centerLabel, centerSubLab
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                        lineNumber: 291,
+                                        lineNumber: 290,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, d.name, true, {
                                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                lineNumber: 288,
+                                lineNumber: 287,
                                 columnNumber: 13
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                        lineNumber: 286,
+                        lineNumber: 285,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                lineNumber: 266,
+                lineNumber: 265,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-        lineNumber: 261,
+        lineNumber: 260,
         columnNumber: 5
     }, this);
 }
@@ -1382,24 +1382,24 @@ function ChecklistItem({ actividad }) {
                     className: "h-4 w-4 text-green-500"
                 }, void 0, false, {
                     fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                    lineNumber: 315,
+                    lineNumber: 314,
                     columnNumber: 13
                 }, this) : isOverdue ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$triangle$2d$alert$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__AlertTriangle$3e$__["AlertTriangle"], {
                     className: "h-4 w-4 text-destructive"
                 }, void 0, false, {
                     fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                    lineNumber: 317,
+                    lineNumber: 316,
                     columnNumber: 15
                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Circle$3e$__["Circle"], {
                     className: "h-4 w-4 text-muted-foreground"
                 }, void 0, false, {
                     fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                    lineNumber: 318,
+                    lineNumber: 317,
                     columnNumber: 15
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                lineNumber: 313,
+                lineNumber: 312,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1407,10 +1407,10 @@ function ChecklistItem({ actividad }) {
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                         className: (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$utils$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["cn"])('text-sm font-medium leading-tight', isCompleted && 'line-through text-muted-foreground'),
-                        children: actividad.descripcion ?? actividad.nombre_plan_accion ?? 'Actividad sin descripción'
+                        children: actividad.descripcion ?? 'Actividad sin descripción'
                     }, void 0, false, {
                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                        lineNumber: 322,
+                        lineNumber: 321,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1422,7 +1422,7 @@ function ChecklistItem({ actividad }) {
                                 children: actividad.responsable_accion
                             }, void 0, false, {
                                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                lineNumber: 328,
+                                lineNumber: 327,
                                 columnNumber: 13
                             }, this),
                             actividad.fecha_compromiso && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -1432,32 +1432,32 @@ function ChecklistItem({ actividad }) {
                                         className: "h-3 w-3"
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                        lineNumber: 332,
+                                        lineNumber: 331,
                                         columnNumber: 15
                                     }, this),
                                     (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$utils$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["formatDateTime"])(actividad.fecha_compromiso)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                lineNumber: 331,
+                                lineNumber: 330,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                        lineNumber: 325,
+                        lineNumber: 324,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                lineNumber: 321,
+                lineNumber: 320,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-        lineNumber: 307,
+        lineNumber: 306,
         columnNumber: 5
     }, this);
 }
@@ -1489,7 +1489,7 @@ function HallazgoChecklistCard({ hallazgo }) {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                        lineNumber: 356,
+                                        lineNumber: 355,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1503,14 +1503,14 @@ function HallazgoChecklistCard({ hallazgo }) {
                                                         children: hallazgo.codigo
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                                        lineNumber: 366,
+                                                        lineNumber: 365,
                                                         columnNumber: 17
                                                     }, this),
                                                     estadoBadge(hallazgo.estado)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                                lineNumber: 365,
+                                                lineNumber: 364,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1519,19 +1519,19 @@ function HallazgoChecklistCard({ hallazgo }) {
                                                 children: hallazgo.descripcion
                                             }, void 0, false, {
                                                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                                lineNumber: 369,
+                                                lineNumber: 368,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                        lineNumber: 364,
+                                        lineNumber: 363,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                lineNumber: 355,
+                                lineNumber: 354,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1545,7 +1545,7 @@ function HallazgoChecklistCard({ hallazgo }) {
                                                 children: "Actividades"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                                lineNumber: 376,
+                                                lineNumber: 375,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1557,32 +1557,32 @@ function HallazgoChecklistCard({ hallazgo }) {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                                lineNumber: 377,
+                                                lineNumber: 376,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                        lineNumber: 375,
+                                        lineNumber: 374,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$down$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronDown$3e$__["ChevronDown"], {
                                         className: (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$utils$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["cn"])('h-4 w-4 text-muted-foreground transition-transform', isOpen && 'rotate-180')
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                        lineNumber: 379,
+                                        lineNumber: 378,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                lineNumber: 374,
+                                lineNumber: 373,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                        lineNumber: 354,
+                        lineNumber: 353,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$progress$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Progress"], {
@@ -1590,20 +1590,20 @@ function HallazgoChecklistCard({ hallazgo }) {
                         className: "mt-3 h-1.5"
                     }, void 0, false, {
                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                        lineNumber: 382,
+                        lineNumber: 381,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                lineNumber: 349,
+                lineNumber: 348,
                 columnNumber: 7
             }, this),
             isOpen && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Fragment"], {
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$separator$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Separator"], {}, void 0, false, {
                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                        lineNumber: 386,
+                        lineNumber: 385,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -1613,7 +1613,7 @@ function HallazgoChecklistCard({ hallazgo }) {
                             children: "Sin actividades registradas"
                         }, void 0, false, {
                             fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                            lineNumber: 389,
+                            lineNumber: 388,
                             columnNumber: 15
                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                             className: "space-y-2",
@@ -1621,17 +1621,17 @@ function HallazgoChecklistCard({ hallazgo }) {
                                     actividad: actividad
                                 }, actividad.id ?? idx, false, {
                                     fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                    lineNumber: 393,
+                                    lineNumber: 392,
                                     columnNumber: 19
                                 }, this))
                         }, void 0, false, {
                             fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                            lineNumber: 391,
+                            lineNumber: 390,
                             columnNumber: 15
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                        lineNumber: 387,
+                        lineNumber: 386,
                         columnNumber: 11
                     }, this)
                 ]
@@ -1639,7 +1639,7 @@ function HallazgoChecklistCard({ hallazgo }) {
         ]
     }, void 0, true, {
         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-        lineNumber: 348,
+        lineNumber: 347,
         columnNumber: 5
     }, this);
 }
@@ -1771,7 +1771,7 @@ function DirectivoDashboard() {
                             strokeWidth: "4"
                         }, void 0, false, {
                             fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                            lineNumber: 491,
+                            lineNumber: 490,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
@@ -1780,20 +1780,20 @@ function DirectivoDashboard() {
                             d: "M4 12a8 8 0 018-8v8z"
                         }, void 0, false, {
                             fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                            lineNumber: 492,
+                            lineNumber: 491,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                    lineNumber: 490,
+                    lineNumber: 489,
                     columnNumber: 9
                 }, this),
                 "Cargando…"
             ]
         }, void 0, true, {
             fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-            lineNumber: 489,
+            lineNumber: 488,
             columnNumber: 7
         }, this);
     }
@@ -1810,7 +1810,7 @@ function DirectivoDashboard() {
                                 children: "Mi Panel"
                             }, void 0, false, {
                                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                lineNumber: 505,
+                                lineNumber: 504,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -1822,13 +1822,13 @@ function DirectivoDashboard() {
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                lineNumber: 506,
+                                lineNumber: 505,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                        lineNumber: 504,
+                        lineNumber: 503,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -1842,20 +1842,20 @@ function DirectivoDashboard() {
                                 className: (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$utils$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["cn"])('h-3.5 w-3.5', refreshing && 'animate-spin')
                             }, void 0, false, {
                                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                lineNumber: 511,
+                                lineNumber: 510,
                                 columnNumber: 11
                             }, this),
                             "Actualizar"
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                        lineNumber: 510,
+                        lineNumber: 509,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                lineNumber: 503,
+                lineNumber: 502,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1867,7 +1867,7 @@ function DirectivoDashboard() {
                         icon: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$layers$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Layers$3e$__["Layers"]
                     }, void 0, false, {
                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                        lineNumber: 518,
+                        lineNumber: 517,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(KpiTile, {
@@ -1877,7 +1877,7 @@ function DirectivoDashboard() {
                         variant: "warning"
                     }, void 0, false, {
                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                        lineNumber: 519,
+                        lineNumber: 518,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(KpiTile, {
@@ -1887,7 +1887,7 @@ function DirectivoDashboard() {
                         variant: "danger"
                     }, void 0, false, {
                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                        lineNumber: 520,
+                        lineNumber: 519,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(KpiTile, {
@@ -1896,7 +1896,7 @@ function DirectivoDashboard() {
                         icon: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$calendar$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Calendar$3e$__["Calendar"]
                     }, void 0, false, {
                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                        lineNumber: 521,
+                        lineNumber: 520,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(KpiTile, {
@@ -1905,7 +1905,7 @@ function DirectivoDashboard() {
                         icon: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$activity$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Activity$3e$__["Activity"]
                     }, void 0, false, {
                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                        lineNumber: 522,
+                        lineNumber: 521,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(KpiTile, {
@@ -1915,13 +1915,13 @@ function DirectivoDashboard() {
                         variant: cumplimiento >= 70 ? 'success' : 'danger'
                     }, void 0, false, {
                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                        lineNumber: 523,
+                        lineNumber: 522,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                lineNumber: 517,
+                lineNumber: 516,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -1935,7 +1935,7 @@ function DirectivoDashboard() {
                         centerSubLabel: "Total"
                     }, void 0, false, {
                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                        lineNumber: 528,
+                        lineNumber: 527,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(EnhancedDonutCard, {
@@ -1946,7 +1946,7 @@ function DirectivoDashboard() {
                         centerSubLabel: "Planes"
                     }, void 0, false, {
                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                        lineNumber: 535,
+                        lineNumber: 534,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -1964,7 +1964,7 @@ function DirectivoDashboard() {
                                                     children: "Índice de Cierre"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                                    lineNumber: 548,
+                                                    lineNumber: 547,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
@@ -1972,31 +1972,31 @@ function DirectivoDashboard() {
                                                     children: "Mis hallazgos cerrados vs total"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                                    lineNumber: 549,
+                                                    lineNumber: 548,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                            lineNumber: 547,
+                                            lineNumber: 546,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$target$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Target$3e$__["Target"], {
                                             className: "h-4 w-4 text-muted-foreground"
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                            lineNumber: 551,
+                                            lineNumber: 550,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                    lineNumber: 546,
+                                    lineNumber: 545,
                                     columnNumber: 13
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                lineNumber: 545,
+                                lineNumber: 544,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -2033,17 +2033,17 @@ function DirectivoDashboard() {
                                                         }
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                                        lineNumber: 570,
+                                                        lineNumber: 569,
                                                         columnNumber: 19
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                                    lineNumber: 557,
+                                                    lineNumber: 556,
                                                     columnNumber: 17
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                                lineNumber: 556,
+                                                lineNumber: 555,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2057,7 +2057,7 @@ function DirectivoDashboard() {
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                                        lineNumber: 574,
+                                                        lineNumber: 573,
                                                         columnNumber: 17
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2069,19 +2069,19 @@ function DirectivoDashboard() {
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                                        lineNumber: 582,
+                                                        lineNumber: 581,
                                                         columnNumber: 17
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                                lineNumber: 573,
+                                                lineNumber: 572,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                        lineNumber: 555,
+                                        lineNumber: 554,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2092,7 +2092,7 @@ function DirectivoDashboard() {
                                                     className: "h-4 w-4 text-green-500"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                                    lineNumber: 588,
+                                                    lineNumber: 587,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2100,7 +2100,7 @@ function DirectivoDashboard() {
                                                     children: "Buen desempeño"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                                    lineNumber: 589,
+                                                    lineNumber: 588,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
@@ -2110,7 +2110,7 @@ function DirectivoDashboard() {
                                                     className: "h-4 w-4 text-amber-500"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                                    lineNumber: 593,
+                                                    lineNumber: 592,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -2118,32 +2118,32 @@ function DirectivoDashboard() {
                                                     children: "Requiere atención"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                                    lineNumber: 594,
+                                                    lineNumber: 593,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true)
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                        lineNumber: 585,
+                                        lineNumber: 584,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                lineNumber: 554,
+                                lineNumber: 553,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                        lineNumber: 544,
+                        lineNumber: 543,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                lineNumber: 527,
+                lineNumber: 526,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -2160,7 +2160,7 @@ function DirectivoDashboard() {
                                             children: "Estado de mis Acciones"
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                            lineNumber: 607,
+                                            lineNumber: 606,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
@@ -2168,37 +2168,37 @@ function DirectivoDashboard() {
                                             children: "Distribución por estado de acción en mis hallazgos"
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                            lineNumber: 608,
+                                            lineNumber: 607,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                    lineNumber: 606,
+                                    lineNumber: 605,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chart$2d$column$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__BarChart3$3e$__["BarChart3"], {
                                     className: "h-4 w-4 text-muted-foreground"
                                 }, void 0, false, {
                                     fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                    lineNumber: 610,
+                                    lineNumber: 609,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                            lineNumber: 605,
+                            lineNumber: 604,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                        lineNumber: 604,
+                        lineNumber: 603,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
                         children: porEstadoAccion.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(EmptyChart, {}, void 0, false, {
                             fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                            lineNumber: 614,
+                            lineNumber: 613,
                             columnNumber: 43
                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$chart$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ChartContainer"], {
                             config: porEstadoAccion.reduce((acc, item, i)=>{
@@ -2222,7 +2222,7 @@ function DirectivoDashboard() {
                                         hide: true
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                        lineNumber: 623,
+                                        lineNumber: 622,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$YAxis$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["YAxis"], {
@@ -2236,18 +2236,18 @@ function DirectivoDashboard() {
                                         tickFormatter: (v)=>v.length > 16 ? `${v.slice(0, 16)}…` : v
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                        lineNumber: 624,
+                                        lineNumber: 623,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$chart$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ChartTooltip"], {
                                         content: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$chart$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ChartTooltipContent"], {}, void 0, false, {
                                             fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                            lineNumber: 630,
+                                            lineNumber: 629,
                                             columnNumber: 40
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                        lineNumber: 630,
+                                        lineNumber: 629,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$Bar$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Bar"], {
@@ -2264,7 +2264,7 @@ function DirectivoDashboard() {
                                                     fill: entry.fill ?? CHART_COLORS_HEX[i % CHART_COLORS_HEX.length]
                                                 }, i, false, {
                                                     fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                                    lineNumber: 633,
+                                                    lineNumber: 632,
                                                     columnNumber: 21
                                                 }, this)),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$component$2f$LabelList$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["LabelList"], {
@@ -2273,35 +2273,35 @@ function DirectivoDashboard() {
                                                 className: "fill-foreground text-xs font-medium"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                                lineNumber: 635,
+                                                lineNumber: 634,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                        lineNumber: 631,
+                                        lineNumber: 630,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                lineNumber: 622,
+                                lineNumber: 621,
                                 columnNumber: 15
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                            lineNumber: 615,
+                            lineNumber: 614,
                             columnNumber: 13
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                        lineNumber: 613,
+                        lineNumber: 612,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                lineNumber: 603,
+                lineNumber: 602,
                 columnNumber: 7
             }, this),
             hallazgosConActividades.length > 0 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2315,12 +2315,12 @@ function DirectivoDashboard() {
                                     className: "h-4 w-4 text-primary"
                                 }, void 0, false, {
                                     fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                    lineNumber: 648,
+                                    lineNumber: 647,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                lineNumber: 647,
+                                lineNumber: 646,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2330,7 +2330,7 @@ function DirectivoDashboard() {
                                         children: "Mis Actividades"
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                        lineNumber: 651,
+                                        lineNumber: 650,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -2338,19 +2338,19 @@ function DirectivoDashboard() {
                                         children: "Actividades asignadas agrupadas por hallazgo"
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                        lineNumber: 652,
+                                        lineNumber: 651,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                lineNumber: 650,
+                                lineNumber: 649,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                        lineNumber: 646,
+                        lineNumber: 645,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2359,12 +2359,12 @@ function DirectivoDashboard() {
                                 hallazgo: h
                             }, h.id, false, {
                                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                lineNumber: 657,
+                                lineNumber: 656,
                                 columnNumber: 15
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                        lineNumber: 655,
+                        lineNumber: 654,
                         columnNumber: 11
                     }, this),
                     actividades && actividades.pages > 1 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2375,18 +2375,18 @@ function DirectivoDashboard() {
                             onChange: setAPage
                         }, void 0, false, {
                             fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                            lineNumber: 662,
+                            lineNumber: 661,
                             columnNumber: 15
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                        lineNumber: 661,
+                        lineNumber: 660,
                         columnNumber: 13
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                lineNumber: 645,
+                lineNumber: 644,
                 columnNumber: 9
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -2404,7 +2404,7 @@ function DirectivoDashboard() {
                                             children: "Mis Hallazgos"
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                            lineNumber: 673,
+                                            lineNumber: 672,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
@@ -2412,13 +2412,13 @@ function DirectivoDashboard() {
                                             children: "Hallazgos asignados a mi cargo"
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                            lineNumber: 674,
+                                            lineNumber: 673,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                    lineNumber: 672,
+                                    lineNumber: 671,
                                     columnNumber: 13
                                 }, this),
                                 hallazgos && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$Badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
@@ -2429,23 +2429,23 @@ function DirectivoDashboard() {
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                    lineNumber: 676,
+                                    lineNumber: 675,
                                     columnNumber: 27
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                            lineNumber: 671,
+                            lineNumber: 670,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                        lineNumber: 670,
+                        lineNumber: 669,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$separator$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Separator"], {}, void 0, false, {
                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                        lineNumber: 679,
+                        lineNumber: 678,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -2455,7 +2455,7 @@ function DirectivoDashboard() {
                             children: "Sin registros"
                         }, void 0, false, {
                             fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                            lineNumber: 682,
+                            lineNumber: 681,
                             columnNumber: 13
                         }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Fragment"], {
                             children: [
@@ -2473,7 +2473,7 @@ function DirectivoDashboard() {
                                                             children: "Código"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                                            lineNumber: 689,
+                                                            lineNumber: 688,
                                                             columnNumber: 23
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -2481,7 +2481,7 @@ function DirectivoDashboard() {
                                                             children: "Descripción"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                                            lineNumber: 690,
+                                                            lineNumber: 689,
                                                             columnNumber: 23
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -2489,7 +2489,7 @@ function DirectivoDashboard() {
                                                             children: "Estado"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                                            lineNumber: 691,
+                                                            lineNumber: 690,
                                                             columnNumber: 23
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -2497,7 +2497,7 @@ function DirectivoDashboard() {
                                                             children: "Plan"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                                            lineNumber: 692,
+                                                            lineNumber: 691,
                                                             columnNumber: 23
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -2505,7 +2505,7 @@ function DirectivoDashboard() {
                                                             children: "Responsable"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                                            lineNumber: 693,
+                                                            lineNumber: 692,
                                                             columnNumber: 23
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -2513,18 +2513,18 @@ function DirectivoDashboard() {
                                                             children: "Cierre proyectado"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                                            lineNumber: 694,
+                                                            lineNumber: 693,
                                                             columnNumber: 23
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                                    lineNumber: 688,
+                                                    lineNumber: 687,
                                                     columnNumber: 21
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                                lineNumber: 687,
+                                                lineNumber: 686,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
@@ -2537,7 +2537,7 @@ function DirectivoDashboard() {
                                                                 children: h.codigo_del_hallazgo
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                                                lineNumber: 700,
+                                                                lineNumber: 699,
                                                                 columnNumber: 25
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -2546,7 +2546,7 @@ function DirectivoDashboard() {
                                                                 children: h.descripcion
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                                                lineNumber: 703,
+                                                                lineNumber: 702,
                                                                 columnNumber: 25
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -2554,7 +2554,7 @@ function DirectivoDashboard() {
                                                                 children: estadoBadge(h.estado)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                                                lineNumber: 706,
+                                                                lineNumber: 705,
                                                                 columnNumber: 25
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -2562,7 +2562,7 @@ function DirectivoDashboard() {
                                                                 children: estadoBadge(h.estado_plan_accion)
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                                                lineNumber: 707,
+                                                                lineNumber: 706,
                                                                 columnNumber: 25
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -2570,7 +2570,7 @@ function DirectivoDashboard() {
                                                                 children: h.responsable_plan_accion ?? '—'
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                                                lineNumber: 708,
+                                                                lineNumber: 707,
                                                                 columnNumber: 25
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -2578,29 +2578,29 @@ function DirectivoDashboard() {
                                                                 children: h.fecha_cierre_proyectada ? (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$utils$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["formatDateTime"])(h.fecha_cierre_proyectada) : '—'
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                                                lineNumber: 709,
+                                                                lineNumber: 708,
                                                                 columnNumber: 25
                                                             }, this)
                                                         ]
                                                     }, h.id, true, {
                                                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                                        lineNumber: 699,
+                                                        lineNumber: 698,
                                                         columnNumber: 23
                                                     }, this))
                                             }, void 0, false, {
                                                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                                lineNumber: 697,
+                                                lineNumber: 696,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                        lineNumber: 686,
+                                        lineNumber: 685,
                                         columnNumber: 17
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                    lineNumber: 685,
+                                    lineNumber: 684,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -2611,31 +2611,31 @@ function DirectivoDashboard() {
                                         onChange: setHPage
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                        lineNumber: 718,
+                                        lineNumber: 717,
                                         columnNumber: 17
                                     }, this)
                                 }, void 0, false, {
                                     fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                                    lineNumber: 717,
+                                    lineNumber: 716,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true)
                     }, void 0, false, {
                         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                        lineNumber: 680,
+                        lineNumber: 679,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-                lineNumber: 669,
+                lineNumber: 668,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/dashboard/DirectivoDashboard.tsx",
-        lineNumber: 500,
+        lineNumber: 499,
         columnNumber: 5
     }, this);
 }
@@ -3446,7 +3446,7 @@ function groupActivitiesByHallazgo(actividades, hallazgos) {
             grouped.set(codigo, {
                 id: act.hallazgo_id ?? act.id,
                 codigo,
-                descripcion: act.nombre_plan_accion ?? 'Plan de acción',
+                descripcion: act.descripcion ?? 'Plan de acción',
                 estado: act.estado_plan_accion ?? 'Pendiente',
                 prioridad: hallazgoInfo?.prioridad ?? 'media',
                 dias_restantes: hallazgoInfo?.dias_restantes ?? 0,
@@ -3472,7 +3472,7 @@ function estadoBadge(estado) {
         children: "—"
     }, void 0, false, {
         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-        lineNumber: 224,
+        lineNumber: 223,
         columnNumber: 23
     }, this);
     const lower = estado.toLowerCase();
@@ -3481,7 +3481,7 @@ function estadoBadge(estado) {
         children: estado
     }, void 0, false, {
         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-        lineNumber: 227,
+        lineNumber: 226,
         columnNumber: 12
     }, this);
     if (lower.includes('vencido') || lower.includes('atraso')) return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$Badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
@@ -3489,7 +3489,7 @@ function estadoBadge(estado) {
         children: estado
     }, void 0, false, {
         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-        lineNumber: 229,
+        lineNumber: 228,
         columnNumber: 12
     }, this);
     if (lower.includes('validación') || lower.includes('validacion')) return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$Badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
@@ -3497,7 +3497,7 @@ function estadoBadge(estado) {
         children: estado
     }, void 0, false, {
         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-        lineNumber: 231,
+        lineNumber: 230,
         columnNumber: 12
     }, this);
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$Badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
@@ -3505,7 +3505,7 @@ function estadoBadge(estado) {
         children: estado
     }, void 0, false, {
         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-        lineNumber: 232,
+        lineNumber: 231,
         columnNumber: 10
     }, this);
 }
@@ -3519,14 +3519,14 @@ function semaforoBadge(diasRestantes) {
                     className: "w-2 h-2 rounded-full bg-red-500"
                 }, void 0, false, {
                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                    lineNumber: 237,
+                    lineNumber: 236,
                     columnNumber: 59
                 }, this),
                 "Vencido"
             ]
         }, void 0, true, {
             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-            lineNumber: 237,
+            lineNumber: 236,
             columnNumber: 12
         }, this);
     }
@@ -3538,14 +3538,14 @@ function semaforoBadge(diasRestantes) {
                     className: "w-2 h-2 rounded-full bg-amber-500"
                 }, void 0, false, {
                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                    lineNumber: 240,
+                    lineNumber: 239,
                     columnNumber: 88
                 }, this),
                 "Próximo"
             ]
         }, void 0, true, {
             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-            lineNumber: 240,
+            lineNumber: 239,
             columnNumber: 12
         }, this);
     }
@@ -3556,14 +3556,14 @@ function semaforoBadge(diasRestantes) {
                 className: "w-2 h-2 rounded-full bg-green-500"
             }, void 0, false, {
                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                lineNumber: 242,
+                lineNumber: 241,
                 columnNumber: 86
             }, this),
             "En tiempo"
         ]
     }, void 0, true, {
         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-        lineNumber: 242,
+        lineNumber: 241,
         columnNumber: 10
     }, this);
 }
@@ -3599,12 +3599,12 @@ function Pagination({ page, pages, onChange }) {
                     className: "w-3.5 h-3.5"
                 }, void 0, false, {
                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                    lineNumber: 262,
+                    lineNumber: 261,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                lineNumber: 261,
+                lineNumber: 260,
                 columnNumber: 7
             }, this),
             nums.map((n, i)=>n === '...' ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3612,7 +3612,7 @@ function Pagination({ page, pages, onChange }) {
                     children: "…"
                 }, `e-${i}`, false, {
                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                    lineNumber: 266,
+                    lineNumber: 265,
                     columnNumber: 11
                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
                     variant: n === page ? 'default' : 'ghost',
@@ -3622,7 +3622,7 @@ function Pagination({ page, pages, onChange }) {
                     children: n
                 }, n, false, {
                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                    lineNumber: 268,
+                    lineNumber: 267,
                     columnNumber: 11
                 }, this)),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -3635,18 +3635,18 @@ function Pagination({ page, pages, onChange }) {
                     className: "w-3.5 h-3.5"
                 }, void 0, false, {
                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                    lineNumber: 274,
+                    lineNumber: 273,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                lineNumber: 273,
+                lineNumber: 272,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-        lineNumber: 260,
+        lineNumber: 259,
         columnNumber: 5
     }, this);
 }
@@ -3659,7 +3659,7 @@ function EmptyChart() {
                 className: "h-7 w-7 mb-2 opacity-30"
             }, void 0, false, {
                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                lineNumber: 283,
+                lineNumber: 282,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3667,13 +3667,13 @@ function EmptyChart() {
                 children: "Sin datos"
             }, void 0, false, {
                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                lineNumber: 284,
+                lineNumber: 283,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-        lineNumber: 282,
+        lineNumber: 281,
         columnNumber: 5
     }, this);
 }
@@ -3709,7 +3709,7 @@ function KpiTile({ title, value, icon: Icon, variant = 'default', trend, subtitl
                                 children: title
                             }, void 0, false, {
                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                lineNumber: 317,
+                                lineNumber: 316,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3720,7 +3720,7 @@ function KpiTile({ title, value, icon: Icon, variant = 'default', trend, subtitl
                                         children: value
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                        lineNumber: 319,
+                                        lineNumber: 318,
                                         columnNumber: 15
                                     }, this),
                                     trend !== undefined && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3730,13 +3730,13 @@ function KpiTile({ title, value, icon: Icon, variant = 'default', trend, subtitl
                                                 className: "h-3 w-3 mr-0.5"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                lineNumber: 322,
+                                                lineNumber: 321,
                                                 columnNumber: 32
                                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$trending$2d$down$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TrendingDown$3e$__["TrendingDown"], {
                                                 className: "h-3 w-3 mr-0.5"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                lineNumber: 322,
+                                                lineNumber: 321,
                                                 columnNumber: 76
                                             }, this),
                                             Math.abs(trend),
@@ -3744,13 +3744,13 @@ function KpiTile({ title, value, icon: Icon, variant = 'default', trend, subtitl
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                        lineNumber: 321,
+                                        lineNumber: 320,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                lineNumber: 318,
+                                lineNumber: 317,
                                 columnNumber: 13
                             }, this),
                             subtitle && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -3758,13 +3758,13 @@ function KpiTile({ title, value, icon: Icon, variant = 'default', trend, subtitl
                                 children: subtitle
                             }, void 0, false, {
                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                lineNumber: 327,
+                                lineNumber: 326,
                                 columnNumber: 26
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                        lineNumber: 316,
+                        lineNumber: 315,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3773,28 +3773,28 @@ function KpiTile({ title, value, icon: Icon, variant = 'default', trend, subtitl
                             className: "h-5 w-5"
                         }, void 0, false, {
                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                            lineNumber: 330,
+                            lineNumber: 329,
                             columnNumber: 13
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                        lineNumber: 329,
+                        lineNumber: 328,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                lineNumber: 315,
+                lineNumber: 314,
                 columnNumber: 9
             }, this)
         }, void 0, false, {
             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-            lineNumber: 314,
+            lineNumber: 313,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-        lineNumber: 313,
+        lineNumber: 312,
         columnNumber: 5
     }, this);
 }
@@ -3811,7 +3811,7 @@ function EnhancedDonutCard({ title, description, data, centerLabel, centerSubLab
                         children: title
                     }, void 0, false, {
                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                        lineNumber: 348,
+                        lineNumber: 347,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
@@ -3819,30 +3819,30 @@ function EnhancedDonutCard({ title, description, data, centerLabel, centerSubLab
                         children: description
                     }, void 0, false, {
                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                        lineNumber: 349,
+                        lineNumber: 348,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                lineNumber: 347,
+                lineNumber: 346,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(EmptyChart, {}, void 0, false, {
                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                    lineNumber: 351,
+                    lineNumber: 350,
                     columnNumber: 20
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                lineNumber: 351,
+                lineNumber: 350,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-        lineNumber: 346,
+        lineNumber: 345,
         columnNumber: 5
     }, this);
     const total = data.reduce((acc, d)=>acc + d.value, 0);
@@ -3864,7 +3864,7 @@ function EnhancedDonutCard({ title, description, data, centerLabel, centerSubLab
                         children: title
                     }, void 0, false, {
                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                        lineNumber: 364,
+                        lineNumber: 363,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
@@ -3872,13 +3872,13 @@ function EnhancedDonutCard({ title, description, data, centerLabel, centerSubLab
                         children: description
                     }, void 0, false, {
                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                        lineNumber: 365,
+                        lineNumber: 364,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                lineNumber: 363,
+                lineNumber: 362,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -3894,12 +3894,12 @@ function EnhancedDonutCard({ title, description, data, centerLabel, centerSubLab
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$chart$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ChartTooltip"], {
                                             content: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$chart$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ChartTooltipContent"], {}, void 0, false, {
                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                lineNumber: 371,
+                                                lineNumber: 370,
                                                 columnNumber: 38
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 371,
+                                            lineNumber: 370,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$polar$2f$Pie$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Pie"], {
@@ -3917,23 +3917,23 @@ function EnhancedDonutCard({ title, description, data, centerLabel, centerSubLab
                                                     fill: entry.fill ?? CHART_COLORS_HEX[i % CHART_COLORS_HEX.length]
                                                 }, i, false, {
                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                    lineNumber: 378,
+                                                    lineNumber: 377,
                                                     columnNumber: 41
                                                 }, this))
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 372,
+                                            lineNumber: 371,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                    lineNumber: 370,
+                                    lineNumber: 369,
                                     columnNumber: 13
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                lineNumber: 369,
+                                lineNumber: 368,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3944,7 +3944,7 @@ function EnhancedDonutCard({ title, description, data, centerLabel, centerSubLab
                                         children: centerLabel
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                        lineNumber: 383,
+                                        lineNumber: 382,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3952,19 +3952,19 @@ function EnhancedDonutCard({ title, description, data, centerLabel, centerSubLab
                                         children: centerSubLabel
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                        lineNumber: 384,
+                                        lineNumber: 383,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                lineNumber: 382,
+                                lineNumber: 381,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                        lineNumber: 368,
+                        lineNumber: 367,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -3979,7 +3979,7 @@ function EnhancedDonutCard({ title, description, data, centerLabel, centerSubLab
                                         }
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                        lineNumber: 390,
+                                        lineNumber: 389,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3987,7 +3987,7 @@ function EnhancedDonutCard({ title, description, data, centerLabel, centerSubLab
                                         children: d.name
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                        lineNumber: 391,
+                                        lineNumber: 390,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -3998,30 +3998,30 @@ function EnhancedDonutCard({ title, description, data, centerLabel, centerSubLab
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                        lineNumber: 392,
+                                        lineNumber: 391,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, d.name, true, {
                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                lineNumber: 389,
+                                lineNumber: 388,
                                 columnNumber: 13
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                        lineNumber: 387,
+                        lineNumber: 386,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                lineNumber: 367,
+                lineNumber: 366,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-        lineNumber: 362,
+        lineNumber: 361,
         columnNumber: 5
     }, this);
 }
@@ -4051,12 +4051,12 @@ function WorkflowStepper({ currentEstado, onChangeEstado }) {
                                     className: "h-4 w-4"
                                 }, void 0, false, {
                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                    lineNumber: 431,
+                                    lineNumber: 430,
                                     columnNumber: 17
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                lineNumber: 425,
+                                lineNumber: 424,
                                 columnNumber: 15
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4064,32 +4064,32 @@ function WorkflowStepper({ currentEstado, onChangeEstado }) {
                                 children: step.label
                             }, void 0, false, {
                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                lineNumber: 433,
+                                lineNumber: 432,
                                 columnNumber: 15
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                        lineNumber: 415,
+                        lineNumber: 414,
                         columnNumber: 13
                     }, this),
                     index < WORKFLOW_STEPS.length - 1 && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                         className: (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$utils$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["cn"])('h-0.5 flex-1 mx-1', index < currentIndex ? 'bg-green-500' : 'bg-muted')
                     }, void 0, false, {
                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                        lineNumber: 442,
+                        lineNumber: 441,
                         columnNumber: 15
                     }, this)
                 ]
             }, step.estado, true, {
                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                lineNumber: 414,
+                lineNumber: 413,
                 columnNumber: 11
             }, this);
         })
     }, void 0, false, {
         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-        lineNumber: 406,
+        lineNumber: 405,
         columnNumber: 5
     }, this);
 }
@@ -4108,24 +4108,24 @@ function ChecklistItem({ actividad }) {
                     className: "h-4 w-4 text-green-500"
                 }, void 0, false, {
                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                    lineNumber: 469,
+                    lineNumber: 468,
                     columnNumber: 13
                 }, this) : isOverdue ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$triangle$2d$alert$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__AlertTriangle$3e$__["AlertTriangle"], {
                     className: "h-4 w-4 text-destructive"
                 }, void 0, false, {
                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                    lineNumber: 471,
+                    lineNumber: 470,
                     columnNumber: 15
                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$circle$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Circle$3e$__["Circle"], {
                     className: "h-4 w-4 text-muted-foreground"
                 }, void 0, false, {
                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                    lineNumber: 472,
+                    lineNumber: 471,
                     columnNumber: 15
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                lineNumber: 467,
+                lineNumber: 466,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4133,10 +4133,10 @@ function ChecklistItem({ actividad }) {
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                         className: (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$utils$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["cn"])('text-sm font-medium leading-tight', isCompleted && 'line-through text-muted-foreground'),
-                        children: actividad.descripcion ?? actividad.nombre_plan_accion ?? 'Actividad sin descripción'
+                        children: actividad.descripcion ?? 'Actividad sin descripción'
                     }, void 0, false, {
                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                        lineNumber: 476,
+                        lineNumber: 475,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4148,7 +4148,7 @@ function ChecklistItem({ actividad }) {
                                 children: actividad.responsable_accion
                             }, void 0, false, {
                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                lineNumber: 482,
+                                lineNumber: 481,
                                 columnNumber: 13
                             }, this),
                             actividad.fecha_compromiso && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4158,26 +4158,26 @@ function ChecklistItem({ actividad }) {
                                         className: "h-3 w-3"
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                        lineNumber: 486,
+                                        lineNumber: 485,
                                         columnNumber: 15
                                     }, this),
                                     formatDateTime(actividad.fecha_compromiso)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                lineNumber: 485,
+                                lineNumber: 484,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                        lineNumber: 479,
+                        lineNumber: 478,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                lineNumber: 475,
+                lineNumber: 474,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dropdown$2d$menu$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DropdownMenu"], {
@@ -4189,19 +4189,19 @@ function ChecklistItem({ actividad }) {
                             className: "h-7 w-7"
                         }, void 0, false, {
                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                            lineNumber: 493,
+                            lineNumber: 492,
                             columnNumber: 38
                         }, this),
                         children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$ellipsis$2d$vertical$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__MoreVertical$3e$__["MoreVertical"], {
                             className: "h-3.5 w-3.5"
                         }, void 0, false, {
                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                            lineNumber: 494,
+                            lineNumber: 493,
                             columnNumber: 11
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                        lineNumber: 493,
+                        lineNumber: 492,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dropdown$2d$menu$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DropdownMenuContent"], {
@@ -4213,14 +4213,14 @@ function ChecklistItem({ actividad }) {
                                         className: "h-3.5 w-3.5 mr-2"
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                        lineNumber: 497,
+                                        lineNumber: 496,
                                         columnNumber: 29
                                     }, this),
                                     "Editar"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                lineNumber: 497,
+                                lineNumber: 496,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dropdown$2d$menu$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DropdownMenuItem"], {
@@ -4229,14 +4229,14 @@ function ChecklistItem({ actividad }) {
                                         className: "h-3.5 w-3.5 mr-2"
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                        lineNumber: 498,
+                                        lineNumber: 497,
                                         columnNumber: 29
                                     }, this),
                                     "Subir evidencia"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                lineNumber: 498,
+                                lineNumber: 497,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dropdown$2d$menu$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DropdownMenuItem"], {
@@ -4245,19 +4245,19 @@ function ChecklistItem({ actividad }) {
                                         className: "h-3.5 w-3.5 mr-2"
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                        lineNumber: 499,
+                                        lineNumber: 498,
                                         columnNumber: 29
                                     }, this),
                                     "Comentar"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                lineNumber: 499,
+                                lineNumber: 498,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dropdown$2d$menu$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DropdownMenuSeparator"], {}, void 0, false, {
                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                lineNumber: 500,
+                                lineNumber: 499,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dropdown$2d$menu$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DropdownMenuItem"], {
@@ -4266,32 +4266,32 @@ function ChecklistItem({ actividad }) {
                                         className: "h-3.5 w-3.5 mr-2"
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                        lineNumber: 501,
+                                        lineNumber: 500,
                                         columnNumber: 29
                                     }, this),
                                     "Marcar completada"
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                lineNumber: 501,
+                                lineNumber: 500,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                        lineNumber: 496,
+                        lineNumber: 495,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                lineNumber: 492,
+                lineNumber: 491,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-        lineNumber: 461,
+        lineNumber: 460,
         columnNumber: 5
     }, this);
 }
@@ -4323,7 +4323,7 @@ function HallazgoChecklistCard({ hallazgo }) {
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                        lineNumber: 522,
+                                        lineNumber: 521,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4337,7 +4337,7 @@ function HallazgoChecklistCard({ hallazgo }) {
                                                         children: hallazgo.codigo
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                        lineNumber: 532,
+                                                        lineNumber: 531,
                                                         columnNumber: 17
                                                     }, this),
                                                     estadoBadge(hallazgo.estado),
@@ -4346,14 +4346,14 @@ function HallazgoChecklistCard({ hallazgo }) {
                                                         children: PRIORIDAD_CONFIG[hallazgo.prioridad].label
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                        lineNumber: 534,
+                                                        lineNumber: 533,
                                                         columnNumber: 17
                                                     }, this),
                                                     semaforoBadge(hallazgo.dias_restantes)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                lineNumber: 531,
+                                                lineNumber: 530,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4362,19 +4362,19 @@ function HallazgoChecklistCard({ hallazgo }) {
                                                 children: hallazgo.descripcion
                                             }, void 0, false, {
                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                lineNumber: 539,
+                                                lineNumber: 538,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                        lineNumber: 530,
+                                        lineNumber: 529,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                lineNumber: 521,
+                                lineNumber: 520,
                                 columnNumber: 11
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4388,7 +4388,7 @@ function HallazgoChecklistCard({ hallazgo }) {
                                                 children: "Actividades"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                lineNumber: 546,
+                                                lineNumber: 545,
                                                 columnNumber: 15
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4400,32 +4400,32 @@ function HallazgoChecklistCard({ hallazgo }) {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                lineNumber: 547,
+                                                lineNumber: 546,
                                                 columnNumber: 15
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                        lineNumber: 545,
+                                        lineNumber: 544,
                                         columnNumber: 13
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chevron$2d$down$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ChevronDown$3e$__["ChevronDown"], {
                                         className: (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$utils$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["cn"])('h-4 w-4 text-muted-foreground transition-transform', isOpen && 'rotate-180')
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                        lineNumber: 549,
+                                        lineNumber: 548,
                                         columnNumber: 13
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                lineNumber: 544,
+                                lineNumber: 543,
                                 columnNumber: 11
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                        lineNumber: 520,
+                        lineNumber: 519,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$progress$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Progress"], {
@@ -4433,20 +4433,20 @@ function HallazgoChecklistCard({ hallazgo }) {
                         className: "mt-3 h-1.5"
                     }, void 0, false, {
                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                        lineNumber: 552,
+                        lineNumber: 551,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                lineNumber: 515,
+                lineNumber: 514,
                 columnNumber: 7
             }, this),
             isOpen && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Fragment"], {
                 children: [
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$separator$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Separator"], {}, void 0, false, {
                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                        lineNumber: 556,
+                        lineNumber: 555,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -4460,25 +4460,25 @@ function HallazgoChecklistCard({ hallazgo }) {
                                         children: "Estado del workflow"
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                        lineNumber: 560,
+                                        lineNumber: 559,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(WorkflowStepper, {
                                         currentEstado: hallazgo.workflow_estado
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                        lineNumber: 561,
+                                        lineNumber: 560,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                lineNumber: 559,
+                                lineNumber: 558,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$separator$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Separator"], {}, void 0, false, {
                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                lineNumber: 563,
+                                lineNumber: 562,
                                 columnNumber: 13
                             }, this),
                             hallazgo.actividades.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4486,7 +4486,7 @@ function HallazgoChecklistCard({ hallazgo }) {
                                 children: "Sin actividades registradas"
                             }, void 0, false, {
                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                lineNumber: 565,
+                                lineNumber: 564,
                                 columnNumber: 15
                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                 className: "space-y-2",
@@ -4494,12 +4494,12 @@ function HallazgoChecklistCard({ hallazgo }) {
                                         actividad: actividad
                                     }, actividad.id ?? idx, false, {
                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                        lineNumber: 569,
+                                        lineNumber: 568,
                                         columnNumber: 19
                                     }, this))
                             }, void 0, false, {
                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                lineNumber: 567,
+                                lineNumber: 566,
                                 columnNumber: 15
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4514,14 +4514,14 @@ function HallazgoChecklistCard({ hallazgo }) {
                                                 className: "h-3.5 w-3.5"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                lineNumber: 575,
+                                                lineNumber: 574,
                                                 columnNumber: 17
                                             }, this),
                                             "Subir evidencia"
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                        lineNumber: 574,
+                                        lineNumber: 573,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -4533,14 +4533,14 @@ function HallazgoChecklistCard({ hallazgo }) {
                                                 className: "h-3.5 w-3.5"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                lineNumber: 579,
+                                                lineNumber: 578,
                                                 columnNumber: 17
                                             }, this),
                                             "Comentar"
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                        lineNumber: 578,
+                                        lineNumber: 577,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -4552,26 +4552,26 @@ function HallazgoChecklistCard({ hallazgo }) {
                                                 className: "h-3.5 w-3.5"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                lineNumber: 583,
+                                                lineNumber: 582,
                                                 columnNumber: 17
                                             }, this),
                                             "Solicitar prórroga"
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                        lineNumber: 582,
+                                        lineNumber: 581,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                lineNumber: 573,
+                                lineNumber: 572,
                                 columnNumber: 13
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                        lineNumber: 557,
+                        lineNumber: 556,
                         columnNumber: 11
                     }, this)
                 ]
@@ -4579,7 +4579,7 @@ function HallazgoChecklistCard({ hallazgo }) {
         ]
     }, void 0, true, {
         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-        lineNumber: 514,
+        lineNumber: 513,
         columnNumber: 5
     }, this);
 }
@@ -4601,7 +4601,7 @@ function BitacoraCard({ entries }) {
                                     children: "Bitácora de Actividad"
                                 }, void 0, false, {
                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                    lineNumber: 601,
+                                    lineNumber: 600,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
@@ -4609,31 +4609,31 @@ function BitacoraCard({ entries }) {
                                     children: "Últimas acciones realizadas"
                                 }, void 0, false, {
                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                    lineNumber: 602,
+                                    lineNumber: 601,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                            lineNumber: 600,
+                            lineNumber: 599,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$history$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__History$3e$__["History"], {
                             className: "h-4 w-4 text-muted-foreground"
                         }, void 0, false, {
                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                            lineNumber: 604,
+                            lineNumber: 603,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                    lineNumber: 599,
+                    lineNumber: 598,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                lineNumber: 598,
+                lineNumber: 597,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -4650,12 +4650,12 @@ function BitacoraCard({ entries }) {
                                             className: "h-4 w-4 text-primary"
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 613,
+                                            lineNumber: 612,
                                             columnNumber: 19
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                        lineNumber: 612,
+                                        lineNumber: 611,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4669,7 +4669,7 @@ function BitacoraCard({ entries }) {
                                                         children: entry.accion
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                        lineNumber: 617,
+                                                        lineNumber: 616,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -4677,13 +4677,13 @@ function BitacoraCard({ entries }) {
                                                         children: entry.fecha
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                        lineNumber: 618,
+                                                        lineNumber: 617,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                lineNumber: 616,
+                                                lineNumber: 615,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4691,7 +4691,7 @@ function BitacoraCard({ entries }) {
                                                 children: entry.detalle
                                             }, void 0, false, {
                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                lineNumber: 620,
+                                                lineNumber: 619,
                                                 columnNumber: 19
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4702,45 +4702,45 @@ function BitacoraCard({ entries }) {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                lineNumber: 621,
+                                                lineNumber: 620,
                                                 columnNumber: 19
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                        lineNumber: 615,
+                                        lineNumber: 614,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, entry.id, true, {
                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                lineNumber: 611,
+                                lineNumber: 610,
                                 columnNumber: 15
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                        lineNumber: 609,
+                        lineNumber: 608,
                         columnNumber: 11
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                    lineNumber: 608,
+                    lineNumber: 607,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                lineNumber: 607,
+                lineNumber: 606,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-        lineNumber: 597,
+        lineNumber: 596,
         columnNumber: 5
     }, this);
 }
 _c7 = BitacoraCard;
-// ─── Responsables Críticos ────────────────────────────────────────────────────
+//
 function ResponsablesCriticosCard({ responsables }) {
     return /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
         children: [
@@ -4756,7 +4756,7 @@ function ResponsablesCriticosCard({ responsables }) {
                                     children: "Responsables Críticos"
                                 }, void 0, false, {
                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                    lineNumber: 639,
+                                    lineNumber: 638,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
@@ -4764,31 +4764,31 @@ function ResponsablesCriticosCard({ responsables }) {
                                     children: "Requieren seguimiento inmediato"
                                 }, void 0, false, {
                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                    lineNumber: 640,
+                                    lineNumber: 639,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                            lineNumber: 638,
+                            lineNumber: 637,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$users$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Users$3e$__["Users"], {
                             className: "h-4 w-4 text-muted-foreground"
                         }, void 0, false, {
                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                            lineNumber: 642,
+                            lineNumber: 641,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                    lineNumber: 637,
+                    lineNumber: 636,
                     columnNumber: 9
                 }, this)
             }, void 0, false, {
                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                lineNumber: 636,
+                lineNumber: 635,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -4807,12 +4807,12 @@ function ResponsablesCriticosCard({ responsables }) {
                                                     className: "h-4 w-4 text-destructive"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                    lineNumber: 651,
+                                                    lineNumber: 650,
                                                     columnNumber: 19
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                lineNumber: 650,
+                                                lineNumber: 649,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4822,7 +4822,7 @@ function ResponsablesCriticosCard({ responsables }) {
                                                         children: resp.nombre
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                        lineNumber: 654,
+                                                        lineNumber: 653,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4835,19 +4835,19 @@ function ResponsablesCriticosCard({ responsables }) {
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                        lineNumber: 655,
+                                                        lineNumber: 654,
                                                         columnNumber: 19
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                lineNumber: 653,
+                                                lineNumber: 652,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                        lineNumber: 649,
+                                        lineNumber: 648,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -4861,7 +4861,7 @@ function ResponsablesCriticosCard({ responsables }) {
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                lineNumber: 661,
+                                                lineNumber: 660,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -4869,24 +4869,24 @@ function ResponsablesCriticosCard({ responsables }) {
                                                 children: "cumplimiento"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                lineNumber: 669,
+                                                lineNumber: 668,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                        lineNumber: 660,
+                                        lineNumber: 659,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, i, true, {
                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                lineNumber: 648,
+                                lineNumber: 647,
                                 columnNumber: 13
                             }, this))
                     }, void 0, false, {
                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                        lineNumber: 646,
+                        lineNumber: 645,
                         columnNumber: 9
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -4898,26 +4898,26 @@ function ResponsablesCriticosCard({ responsables }) {
                                 className: "h-3.5 w-3.5"
                             }, void 0, false, {
                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                lineNumber: 675,
+                                lineNumber: 674,
                                 columnNumber: 11
                             }, this),
                             "Enviar recordatorios"
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                        lineNumber: 674,
+                        lineNumber: 673,
                         columnNumber: 9
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                lineNumber: 645,
+                lineNumber: 644,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-        lineNumber: 635,
+        lineNumber: 634,
         columnNumber: 5
     }, this);
 }
@@ -5030,7 +5030,7 @@ function GestorDashboard() {
                             strokeWidth: "4"
                         }, void 0, false, {
                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                            lineNumber: 784,
+                            lineNumber: 783,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
@@ -5039,20 +5039,20 @@ function GestorDashboard() {
                             d: "M4 12a8 8 0 018-8v8z"
                         }, void 0, false, {
                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                            lineNumber: 785,
+                            lineNumber: 784,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                    lineNumber: 783,
+                    lineNumber: 782,
                     columnNumber: 9
                 }, this),
                 "Cargando…"
             ]
         }, void 0, true, {
             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-            lineNumber: 782,
+            lineNumber: 781,
             columnNumber: 7
         }, this);
     }
@@ -5074,12 +5074,12 @@ function GestorDashboard() {
                                             className: "h-5 w-5 text-primary"
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 801,
+                                            lineNumber: 800,
                                             columnNumber: 17
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                        lineNumber: 800,
+                                        lineNumber: 799,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5089,7 +5089,7 @@ function GestorDashboard() {
                                                 children: "Panel del Gestor"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                lineNumber: 804,
+                                                lineNumber: 803,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -5101,30 +5101,30 @@ function GestorDashboard() {
                                                         children: user?.dependencia ?? 'Sin dependencia'
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                        lineNumber: 806,
+                                                        lineNumber: 805,
                                                         columnNumber: 65
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                lineNumber: 805,
+                                                lineNumber: 804,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                        lineNumber: 803,
+                                        lineNumber: 802,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                lineNumber: 799,
+                                lineNumber: 798,
                                 columnNumber: 13
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                            lineNumber: 798,
+                            lineNumber: 797,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5141,14 +5141,14 @@ function GestorDashboard() {
                                             className: (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$utils$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["cn"])('h-3.5 w-3.5', refreshing && 'animate-spin')
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 813,
+                                            lineNumber: 812,
                                             columnNumber: 15
                                         }, this),
                                         "Actualizar"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                    lineNumber: 812,
+                                    lineNumber: 811,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Dialog"], {
@@ -5159,7 +5159,7 @@ function GestorDashboard() {
                                                 className: "gap-2"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                lineNumber: 817,
+                                                lineNumber: 816,
                                                 columnNumber: 38
                                             }, this),
                                             children: [
@@ -5167,14 +5167,14 @@ function GestorDashboard() {
                                                     className: "h-3.5 w-3.5"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                    lineNumber: 818,
+                                                    lineNumber: 817,
                                                     columnNumber: 17
                                                 }, this),
                                                 "Nuevo Plan"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 817,
+                                            lineNumber: 816,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DialogContent"], {
@@ -5185,20 +5185,20 @@ function GestorDashboard() {
                                                             children: "Crear Plan de Acción"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                            lineNumber: 823,
+                                                            lineNumber: 822,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DialogDescription"], {
                                                             children: "Defina el plan de acción para atender un hallazgo."
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                            lineNumber: 824,
+                                                            lineNumber: 823,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                    lineNumber: 822,
+                                                    lineNumber: 821,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5212,20 +5212,20 @@ function GestorDashboard() {
                                                                     children: "Hallazgo asociado"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                    lineNumber: 830,
+                                                                    lineNumber: 829,
                                                                     columnNumber: 21
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
                                                                     placeholder: "Buscar hallazgo..."
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                    lineNumber: 831,
+                                                                    lineNumber: 830,
                                                                     columnNumber: 21
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                            lineNumber: 829,
+                                                            lineNumber: 828,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5236,20 +5236,20 @@ function GestorDashboard() {
                                                                     children: "Descripción del plan"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                    lineNumber: 834,
+                                                                    lineNumber: 833,
                                                                     columnNumber: 21
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$textarea$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Textarea"], {
                                                                     placeholder: "Describa las acciones a realizar..."
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                    lineNumber: 835,
+                                                                    lineNumber: 834,
                                                                     columnNumber: 21
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                            lineNumber: 833,
+                                                            lineNumber: 832,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5263,20 +5263,20 @@ function GestorDashboard() {
                                                                             children: "Responsable"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                            lineNumber: 839,
+                                                                            lineNumber: 838,
                                                                             columnNumber: 23
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
                                                                             placeholder: "Nombre del responsable"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                            lineNumber: 840,
+                                                                            lineNumber: 839,
                                                                             columnNumber: 23
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                    lineNumber: 838,
+                                                                    lineNumber: 837,
                                                                     columnNumber: 21
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5287,32 +5287,32 @@ function GestorDashboard() {
                                                                             children: "Fecha compromiso"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                            lineNumber: 843,
+                                                                            lineNumber: 842,
                                                                             columnNumber: 23
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
                                                                             type: "date"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                            lineNumber: 844,
+                                                                            lineNumber: 843,
                                                                             columnNumber: 23
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                    lineNumber: 842,
+                                                                    lineNumber: 841,
                                                                     columnNumber: 21
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                            lineNumber: 837,
+                                                            lineNumber: 836,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                    lineNumber: 828,
+                                                    lineNumber: 827,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DialogFooter"], {
@@ -5322,44 +5322,44 @@ function GestorDashboard() {
                                                             children: "Cancelar"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                            lineNumber: 849,
+                                                            lineNumber: 848,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
                                                             children: "Crear plan"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                            lineNumber: 850,
+                                                            lineNumber: 849,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                    lineNumber: 848,
+                                                    lineNumber: 847,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 821,
+                                            lineNumber: 820,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                    lineNumber: 816,
+                                    lineNumber: 815,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                            lineNumber: 811,
+                            lineNumber: 810,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                    lineNumber: 797,
+                    lineNumber: 796,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$tabs$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Tabs"], {
@@ -5378,7 +5378,7 @@ function GestorDashboard() {
                                             className: "h-4 w-4"
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 861,
+                                            lineNumber: 860,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -5386,13 +5386,13 @@ function GestorDashboard() {
                                             children: "Resumen"
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 862,
+                                            lineNumber: 861,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                    lineNumber: 860,
+                                    lineNumber: 859,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$tabs$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["TabsTrigger"], {
@@ -5403,7 +5403,7 @@ function GestorDashboard() {
                                             className: "h-4 w-4"
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 865,
+                                            lineNumber: 864,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -5411,13 +5411,13 @@ function GestorDashboard() {
                                             children: "Hallazgos"
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 866,
+                                            lineNumber: 865,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                    lineNumber: 864,
+                                    lineNumber: 863,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$tabs$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["TabsTrigger"], {
@@ -5428,7 +5428,7 @@ function GestorDashboard() {
                                             className: "h-4 w-4"
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 869,
+                                            lineNumber: 868,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -5436,13 +5436,13 @@ function GestorDashboard() {
                                             children: "Actividades"
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 870,
+                                            lineNumber: 869,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                    lineNumber: 868,
+                                    lineNumber: 867,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$tabs$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["TabsTrigger"], {
@@ -5453,7 +5453,7 @@ function GestorDashboard() {
                                             className: "h-4 w-4"
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 873,
+                                            lineNumber: 872,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -5461,19 +5461,19 @@ function GestorDashboard() {
                                             children: "Seguimiento"
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 874,
+                                            lineNumber: 873,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                    lineNumber: 872,
+                                    lineNumber: 871,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                            lineNumber: 859,
+                            lineNumber: 858,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$tabs$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["TabsContent"], {
@@ -5490,7 +5490,7 @@ function GestorDashboard() {
                                             subtitle: "Hallazgos en gestión"
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 882,
+                                            lineNumber: 881,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(KpiTile, {
@@ -5501,7 +5501,7 @@ function GestorDashboard() {
                                             subtitle: "Ejecutándose ahora"
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 883,
+                                            lineNumber: 882,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(KpiTile, {
@@ -5512,7 +5512,7 @@ function GestorDashboard() {
                                             subtitle: "Requieren atención"
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 884,
+                                            lineNumber: 883,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(KpiTile, {
@@ -5523,7 +5523,7 @@ function GestorDashboard() {
                                             subtitle: "En los próximos 7 días"
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 885,
+                                            lineNumber: 884,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(KpiTile, {
@@ -5534,13 +5534,13 @@ function GestorDashboard() {
                                             subtitle: `${cerradas} de ${total} cerrados`
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 886,
+                                            lineNumber: 885,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                    lineNumber: 881,
+                                    lineNumber: 880,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5552,7 +5552,7 @@ function GestorDashboard() {
                                             icon: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$upload$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Upload$3e$__["Upload"]
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 891,
+                                            lineNumber: 890,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(KpiTile, {
@@ -5562,7 +5562,7 @@ function GestorDashboard() {
                                             variant: "info"
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 892,
+                                            lineNumber: 891,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(KpiTile, {
@@ -5571,7 +5571,7 @@ function GestorDashboard() {
                                             icon: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$calendar$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Calendar$3e$__["Calendar"]
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 893,
+                                            lineNumber: 892,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(KpiTile, {
@@ -5580,13 +5580,13 @@ function GestorDashboard() {
                                             icon: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$activity$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Activity$3e$__["Activity"]
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 894,
+                                            lineNumber: 893,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                    lineNumber: 890,
+                                    lineNumber: 889,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5600,7 +5600,7 @@ function GestorDashboard() {
                                             centerSubLabel: "Total"
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 900,
+                                            lineNumber: 899,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(EnhancedDonutCard, {
@@ -5611,7 +5611,7 @@ function GestorDashboard() {
                                             centerSubLabel: "Hallazgos"
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 907,
+                                            lineNumber: 906,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -5629,7 +5629,7 @@ function GestorDashboard() {
                                                                         children: "Índice de Cierre"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                        lineNumber: 920,
+                                                                        lineNumber: 919,
                                                                         columnNumber: 23
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
@@ -5637,31 +5637,31 @@ function GestorDashboard() {
                                                                         children: "Mis hallazgos cerrados vs total"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                        lineNumber: 921,
+                                                                        lineNumber: 920,
                                                                         columnNumber: 23
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                lineNumber: 919,
+                                                                lineNumber: 918,
                                                                 columnNumber: 21
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$target$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Target$3e$__["Target"], {
                                                                 className: "h-4 w-4 text-muted-foreground"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                lineNumber: 923,
+                                                                lineNumber: 922,
                                                                 columnNumber: 21
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                        lineNumber: 918,
+                                                        lineNumber: 917,
                                                         columnNumber: 19
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                    lineNumber: 917,
+                                                    lineNumber: 916,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -5698,17 +5698,17 @@ function GestorDashboard() {
                                                                             }
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                            lineNumber: 942,
+                                                                            lineNumber: 941,
                                                                             columnNumber: 25
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                        lineNumber: 929,
+                                                                        lineNumber: 928,
                                                                         columnNumber: 23
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                    lineNumber: 928,
+                                                                    lineNumber: 927,
                                                                     columnNumber: 21
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5722,7 +5722,7 @@ function GestorDashboard() {
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                            lineNumber: 946,
+                                                                            lineNumber: 945,
                                                                             columnNumber: 23
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -5734,19 +5734,19 @@ function GestorDashboard() {
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                            lineNumber: 954,
+                                                                            lineNumber: 953,
                                                                             columnNumber: 23
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                    lineNumber: 945,
+                                                                    lineNumber: 944,
                                                                     columnNumber: 21
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                            lineNumber: 927,
+                                                            lineNumber: 926,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5757,7 +5757,7 @@ function GestorDashboard() {
                                                                         className: "h-4 w-4 text-green-500"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                        lineNumber: 960,
+                                                                        lineNumber: 959,
                                                                         columnNumber: 25
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -5765,7 +5765,7 @@ function GestorDashboard() {
                                                                         children: "Buen desempeño"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                        lineNumber: 961,
+                                                                        lineNumber: 960,
                                                                         columnNumber: 25
                                                                     }, this)
                                                                 ]
@@ -5775,7 +5775,7 @@ function GestorDashboard() {
                                                                         className: "h-4 w-4 text-amber-500"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                        lineNumber: 965,
+                                                                        lineNumber: 964,
                                                                         columnNumber: 25
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -5783,32 +5783,32 @@ function GestorDashboard() {
                                                                         children: "Requiere atención"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                        lineNumber: 966,
+                                                                        lineNumber: 965,
                                                                         columnNumber: 25
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true)
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                            lineNumber: 957,
+                                                            lineNumber: 956,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                    lineNumber: 926,
+                                                    lineNumber: 925,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 916,
+                                            lineNumber: 915,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                    lineNumber: 898,
+                                    lineNumber: 897,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5828,7 +5828,7 @@ function GestorDashboard() {
                                                                         children: "Tiempo Promedio por Etapa"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                        lineNumber: 980,
+                                                                        lineNumber: 979,
                                                                         columnNumber: 23
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
@@ -5836,31 +5836,31 @@ function GestorDashboard() {
                                                                         children: "Días promedio en cada fase del workflow"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                        lineNumber: 981,
+                                                                        lineNumber: 980,
                                                                         columnNumber: 23
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                lineNumber: 979,
+                                                                lineNumber: 978,
                                                                 columnNumber: 21
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$timer$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Timer$3e$__["Timer"], {
                                                                 className: "h-4 w-4 text-muted-foreground"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                lineNumber: 983,
+                                                                lineNumber: 982,
                                                                 columnNumber: 21
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                        lineNumber: 978,
+                                                        lineNumber: 977,
                                                         columnNumber: 19
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                    lineNumber: 977,
+                                                    lineNumber: 976,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -5886,7 +5886,7 @@ function GestorDashboard() {
                                                                     hide: true
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                    lineNumber: 995,
+                                                                    lineNumber: 994,
                                                                     columnNumber: 23
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$YAxis$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["YAxis"], {
@@ -5899,18 +5899,18 @@ function GestorDashboard() {
                                                                     stroke: "var(--muted-foreground)"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                    lineNumber: 996,
+                                                                    lineNumber: 995,
                                                                     columnNumber: 23
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$chart$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ChartTooltip"], {
                                                                     content: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$chart$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ChartTooltipContent"], {}, void 0, false, {
                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                        lineNumber: 1001,
+                                                                        lineNumber: 1000,
                                                                         columnNumber: 46
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                    lineNumber: 1001,
+                                                                    lineNumber: 1000,
                                                                     columnNumber: 23
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$Bar$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Bar"], {
@@ -5927,7 +5927,7 @@ function GestorDashboard() {
                                                                                 fill: CHART_COLORS_HEX[i % CHART_COLORS_HEX.length]
                                                                             }, i, false, {
                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                lineNumber: 1004,
+                                                                                lineNumber: 1003,
                                                                                 columnNumber: 27
                                                                             }, this)),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$component$2f$LabelList$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["LabelList"], {
@@ -5937,61 +5937,61 @@ function GestorDashboard() {
                                                                             formatter: (v)=>`${v ?? 0} días`
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                            lineNumber: 1006,
+                                                                            lineNumber: 1005,
                                                                             columnNumber: 25
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                    lineNumber: 1002,
+                                                                    lineNumber: 1001,
                                                                     columnNumber: 23
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                            lineNumber: 994,
+                                                            lineNumber: 993,
                                                             columnNumber: 21
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                        lineNumber: 987,
+                                                        lineNumber: 986,
                                                         columnNumber: 19
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                    lineNumber: 986,
+                                                    lineNumber: 985,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 976,
+                                            lineNumber: 975,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(ResponsablesCriticosCard, {
                                             responsables: responsablesCriticos
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 1013,
+                                            lineNumber: 1012,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                    lineNumber: 975,
+                                    lineNumber: 974,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(BitacoraCard, {
                                     entries: bitacora
                                 }, void 0, false, {
                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                    lineNumber: 1017,
+                                    lineNumber: 1016,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                            lineNumber: 879,
+                            lineNumber: 878,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$tabs$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["TabsContent"], {
@@ -6008,7 +6008,7 @@ function GestorDashboard() {
                                                     className: "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                    lineNumber: 1024,
+                                                    lineNumber: 1023,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
@@ -6018,13 +6018,13 @@ function GestorDashboard() {
                                                     onChange: (e)=>setSearchTerm(e.target.value)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                    lineNumber: 1025,
+                                                    lineNumber: 1024,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 1023,
+                                            lineNumber: 1022,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -6034,18 +6034,18 @@ function GestorDashboard() {
                                                 className: "h-4 w-4"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                lineNumber: 1033,
+                                                lineNumber: 1032,
                                                 columnNumber: 17
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 1032,
+                                            lineNumber: 1031,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                    lineNumber: 1022,
+                                    lineNumber: 1021,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -6063,7 +6063,7 @@ function GestorDashboard() {
                                                                 children: "Hallazgos en Gestión"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                lineNumber: 1041,
+                                                                lineNumber: 1040,
                                                                 columnNumber: 21
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
@@ -6071,13 +6071,13 @@ function GestorDashboard() {
                                                                 children: "Hallazgos asignados a mi dependencia"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                lineNumber: 1042,
+                                                                lineNumber: 1041,
                                                                 columnNumber: 21
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                        lineNumber: 1040,
+                                                        lineNumber: 1039,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$Badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
@@ -6088,23 +6088,23 @@ function GestorDashboard() {
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                        lineNumber: 1044,
+                                                        lineNumber: 1043,
                                                         columnNumber: 19
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                lineNumber: 1039,
+                                                lineNumber: 1038,
                                                 columnNumber: 17
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 1038,
+                                            lineNumber: 1037,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$separator$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Separator"], {}, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 1047,
+                                            lineNumber: 1046,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -6114,7 +6114,7 @@ function GestorDashboard() {
                                                 children: "Sin registros"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                lineNumber: 1050,
+                                                lineNumber: 1049,
                                                 columnNumber: 19
                                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Fragment"], {
                                                 children: [
@@ -6132,7 +6132,7 @@ function GestorDashboard() {
                                                                                 children: "Código"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                lineNumber: 1057,
+                                                                                lineNumber: 1056,
                                                                                 columnNumber: 29
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -6140,7 +6140,7 @@ function GestorDashboard() {
                                                                                 children: "Descripción"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                lineNumber: 1058,
+                                                                                lineNumber: 1057,
                                                                                 columnNumber: 29
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -6148,7 +6148,7 @@ function GestorDashboard() {
                                                                                 children: "Prioridad"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                lineNumber: 1059,
+                                                                                lineNumber: 1058,
                                                                                 columnNumber: 29
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -6156,7 +6156,7 @@ function GestorDashboard() {
                                                                                 children: "Semáforo"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                lineNumber: 1060,
+                                                                                lineNumber: 1059,
                                                                                 columnNumber: 29
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -6164,7 +6164,7 @@ function GestorDashboard() {
                                                                                 children: "Estado"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                lineNumber: 1061,
+                                                                                lineNumber: 1060,
                                                                                 columnNumber: 29
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -6172,7 +6172,7 @@ function GestorDashboard() {
                                                                                 children: "Responsable"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                lineNumber: 1062,
+                                                                                lineNumber: 1061,
                                                                                 columnNumber: 29
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -6180,7 +6180,7 @@ function GestorDashboard() {
                                                                                 children: "Cierre"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                lineNumber: 1063,
+                                                                                lineNumber: 1062,
                                                                                 columnNumber: 29
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -6188,18 +6188,18 @@ function GestorDashboard() {
                                                                                 children: "Acciones"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                lineNumber: 1064,
+                                                                                lineNumber: 1063,
                                                                                 columnNumber: 29
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                        lineNumber: 1056,
+                                                                        lineNumber: 1055,
                                                                         columnNumber: 27
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                    lineNumber: 1055,
+                                                                    lineNumber: 1054,
                                                                     columnNumber: 25
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
@@ -6212,7 +6212,7 @@ function GestorDashboard() {
                                                                                     children: h.codigo_del_hallazgo
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                    lineNumber: 1070,
+                                                                                    lineNumber: 1069,
                                                                                     columnNumber: 31
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -6221,7 +6221,7 @@ function GestorDashboard() {
                                                                                     children: h.descripcion
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                    lineNumber: 1073,
+                                                                                    lineNumber: 1072,
                                                                                     columnNumber: 31
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -6231,12 +6231,12 @@ function GestorDashboard() {
                                                                                         children: PRIORIDAD_CONFIG[h.prioridad].label
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                        lineNumber: 1077,
+                                                                                        lineNumber: 1076,
                                                                                         columnNumber: 33
                                                                                     }, this)
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                    lineNumber: 1076,
+                                                                                    lineNumber: 1075,
                                                                                     columnNumber: 31
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -6244,7 +6244,7 @@ function GestorDashboard() {
                                                                                     children: semaforoBadge(h.dias_restantes)
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                    lineNumber: 1081,
+                                                                                    lineNumber: 1080,
                                                                                     columnNumber: 31
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -6252,7 +6252,7 @@ function GestorDashboard() {
                                                                                     children: estadoBadge(h.estado)
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                    lineNumber: 1082,
+                                                                                    lineNumber: 1081,
                                                                                     columnNumber: 31
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -6260,7 +6260,7 @@ function GestorDashboard() {
                                                                                     children: h.responsable_plan_accion ?? '—'
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                    lineNumber: 1083,
+                                                                                    lineNumber: 1082,
                                                                                     columnNumber: 31
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -6268,7 +6268,7 @@ function GestorDashboard() {
                                                                                     children: h.fecha_cierre_proyectada ? formatDateTime(h.fecha_cierre_proyectada) : '—'
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                    lineNumber: 1084,
+                                                                                    lineNumber: 1083,
                                                                                     columnNumber: 31
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -6282,19 +6282,19 @@ function GestorDashboard() {
                                                                                                     className: "h-7 w-7"
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                                    lineNumber: 1089,
+                                                                                                    lineNumber: 1088,
                                                                                                     columnNumber: 64
                                                                                                 }, this),
                                                                                                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$ellipsis$2d$vertical$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__MoreVertical$3e$__["MoreVertical"], {
                                                                                                     className: "h-3.5 w-3.5"
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                                    lineNumber: 1090,
+                                                                                                    lineNumber: 1089,
                                                                                                     columnNumber: 37
                                                                                                 }, this)
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                                lineNumber: 1089,
+                                                                                                lineNumber: 1088,
                                                                                                 columnNumber: 35
                                                                                             }, this),
                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dropdown$2d$menu$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DropdownMenuContent"], {
@@ -6306,14 +6306,14 @@ function GestorDashboard() {
                                                                                                                 className: "h-3.5 w-3.5 mr-2"
                                                                                                             }, void 0, false, {
                                                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                                                lineNumber: 1093,
+                                                                                                                lineNumber: 1092,
                                                                                                                 columnNumber: 55
                                                                                                             }, this),
                                                                                                             "Ver detalle"
                                                                                                         ]
                                                                                                     }, void 0, true, {
                                                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                                        lineNumber: 1093,
+                                                                                                        lineNumber: 1092,
                                                                                                         columnNumber: 37
                                                                                                     }, this),
                                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dropdown$2d$menu$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DropdownMenuItem"], {
@@ -6322,14 +6322,14 @@ function GestorDashboard() {
                                                                                                                 className: "h-3.5 w-3.5 mr-2"
                                                                                                             }, void 0, false, {
                                                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                                                lineNumber: 1094,
+                                                                                                                lineNumber: 1093,
                                                                                                                 columnNumber: 55
                                                                                                             }, this),
                                                                                                             "Editar plan"
                                                                                                         ]
                                                                                                     }, void 0, true, {
                                                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                                        lineNumber: 1094,
+                                                                                                        lineNumber: 1093,
                                                                                                         columnNumber: 37
                                                                                                     }, this),
                                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dropdown$2d$menu$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DropdownMenuItem"], {
@@ -6338,19 +6338,19 @@ function GestorDashboard() {
                                                                                                                 className: "h-3.5 w-3.5 mr-2"
                                                                                                             }, void 0, false, {
                                                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                                                lineNumber: 1095,
+                                                                                                                lineNumber: 1094,
                                                                                                                 columnNumber: 55
                                                                                                             }, this),
                                                                                                             "Subir evidencia"
                                                                                                         ]
                                                                                                     }, void 0, true, {
                                                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                                        lineNumber: 1095,
+                                                                                                        lineNumber: 1094,
                                                                                                         columnNumber: 37
                                                                                                     }, this),
                                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dropdown$2d$menu$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DropdownMenuSeparator"], {}, void 0, false, {
                                                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                                        lineNumber: 1096,
+                                                                                                        lineNumber: 1095,
                                                                                                         columnNumber: 37
                                                                                                     }, this),
                                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dropdown$2d$menu$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DropdownMenuItem"], {
@@ -6359,14 +6359,14 @@ function GestorDashboard() {
                                                                                                                 className: "h-3.5 w-3.5 mr-2"
                                                                                                             }, void 0, false, {
                                                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                                                lineNumber: 1097,
+                                                                                                                lineNumber: 1096,
                                                                                                                 columnNumber: 55
                                                                                                             }, this),
                                                                                                             "Cambiar estado"
                                                                                                         ]
                                                                                                     }, void 0, true, {
                                                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                                        lineNumber: 1097,
+                                                                                                        lineNumber: 1096,
                                                                                                         columnNumber: 37
                                                                                                     }, this),
                                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dropdown$2d$menu$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DropdownMenuItem"], {
@@ -6375,53 +6375,53 @@ function GestorDashboard() {
                                                                                                                 className: "h-3.5 w-3.5 mr-2"
                                                                                                             }, void 0, false, {
                                                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                                                lineNumber: 1098,
+                                                                                                                lineNumber: 1097,
                                                                                                                 columnNumber: 55
                                                                                                             }, this),
                                                                                                             "Solicitar prórroga"
                                                                                                         ]
                                                                                                     }, void 0, true, {
                                                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                                        lineNumber: 1098,
+                                                                                                        lineNumber: 1097,
                                                                                                         columnNumber: 37
                                                                                                     }, this)
                                                                                                 ]
                                                                                             }, void 0, true, {
                                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                                lineNumber: 1092,
+                                                                                                lineNumber: 1091,
                                                                                                 columnNumber: 35
                                                                                             }, this)
                                                                                         ]
                                                                                     }, void 0, true, {
                                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                        lineNumber: 1088,
+                                                                                        lineNumber: 1087,
                                                                                         columnNumber: 33
                                                                                     }, this)
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                    lineNumber: 1087,
+                                                                                    lineNumber: 1086,
                                                                                     columnNumber: 31
                                                                                 }, this)
                                                                             ]
                                                                         }, h.id, true, {
                                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                            lineNumber: 1069,
+                                                                            lineNumber: 1068,
                                                                             columnNumber: 29
                                                                         }, this))
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                    lineNumber: 1067,
+                                                                    lineNumber: 1066,
                                                                     columnNumber: 25
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                            lineNumber: 1054,
+                                                            lineNumber: 1053,
                                                             columnNumber: 23
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                        lineNumber: 1053,
+                                                        lineNumber: 1052,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6432,31 +6432,31 @@ function GestorDashboard() {
                                                             onChange: setHPage
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                            lineNumber: 1108,
+                                                            lineNumber: 1107,
                                                             columnNumber: 23
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                        lineNumber: 1107,
+                                                        lineNumber: 1106,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true)
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 1048,
+                                            lineNumber: 1047,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                    lineNumber: 1037,
+                                    lineNumber: 1036,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                            lineNumber: 1021,
+                            lineNumber: 1020,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$tabs$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["TabsContent"], {
@@ -6472,12 +6472,12 @@ function GestorDashboard() {
                                                 className: "h-4 w-4 text-primary"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                lineNumber: 1120,
+                                                lineNumber: 1119,
                                                 columnNumber: 17
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 1119,
+                                            lineNumber: 1118,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6487,7 +6487,7 @@ function GestorDashboard() {
                                                     children: "Actividades por Hallazgo"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                    lineNumber: 1123,
+                                                    lineNumber: 1122,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -6495,19 +6495,19 @@ function GestorDashboard() {
                                                     children: "Gestione el progreso de cada plan de acción"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                    lineNumber: 1124,
+                                                    lineNumber: 1123,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 1122,
+                                            lineNumber: 1121,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                    lineNumber: 1118,
+                                    lineNumber: 1117,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6516,18 +6516,18 @@ function GestorDashboard() {
                                             hallazgo: h
                                         }, h.id, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 1129,
+                                            lineNumber: 1128,
                                             columnNumber: 17
                                         }, this))
                                 }, void 0, false, {
                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                    lineNumber: 1127,
+                                    lineNumber: 1126,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                            lineNumber: 1117,
+                            lineNumber: 1116,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$tabs$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["TabsContent"], {
@@ -6551,7 +6551,7 @@ function GestorDashboard() {
                                                                         children: "Alertas Activas"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                        lineNumber: 1142,
+                                                                        lineNumber: 1141,
                                                                         columnNumber: 23
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
@@ -6559,31 +6559,31 @@ function GestorDashboard() {
                                                                         children: "Requieren atención inmediata"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                        lineNumber: 1143,
+                                                                        lineNumber: 1142,
                                                                         columnNumber: 23
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                lineNumber: 1141,
+                                                                lineNumber: 1140,
                                                                 columnNumber: 21
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$bell$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Bell$3e$__["Bell"], {
                                                                 className: "h-4 w-4 text-destructive"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                lineNumber: 1145,
+                                                                lineNumber: 1144,
                                                                 columnNumber: 21
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                        lineNumber: 1140,
+                                                        lineNumber: 1139,
                                                         columnNumber: 19
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                    lineNumber: 1139,
+                                                    lineNumber: 1138,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -6597,7 +6597,7 @@ function GestorDashboard() {
                                                                             className: "h-5 w-5 text-destructive shrink-0"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                            lineNumber: 1152,
+                                                                            lineNumber: 1151,
                                                                             columnNumber: 25
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6611,7 +6611,7 @@ function GestorDashboard() {
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                    lineNumber: 1154,
+                                                                                    lineNumber: 1153,
                                                                                     columnNumber: 27
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -6619,13 +6619,13 @@ function GestorDashboard() {
                                                                                     children: h.descripcion
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                    lineNumber: 1155,
+                                                                                    lineNumber: 1154,
                                                                                     columnNumber: 27
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                            lineNumber: 1153,
+                                                                            lineNumber: 1152,
                                                                             columnNumber: 25
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -6634,13 +6634,13 @@ function GestorDashboard() {
                                                                             children: "Atender"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                            lineNumber: 1157,
+                                                                            lineNumber: 1156,
                                                                             columnNumber: 25
                                                                         }, this)
                                                                     ]
                                                                 }, h.id, true, {
                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                    lineNumber: 1151,
+                                                                    lineNumber: 1150,
                                                                     columnNumber: 23
                                                                 }, this)),
                                                             hallazgos.filter((h)=>h.dias_restantes >= 0 && h.dias_restantes <= 7).map((h)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6650,7 +6650,7 @@ function GestorDashboard() {
                                                                             className: "h-5 w-5 text-amber-500 shrink-0"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                            lineNumber: 1162,
+                                                                            lineNumber: 1161,
                                                                             columnNumber: 25
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6664,7 +6664,7 @@ function GestorDashboard() {
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                    lineNumber: 1164,
+                                                                                    lineNumber: 1163,
                                                                                     columnNumber: 27
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -6675,13 +6675,13 @@ function GestorDashboard() {
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                    lineNumber: 1165,
+                                                                                    lineNumber: 1164,
                                                                                     columnNumber: 27
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                            lineNumber: 1163,
+                                                                            lineNumber: 1162,
                                                                             columnNumber: 25
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -6690,30 +6690,30 @@ function GestorDashboard() {
                                                                             children: "Ver"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                            lineNumber: 1167,
+                                                                            lineNumber: 1166,
                                                                             columnNumber: 25
                                                                         }, this)
                                                                     ]
                                                                 }, h.id, true, {
                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                    lineNumber: 1161,
+                                                                    lineNumber: 1160,
                                                                     columnNumber: 23
                                                                 }, this))
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                        lineNumber: 1149,
+                                                        lineNumber: 1148,
                                                         columnNumber: 19
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                    lineNumber: 1148,
+                                                    lineNumber: 1147,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 1138,
+                                            lineNumber: 1137,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -6730,7 +6730,7 @@ function GestorDashboard() {
                                                                         children: "Cumplimiento SLA"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                        lineNumber: 1179,
+                                                                        lineNumber: 1178,
                                                                         columnNumber: 23
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
@@ -6738,31 +6738,31 @@ function GestorDashboard() {
                                                                         children: "Estado de acuerdos de nivel de servicio"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                        lineNumber: 1180,
+                                                                        lineNumber: 1179,
                                                                         columnNumber: 23
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                lineNumber: 1178,
+                                                                lineNumber: 1177,
                                                                 columnNumber: 21
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$timer$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Timer$3e$__["Timer"], {
                                                                 className: "h-4 w-4 text-muted-foreground"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                lineNumber: 1182,
+                                                                lineNumber: 1181,
                                                                 columnNumber: 21
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                        lineNumber: 1177,
+                                                        lineNumber: 1176,
                                                         columnNumber: 19
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                    lineNumber: 1176,
+                                                    lineNumber: 1175,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -6779,7 +6779,7 @@ function GestorDashboard() {
                                                                                 children: "Hallazgos en SLA"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                lineNumber: 1189,
+                                                                                lineNumber: 1188,
                                                                                 columnNumber: 25
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -6787,13 +6787,13 @@ function GestorDashboard() {
                                                                                 children: "78%"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                lineNumber: 1190,
+                                                                                lineNumber: 1189,
                                                                                 columnNumber: 25
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                        lineNumber: 1188,
+                                                                        lineNumber: 1187,
                                                                         columnNumber: 23
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$progress$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Progress"], {
@@ -6801,13 +6801,13 @@ function GestorDashboard() {
                                                                         className: "h-2"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                        lineNumber: 1192,
+                                                                        lineNumber: 1191,
                                                                         columnNumber: 23
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                lineNumber: 1187,
+                                                                lineNumber: 1186,
                                                                 columnNumber: 21
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6820,7 +6820,7 @@ function GestorDashboard() {
                                                                                 children: "Tiempo promedio de cierre"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                lineNumber: 1196,
+                                                                                lineNumber: 1195,
                                                                                 columnNumber: 25
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -6828,13 +6828,13 @@ function GestorDashboard() {
                                                                                 children: "18 días"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                lineNumber: 1197,
+                                                                                lineNumber: 1196,
                                                                                 columnNumber: 25
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                        lineNumber: 1195,
+                                                                        lineNumber: 1194,
                                                                         columnNumber: 23
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -6842,18 +6842,18 @@ function GestorDashboard() {
                                                                         children: "SLA objetivo: 30 días"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                        lineNumber: 1199,
+                                                                        lineNumber: 1198,
                                                                         columnNumber: 23
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                lineNumber: 1194,
+                                                                lineNumber: 1193,
                                                                 columnNumber: 21
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$separator$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Separator"], {}, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                lineNumber: 1201,
+                                                                lineNumber: 1200,
                                                                 columnNumber: 21
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6866,7 +6866,7 @@ function GestorDashboard() {
                                                                                 children: "31"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                lineNumber: 1204,
+                                                                                lineNumber: 1203,
                                                                                 columnNumber: 25
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -6874,13 +6874,13 @@ function GestorDashboard() {
                                                                                 children: "En tiempo"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                lineNumber: 1205,
+                                                                                lineNumber: 1204,
                                                                                 columnNumber: 25
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                        lineNumber: 1203,
+                                                                        lineNumber: 1202,
                                                                         columnNumber: 23
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6890,7 +6890,7 @@ function GestorDashboard() {
                                                                                 children: "6"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                lineNumber: 1208,
+                                                                                lineNumber: 1207,
                                                                                 columnNumber: 25
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -6898,13 +6898,13 @@ function GestorDashboard() {
                                                                                 children: "En riesgo"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                lineNumber: 1209,
+                                                                                lineNumber: 1208,
                                                                                 columnNumber: 25
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                        lineNumber: 1207,
+                                                                        lineNumber: 1206,
                                                                         columnNumber: 23
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6914,7 +6914,7 @@ function GestorDashboard() {
                                                                                 children: "4"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                lineNumber: 1212,
+                                                                                lineNumber: 1211,
                                                                                 columnNumber: 25
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -6922,42 +6922,42 @@ function GestorDashboard() {
                                                                                 children: "Fuera de SLA"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                lineNumber: 1213,
+                                                                                lineNumber: 1212,
                                                                                 columnNumber: 25
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                        lineNumber: 1211,
+                                                                        lineNumber: 1210,
                                                                         columnNumber: 23
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                lineNumber: 1202,
+                                                                lineNumber: 1201,
                                                                 columnNumber: 21
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                        lineNumber: 1186,
+                                                        lineNumber: 1185,
                                                         columnNumber: 19
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                    lineNumber: 1185,
+                                                    lineNumber: 1184,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 1175,
+                                            lineNumber: 1174,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                    lineNumber: 1136,
+                                    lineNumber: 1135,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6967,43 +6967,43 @@ function GestorDashboard() {
                                             responsables: responsablesCriticos
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 1223,
+                                            lineNumber: 1222,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(BitacoraCard, {
                                             entries: bitacora
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 1224,
+                                            lineNumber: 1223,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                    lineNumber: 1222,
+                                    lineNumber: 1221,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                            lineNumber: 1135,
+                            lineNumber: 1134,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                    lineNumber: 858,
+                    lineNumber: 857,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-            lineNumber: 794,
+            lineNumber: 793,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-        lineNumber: 793,
+        lineNumber: 792,
         columnNumber: 5
     }, this);
 }
@@ -9009,6 +9009,7 @@ var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$re
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$shield$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Shield$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/shield.js [app-client] (ecmascript) <export default as Shield>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$file$2d$exclamation$2d$point$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__FileWarning$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/file-exclamation-point.js [app-client] (ecmascript) <export default as FileWarning>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$zap$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Zap$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/zap.js [app-client] (ecmascript) <export default as Zap>");
+var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$list$2d$checks$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ListChecks$3e$__ = __turbopack_context__.i("[project]/node_modules/lucide-react/dist/esm/icons/list-checks.js [app-client] (ecmascript) <export default as ListChecks>");
 var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$api$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/api.ts [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$auth$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/lib/auth.tsx [app-client] (ecmascript)");
 var __TURBOPACK__imported__module__$5b$project$5d2f$app$2f$dashboard$2f$DirectivoDashboard$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = __turbopack_context__.i("[project]/app/dashboard/DirectivoDashboard.tsx [app-client] (ecmascript)");
@@ -9168,12 +9169,12 @@ function DashboardPage() {
             pathname: pathname,
             children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$app$2f$dashboard$2f$DirectivoDashboard$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                 fileName: "[project]/app/dashboard/page.tsx",
-                lineNumber: 184,
+                lineNumber: 186,
                 columnNumber: 9
             }, this)
         }, void 0, false, {
             fileName: "[project]/app/dashboard/page.tsx",
-            lineNumber: 183,
+            lineNumber: 185,
             columnNumber: 7
         }, this);
     }
@@ -9182,12 +9183,12 @@ function DashboardPage() {
             pathname: pathname,
             children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$app$2f$dashboard$2f$GestorDashboard$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {}, void 0, false, {
                 fileName: "[project]/app/dashboard/page.tsx",
-                lineNumber: 192,
+                lineNumber: 194,
                 columnNumber: 9
             }, this)
         }, void 0, false, {
             fileName: "[project]/app/dashboard/page.tsx",
-            lineNumber: 191,
+            lineNumber: 193,
             columnNumber: 7
         }, this);
     }
@@ -9206,7 +9207,7 @@ function DashboardPage() {
                                     children: "Dashboard de Hallazgos"
                                 }, void 0, false, {
                                     fileName: "[project]/app/dashboard/page.tsx",
-                                    lineNumber: 204,
+                                    lineNumber: 206,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -9214,13 +9215,13 @@ function DashboardPage() {
                                     children: "Resumen ejecutivo de eventos de riesgo operacional"
                                 }, void 0, false, {
                                     fileName: "[project]/app/dashboard/page.tsx",
-                                    lineNumber: 205,
+                                    lineNumber: 207,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/dashboard/page.tsx",
-                            lineNumber: 203,
+                            lineNumber: 205,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -9234,25 +9235,25 @@ function DashboardPage() {
                                     className: `h-3.5 w-3.5 ${isRefreshing ? 'animate-spin' : ''}`
                                 }, void 0, false, {
                                     fileName: "[project]/app/dashboard/page.tsx",
-                                    lineNumber: 216,
+                                    lineNumber: 218,
                                     columnNumber: 13
                                 }, this),
                                 "Actualizar"
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/dashboard/page.tsx",
-                            lineNumber: 209,
+                            lineNumber: 211,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/dashboard/page.tsx",
-                    lineNumber: 202,
+                    lineNumber: 204,
                     columnNumber: 9
                 }, this),
                 loading ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$Spinner$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["PageLoader"], {}, void 0, false, {
                     fileName: "[project]/app/dashboard/page.tsx",
-                    lineNumber: 222,
+                    lineNumber: 224,
                     columnNumber: 11
                 }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Fragment"], {
                     children: [
@@ -9265,7 +9266,7 @@ function DashboardPage() {
                                     icon: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$triangle$2d$alert$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__AlertTriangle$3e$__["AlertTriangle"]
                                 }, void 0, false, {
                                     fileName: "[project]/app/dashboard/page.tsx",
-                                    lineNumber: 227,
+                                    lineNumber: 229,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(KpiCard, {
@@ -9276,7 +9277,7 @@ function DashboardPage() {
                                     variant: "warning"
                                 }, void 0, false, {
                                     fileName: "[project]/app/dashboard/page.tsx",
-                                    lineNumber: 232,
+                                    lineNumber: 234,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(KpiCard, {
@@ -9287,7 +9288,7 @@ function DashboardPage() {
                                     variant: "danger"
                                 }, void 0, false, {
                                     fileName: "[project]/app/dashboard/page.tsx",
-                                    lineNumber: 239,
+                                    lineNumber: 241,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(KpiCard, {
@@ -9300,25 +9301,34 @@ function DashboardPage() {
                                     variant: "success"
                                 }, void 0, false, {
                                     fileName: "[project]/app/dashboard/page.tsx",
-                                    lineNumber: 246,
+                                    lineNumber: 248,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/dashboard/page.tsx",
-                            lineNumber: 226,
+                            lineNumber: 228,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
-                            className: "grid gap-4 md:grid-cols-2 lg:grid-cols-3",
+                            className: "grid gap-4 md:grid-cols-2 lg:grid-cols-4",
                             children: [
+                                /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(KpiCardMini, {
+                                    title: "Total Actividades",
+                                    value: metrics?.total_actividades ?? 0,
+                                    icon: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$list$2d$checks$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ListChecks$3e$__["ListChecks"]
+                                }, void 0, false, {
+                                    fileName: "[project]/app/dashboard/page.tsx",
+                                    lineNumber: 261,
+                                    columnNumber: 15
+                                }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(KpiCardMini, {
                                     title: "Con Prórroga",
                                     value: metrics?.con_prorroga ?? 0,
                                     icon: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$calendar$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Calendar$3e$__["Calendar"]
                                 }, void 0, false, {
                                     fileName: "[project]/app/dashboard/page.tsx",
-                                    lineNumber: 259,
+                                    lineNumber: 266,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(KpiCardMini, {
@@ -9328,7 +9338,7 @@ function DashboardPage() {
                                     variant: "success"
                                 }, void 0, false, {
                                     fileName: "[project]/app/dashboard/page.tsx",
-                                    lineNumber: 264,
+                                    lineNumber: 271,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(KpiCardMini, {
@@ -9338,13 +9348,13 @@ function DashboardPage() {
                                     variant: cumplimiento >= 70 ? 'success' : 'danger'
                                 }, void 0, false, {
                                     fileName: "[project]/app/dashboard/page.tsx",
-                                    lineNumber: 270,
+                                    lineNumber: 277,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/dashboard/page.tsx",
-                            lineNumber: 258,
+                            lineNumber: 260,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9364,7 +9374,7 @@ function DashboardPage() {
                                                                 children: "Distribución por Estado"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/page.tsx",
-                                                                lineNumber: 285,
+                                                                lineNumber: 292,
                                                                 columnNumber: 23
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
@@ -9372,37 +9382,37 @@ function DashboardPage() {
                                                                 children: "Estado actual de hallazgos"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/page.tsx",
-                                                                lineNumber: 286,
+                                                                lineNumber: 293,
                                                                 columnNumber: 23
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/dashboard/page.tsx",
-                                                        lineNumber: 284,
+                                                        lineNumber: 291,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chart$2d$pie$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__PieChart$3e$__["PieChart"], {
                                                         className: "h-4 w-4 text-muted-foreground"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/page.tsx",
-                                                        lineNumber: 288,
+                                                        lineNumber: 295,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/dashboard/page.tsx",
-                                                lineNumber: 283,
+                                                lineNumber: 290,
                                                 columnNumber: 19
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/page.tsx",
-                                            lineNumber: 282,
+                                            lineNumber: 289,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
                                             children: estadoConFill.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(EmptyChart, {}, void 0, false, {
                                                 fileName: "[project]/app/dashboard/page.tsx",
-                                                lineNumber: 293,
+                                                lineNumber: 300,
                                                 columnNumber: 21
                                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Fragment"], {
                                                 children: [
@@ -9429,34 +9439,34 @@ function DashboardPage() {
                                                                             fill: entry.fill
                                                                         }, `cell-${index}`, false, {
                                                                             fileName: "[project]/app/dashboard/page.tsx",
-                                                                            lineNumber: 310,
+                                                                            lineNumber: 317,
                                                                             columnNumber: 31
                                                                         }, this))
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/dashboard/page.tsx",
-                                                                    lineNumber: 298,
+                                                                    lineNumber: 305,
                                                                     columnNumber: 27
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$chart$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ChartTooltip"], {
                                                                     content: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$chart$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ChartTooltipContent"], {}, void 0, false, {
                                                                         fileName: "[project]/app/dashboard/page.tsx",
-                                                                        lineNumber: 313,
+                                                                        lineNumber: 320,
                                                                         columnNumber: 50
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/dashboard/page.tsx",
-                                                                    lineNumber: 313,
+                                                                    lineNumber: 320,
                                                                     columnNumber: 27
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/dashboard/page.tsx",
-                                                            lineNumber: 297,
+                                                            lineNumber: 304,
                                                             columnNumber: 25
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/page.tsx",
-                                                        lineNumber: 296,
+                                                        lineNumber: 303,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9471,7 +9481,7 @@ function DashboardPage() {
                                                                         }
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/dashboard/page.tsx",
-                                                                        lineNumber: 319,
+                                                                        lineNumber: 326,
                                                                         columnNumber: 29
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -9479,7 +9489,7 @@ function DashboardPage() {
                                                                         children: item.name
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/dashboard/page.tsx",
-                                                                        lineNumber: 320,
+                                                                        lineNumber: 327,
                                                                         columnNumber: 29
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -9487,31 +9497,31 @@ function DashboardPage() {
                                                                         children: item.value
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/dashboard/page.tsx",
-                                                                        lineNumber: 321,
+                                                                        lineNumber: 328,
                                                                         columnNumber: 29
                                                                     }, this)
                                                                 ]
                                                             }, item.name, true, {
                                                                 fileName: "[project]/app/dashboard/page.tsx",
-                                                                lineNumber: 318,
+                                                                lineNumber: 325,
                                                                 columnNumber: 27
                                                             }, this))
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/page.tsx",
-                                                        lineNumber: 316,
+                                                        lineNumber: 323,
                                                         columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, void 0, true)
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/page.tsx",
-                                            lineNumber: 291,
+                                            lineNumber: 298,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/page.tsx",
-                                    lineNumber: 281,
+                                    lineNumber: 288,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -9528,7 +9538,7 @@ function DashboardPage() {
                                                                 children: "Plan de Acción"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/page.tsx",
-                                                                lineNumber: 335,
+                                                                lineNumber: 342,
                                                                 columnNumber: 23
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
@@ -9536,37 +9546,37 @@ function DashboardPage() {
                                                                 children: "Estado de los planes de cierre"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/page.tsx",
-                                                                lineNumber: 336,
+                                                                lineNumber: 343,
                                                                 columnNumber: 23
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/dashboard/page.tsx",
-                                                        lineNumber: 334,
+                                                        lineNumber: 341,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$shield$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Shield$3e$__["Shield"], {
                                                         className: "h-4 w-4 text-muted-foreground"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/page.tsx",
-                                                        lineNumber: 338,
+                                                        lineNumber: 345,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/dashboard/page.tsx",
-                                                lineNumber: 333,
+                                                lineNumber: 340,
                                                 columnNumber: 19
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/page.tsx",
-                                            lineNumber: 332,
+                                            lineNumber: 339,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
                                             children: planConFill.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(EmptyChart, {}, void 0, false, {
                                                 fileName: "[project]/app/dashboard/page.tsx",
-                                                lineNumber: 343,
+                                                lineNumber: 350,
                                                 columnNumber: 21
                                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Fragment"], {
                                                 children: [
@@ -9593,34 +9603,34 @@ function DashboardPage() {
                                                                             fill: entry.fill
                                                                         }, `cell-${index}`, false, {
                                                                             fileName: "[project]/app/dashboard/page.tsx",
-                                                                            lineNumber: 360,
+                                                                            lineNumber: 367,
                                                                             columnNumber: 31
                                                                         }, this))
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/dashboard/page.tsx",
-                                                                    lineNumber: 348,
+                                                                    lineNumber: 355,
                                                                     columnNumber: 27
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$chart$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ChartTooltip"], {
                                                                     content: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$chart$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ChartTooltipContent"], {}, void 0, false, {
                                                                         fileName: "[project]/app/dashboard/page.tsx",
-                                                                        lineNumber: 363,
+                                                                        lineNumber: 370,
                                                                         columnNumber: 50
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/dashboard/page.tsx",
-                                                                    lineNumber: 363,
+                                                                    lineNumber: 370,
                                                                     columnNumber: 27
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/dashboard/page.tsx",
-                                                            lineNumber: 347,
+                                                            lineNumber: 354,
                                                             columnNumber: 25
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/page.tsx",
-                                                        lineNumber: 346,
+                                                        lineNumber: 353,
                                                         columnNumber: 23
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9635,7 +9645,7 @@ function DashboardPage() {
                                                                         }
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/dashboard/page.tsx",
-                                                                        lineNumber: 369,
+                                                                        lineNumber: 376,
                                                                         columnNumber: 29
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -9643,7 +9653,7 @@ function DashboardPage() {
                                                                         children: item.name
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/dashboard/page.tsx",
-                                                                        lineNumber: 370,
+                                                                        lineNumber: 377,
                                                                         columnNumber: 29
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -9651,31 +9661,31 @@ function DashboardPage() {
                                                                         children: item.value
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/dashboard/page.tsx",
-                                                                        lineNumber: 371,
+                                                                        lineNumber: 378,
                                                                         columnNumber: 29
                                                                     }, this)
                                                                 ]
                                                             }, item.name, true, {
                                                                 fileName: "[project]/app/dashboard/page.tsx",
-                                                                lineNumber: 368,
+                                                                lineNumber: 375,
                                                                 columnNumber: 27
                                                             }, this))
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/page.tsx",
-                                                        lineNumber: 366,
+                                                        lineNumber: 373,
                                                         columnNumber: 23
                                                     }, this)
                                                 ]
                                             }, void 0, true)
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/page.tsx",
-                                            lineNumber: 341,
+                                            lineNumber: 348,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/page.tsx",
-                                    lineNumber: 331,
+                                    lineNumber: 338,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -9692,7 +9702,7 @@ function DashboardPage() {
                                                                 children: "Índice de Cierre"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/page.tsx",
-                                                                lineNumber: 385,
+                                                                lineNumber: 392,
                                                                 columnNumber: 23
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
@@ -9700,31 +9710,31 @@ function DashboardPage() {
                                                                 children: "Hallazgos cerrados vs total"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/page.tsx",
-                                                                lineNumber: 386,
+                                                                lineNumber: 393,
                                                                 columnNumber: 23
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/dashboard/page.tsx",
-                                                        lineNumber: 384,
+                                                        lineNumber: 391,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$target$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Target$3e$__["Target"], {
                                                         className: "h-4 w-4 text-muted-foreground"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/page.tsx",
-                                                        lineNumber: 388,
+                                                        lineNumber: 395,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/dashboard/page.tsx",
-                                                lineNumber: 383,
+                                                lineNumber: 390,
                                                 columnNumber: 19
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/page.tsx",
-                                            lineNumber: 382,
+                                            lineNumber: 389,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -9753,17 +9763,17 @@ function DashboardPage() {
                                                             }
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/dashboard/page.tsx",
-                                                            lineNumber: 402,
+                                                            lineNumber: 409,
                                                             columnNumber: 23
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/page.tsx",
-                                                        lineNumber: 393,
+                                                        lineNumber: 400,
                                                         columnNumber: 21
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/dashboard/page.tsx",
-                                                    lineNumber: 392,
+                                                    lineNumber: 399,
                                                     columnNumber: 19
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9777,7 +9787,7 @@ function DashboardPage() {
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/dashboard/page.tsx",
-                                                            lineNumber: 411,
+                                                            lineNumber: 418,
                                                             columnNumber: 21
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -9787,43 +9797,43 @@ function DashboardPage() {
                                                                 children: "Buen desempeño"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/page.tsx",
-                                                                lineNumber: 414,
+                                                                lineNumber: 421,
                                                                 columnNumber: 25
                                                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
                                                                 className: "text-amber-500 dark:text-amber-400",
                                                                 children: "Requiere atención"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/page.tsx",
-                                                                lineNumber: 416,
+                                                                lineNumber: 423,
                                                                 columnNumber: 25
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/dashboard/page.tsx",
-                                                            lineNumber: 412,
+                                                            lineNumber: 419,
                                                             columnNumber: 21
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/dashboard/page.tsx",
-                                                    lineNumber: 410,
+                                                    lineNumber: 417,
                                                     columnNumber: 19
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/dashboard/page.tsx",
-                                            lineNumber: 391,
+                                            lineNumber: 398,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/page.tsx",
-                                    lineNumber: 381,
+                                    lineNumber: 388,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/dashboard/page.tsx",
-                            lineNumber: 279,
+                            lineNumber: 286,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -9843,7 +9853,7 @@ function DashboardPage() {
                                                                 children: "Evolución Mensual"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/page.tsx",
-                                                                lineNumber: 431,
+                                                                lineNumber: 438,
                                                                 columnNumber: 23
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
@@ -9851,37 +9861,37 @@ function DashboardPage() {
                                                                 children: "Hallazgos cerrados por mes (últimos 12 meses)"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/page.tsx",
-                                                                lineNumber: 432,
+                                                                lineNumber: 439,
                                                                 columnNumber: 23
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/dashboard/page.tsx",
-                                                        lineNumber: 430,
+                                                        lineNumber: 437,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$trending$2d$up$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__TrendingUp$3e$__["TrendingUp"], {
                                                         className: "h-4 w-4 text-muted-foreground"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/page.tsx",
-                                                        lineNumber: 434,
+                                                        lineNumber: 441,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/dashboard/page.tsx",
-                                                lineNumber: 429,
+                                                lineNumber: 436,
                                                 columnNumber: 19
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/page.tsx",
-                                            lineNumber: 428,
+                                            lineNumber: 435,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
                                             children: timelineForChart.length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(EmptyChart, {}, void 0, false, {
                                                 fileName: "[project]/app/dashboard/page.tsx",
-                                                lineNumber: 439,
+                                                lineNumber: 446,
                                                 columnNumber: 21
                                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$chart$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ChartContainer"], {
                                                 config: {
@@ -9914,7 +9924,7 @@ function DashboardPage() {
                                                                         stopOpacity: 0.3
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/dashboard/page.tsx",
-                                                                        lineNumber: 450,
+                                                                        lineNumber: 457,
                                                                         columnNumber: 29
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("stop", {
@@ -9923,18 +9933,18 @@ function DashboardPage() {
                                                                         stopOpacity: 0
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/dashboard/page.tsx",
-                                                                        lineNumber: 451,
+                                                                        lineNumber: 458,
                                                                         columnNumber: 29
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/dashboard/page.tsx",
-                                                                lineNumber: 449,
+                                                                lineNumber: 456,
                                                                 columnNumber: 27
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/dashboard/page.tsx",
-                                                            lineNumber: 448,
+                                                            lineNumber: 455,
                                                             columnNumber: 25
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$CartesianGrid$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CartesianGrid"], {
@@ -9943,7 +9953,7 @@ function DashboardPage() {
                                                             vertical: false
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/dashboard/page.tsx",
-                                                            lineNumber: 454,
+                                                            lineNumber: 461,
                                                             columnNumber: 25
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$XAxis$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["XAxis"], {
@@ -9955,7 +9965,7 @@ function DashboardPage() {
                                                             stroke: "var(--muted-foreground)"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/dashboard/page.tsx",
-                                                            lineNumber: 455,
+                                                            lineNumber: 462,
                                                             columnNumber: 25
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$YAxis$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["YAxis"], {
@@ -9966,18 +9976,18 @@ function DashboardPage() {
                                                             stroke: "var(--muted-foreground)"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/dashboard/page.tsx",
-                                                            lineNumber: 463,
+                                                            lineNumber: 470,
                                                             columnNumber: 25
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$chart$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ChartTooltip"], {
                                                             content: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$chart$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ChartTooltipContent"], {}, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/page.tsx",
-                                                                lineNumber: 470,
+                                                                lineNumber: 477,
                                                                 columnNumber: 48
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/dashboard/page.tsx",
-                                                            lineNumber: 470,
+                                                            lineNumber: 477,
                                                             columnNumber: 25
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$Area$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Area"], {
@@ -9988,40 +9998,40 @@ function DashboardPage() {
                                                             fill: "url(#fillCerrados)"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/dashboard/page.tsx",
-                                                            lineNumber: 471,
+                                                            lineNumber: 478,
                                                             columnNumber: 25
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$chart$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ChartLegend"], {
                                                             content: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$chart$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ChartLegendContent"], {}, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/page.tsx",
-                                                                lineNumber: 478,
+                                                                lineNumber: 485,
                                                                 columnNumber: 47
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/dashboard/page.tsx",
-                                                            lineNumber: 478,
+                                                            lineNumber: 485,
                                                             columnNumber: 25
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/dashboard/page.tsx",
-                                                    lineNumber: 447,
+                                                    lineNumber: 454,
                                                     columnNumber: 23
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/dashboard/page.tsx",
-                                                lineNumber: 441,
+                                                lineNumber: 448,
                                                 columnNumber: 21
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/page.tsx",
-                                            lineNumber: 437,
+                                            lineNumber: 444,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/page.tsx",
-                                    lineNumber: 427,
+                                    lineNumber: 434,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -10038,7 +10048,7 @@ function DashboardPage() {
                                                                 children: isVice ? 'Hallazgos por Dirección' : 'Hallazgos por Responsable'
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/page.tsx",
-                                                                lineNumber: 490,
+                                                                lineNumber: 497,
                                                                 columnNumber: 23
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
@@ -10046,37 +10056,37 @@ function DashboardPage() {
                                                                 children: isVice ? 'Distribución por área organizacional' : 'Top responsables asignados'
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/page.tsx",
-                                                                lineNumber: 493,
+                                                                lineNumber: 500,
                                                                 columnNumber: 23
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/dashboard/page.tsx",
-                                                        lineNumber: 489,
+                                                        lineNumber: 496,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$chart$2d$column$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__BarChart3$3e$__["BarChart3"], {
                                                         className: "h-4 w-4 text-muted-foreground"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/page.tsx",
-                                                        lineNumber: 497,
+                                                        lineNumber: 504,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/dashboard/page.tsx",
-                                                lineNumber: 488,
+                                                lineNumber: 495,
                                                 columnNumber: 19
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/page.tsx",
-                                            lineNumber: 487,
+                                            lineNumber: 494,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
                                             children: (isVice ? porDependencia : porResponsable).length === 0 ? /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(EmptyChart, {}, void 0, false, {
                                                 fileName: "[project]/app/dashboard/page.tsx",
-                                                lineNumber: 502,
+                                                lineNumber: 509,
                                                 columnNumber: 21
                                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$chart$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ChartContainer"], {
                                                 config: {
@@ -10103,7 +10113,7 @@ function DashboardPage() {
                                                             vertical: true
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/dashboard/page.tsx",
-                                                            lineNumber: 513,
+                                                            lineNumber: 520,
                                                             columnNumber: 25
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$XAxis$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["XAxis"], {
@@ -10114,7 +10124,7 @@ function DashboardPage() {
                                                             stroke: "var(--muted-foreground)"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/dashboard/page.tsx",
-                                                            lineNumber: 514,
+                                                            lineNumber: 521,
                                                             columnNumber: 25
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$YAxis$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["YAxis"], {
@@ -10128,18 +10138,18 @@ function DashboardPage() {
                                                             tickFormatter: (value)=>value.length > 14 ? `${value.slice(0, 14)}…` : value
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/dashboard/page.tsx",
-                                                            lineNumber: 515,
+                                                            lineNumber: 522,
                                                             columnNumber: 25
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$chart$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ChartTooltip"], {
                                                             content: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$chart$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ChartTooltipContent"], {}, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/page.tsx",
-                                                                lineNumber: 525,
+                                                                lineNumber: 532,
                                                                 columnNumber: 48
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/dashboard/page.tsx",
-                                                            lineNumber: 525,
+                                                            lineNumber: 532,
                                                             columnNumber: 25
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$Bar$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Bar"], {
@@ -10154,35 +10164,35 @@ function DashboardPage() {
                                                             barSize: 18
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/dashboard/page.tsx",
-                                                            lineNumber: 526,
+                                                            lineNumber: 533,
                                                             columnNumber: 25
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/dashboard/page.tsx",
-                                                    lineNumber: 508,
+                                                    lineNumber: 515,
                                                     columnNumber: 23
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/app/dashboard/page.tsx",
-                                                lineNumber: 504,
+                                                lineNumber: 511,
                                                 columnNumber: 21
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/page.tsx",
-                                            lineNumber: 500,
+                                            lineNumber: 507,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/page.tsx",
-                                    lineNumber: 486,
+                                    lineNumber: 493,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/dashboard/page.tsx",
-                            lineNumber: 425,
+                            lineNumber: 432,
                             columnNumber: 13
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10202,7 +10212,7 @@ function DashboardPage() {
                                                                 children: "Top Responsables"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/page.tsx",
-                                                                lineNumber: 541,
+                                                                lineNumber: 548,
                                                                 columnNumber: 23
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
@@ -10210,31 +10220,31 @@ function DashboardPage() {
                                                                 children: "Por cantidad de hallazgos asignados"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/page.tsx",
-                                                                lineNumber: 542,
+                                                                lineNumber: 549,
                                                                 columnNumber: 23
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/dashboard/page.tsx",
-                                                        lineNumber: 540,
+                                                        lineNumber: 547,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$users$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Users$3e$__["Users"], {
                                                         className: "h-4 w-4 text-muted-foreground"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/page.tsx",
-                                                        lineNumber: 544,
+                                                        lineNumber: 551,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/dashboard/page.tsx",
-                                                lineNumber: 539,
+                                                lineNumber: 546,
                                                 columnNumber: 19
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/page.tsx",
-                                            lineNumber: 538,
+                                            lineNumber: 545,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -10244,7 +10254,7 @@ function DashboardPage() {
                                                 children: "Sin datos"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/dashboard/page.tsx",
-                                                lineNumber: 549,
+                                                lineNumber: 556,
                                                 columnNumber: 21
                                             }, this) : porResponsable.slice(0, 5).map((item, index)=>{
                                                 const initials = item.name.split(' ').slice(0, 2).map((w)=>w.charAt(0).toUpperCase()).join('');
@@ -10256,7 +10266,7 @@ function DashboardPage() {
                                                             children: index + 1
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/dashboard/page.tsx",
-                                                            lineNumber: 559,
+                                                            lineNumber: 566,
                                                             columnNumber: 27
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$avatar$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Avatar"], {
@@ -10266,12 +10276,12 @@ function DashboardPage() {
                                                                 children: initials
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/page.tsx",
-                                                                lineNumber: 561,
+                                                                lineNumber: 568,
                                                                 columnNumber: 29
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/dashboard/page.tsx",
-                                                            lineNumber: 560,
+                                                            lineNumber: 567,
                                                             columnNumber: 27
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10282,7 +10292,7 @@ function DashboardPage() {
                                                                     children: item.name
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/dashboard/page.tsx",
-                                                                    lineNumber: 566,
+                                                                    lineNumber: 573,
                                                                     columnNumber: 29
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$progress$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Progress"], {
@@ -10290,13 +10300,13 @@ function DashboardPage() {
                                                                     className: "h-1.5 mt-1"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/dashboard/page.tsx",
-                                                                    lineNumber: 567,
+                                                                    lineNumber: 574,
                                                                     columnNumber: 29
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/dashboard/page.tsx",
-                                                            lineNumber: 565,
+                                                            lineNumber: 572,
                                                             columnNumber: 27
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$Badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
@@ -10305,25 +10315,25 @@ function DashboardPage() {
                                                             children: item.value
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/dashboard/page.tsx",
-                                                            lineNumber: 569,
+                                                            lineNumber: 576,
                                                             columnNumber: 27
                                                         }, this)
                                                     ]
                                                 }, item.name, true, {
                                                     fileName: "[project]/app/dashboard/page.tsx",
-                                                    lineNumber: 558,
+                                                    lineNumber: 565,
                                                     columnNumber: 25
                                                 }, this);
                                             })
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/page.tsx",
-                                            lineNumber: 547,
+                                            lineNumber: 554,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/page.tsx",
-                                    lineNumber: 537,
+                                    lineNumber: 544,
                                     columnNumber: 15
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -10341,7 +10351,7 @@ function DashboardPage() {
                                                                 children: "Cargas Recientes"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/page.tsx",
-                                                                lineNumber: 584,
+                                                                lineNumber: 591,
                                                                 columnNumber: 23
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
@@ -10349,36 +10359,36 @@ function DashboardPage() {
                                                                 children: "Últimos archivos cargados al sistema"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/page.tsx",
-                                                                lineNumber: 585,
+                                                                lineNumber: 592,
                                                                 columnNumber: 23
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/dashboard/page.tsx",
-                                                        lineNumber: 583,
+                                                        lineNumber: 590,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$activity$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Activity$3e$__["Activity"], {
                                                         className: "h-4 w-4 text-muted-foreground"
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/page.tsx",
-                                                        lineNumber: 587,
+                                                        lineNumber: 594,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/dashboard/page.tsx",
-                                                lineNumber: 582,
+                                                lineNumber: 589,
                                                 columnNumber: 19
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/page.tsx",
-                                            lineNumber: 581,
+                                            lineNumber: 588,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$separator$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Separator"], {}, void 0, false, {
                                             fileName: "[project]/app/dashboard/page.tsx",
-                                            lineNumber: 590,
+                                            lineNumber: 597,
                                             columnNumber: 17
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -10388,7 +10398,7 @@ function DashboardPage() {
                                                 children: "Sin cargas recientes"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/dashboard/page.tsx",
-                                                lineNumber: 593,
+                                                lineNumber: 600,
                                                 columnNumber: 21
                                             }, this) : uploads.map((u, i)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
                                                     className: "flex items-center gap-3 py-3 first:pt-2 last:pb-2",
@@ -10399,12 +10409,12 @@ function DashboardPage() {
                                                                 className: "w-4 h-4 text-primary"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/page.tsx",
-                                                                lineNumber: 598,
+                                                                lineNumber: 605,
                                                                 columnNumber: 27
                                                             }, this)
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/dashboard/page.tsx",
-                                                            lineNumber: 597,
+                                                            lineNumber: 604,
                                                             columnNumber: 25
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10415,7 +10425,7 @@ function DashboardPage() {
                                                                     children: u.filename_original
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/dashboard/page.tsx",
-                                                                    lineNumber: 601,
+                                                                    lineNumber: 608,
                                                                     columnNumber: 27
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -10423,13 +10433,13 @@ function DashboardPage() {
                                                                     children: (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$utils$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["formatDateTime"])(u.uploaded_at)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/dashboard/page.tsx",
-                                                                    lineNumber: 604,
+                                                                    lineNumber: 611,
                                                                     columnNumber: 27
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/dashboard/page.tsx",
-                                                            lineNumber: 600,
+                                                            lineNumber: 607,
                                                             columnNumber: 25
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$Badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
@@ -10441,30 +10451,30 @@ function DashboardPage() {
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/dashboard/page.tsx",
-                                                            lineNumber: 606,
+                                                            lineNumber: 613,
                                                             columnNumber: 25
                                                         }, this)
                                                     ]
                                                 }, i, true, {
                                                     fileName: "[project]/app/dashboard/page.tsx",
-                                                    lineNumber: 596,
+                                                    lineNumber: 603,
                                                     columnNumber: 23
                                                 }, this))
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/page.tsx",
-                                            lineNumber: 591,
+                                            lineNumber: 598,
                                             columnNumber: 17
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/page.tsx",
-                                    lineNumber: 580,
+                                    lineNumber: 587,
                                     columnNumber: 15
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/dashboard/page.tsx",
-                            lineNumber: 535,
+                            lineNumber: 542,
                             columnNumber: 13
                         }, this)
                     ]
@@ -10472,12 +10482,12 @@ function DashboardPage() {
             ]
         }, void 0, true, {
             fileName: "[project]/app/dashboard/page.tsx",
-            lineNumber: 199,
+            lineNumber: 201,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/app/dashboard/page.tsx",
-        lineNumber: 198,
+        lineNumber: 200,
         columnNumber: 5
     }, this);
 }
@@ -10517,7 +10527,7 @@ function KpiCard({ title, value, icon: Icon, subtitle, trend, trendLabel, trendU
                                 children: title
                             }, void 0, false, {
                                 fileName: "[project]/app/dashboard/page.tsx",
-                                lineNumber: 661,
+                                lineNumber: 668,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -10525,7 +10535,7 @@ function KpiCard({ title, value, icon: Icon, subtitle, trend, trendLabel, trendU
                                 children: value
                             }, void 0, false, {
                                 fileName: "[project]/app/dashboard/page.tsx",
-                                lineNumber: 662,
+                                lineNumber: 669,
                                 columnNumber: 13
                             }, this),
                             subtitle && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -10533,7 +10543,7 @@ function KpiCard({ title, value, icon: Icon, subtitle, trend, trendLabel, trendU
                                 children: subtitle
                             }, void 0, false, {
                                 fileName: "[project]/app/dashboard/page.tsx",
-                                lineNumber: 663,
+                                lineNumber: 670,
                                 columnNumber: 26
                             }, this),
                             trend !== undefined && /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10543,13 +10553,13 @@ function KpiCard({ title, value, icon: Icon, subtitle, trend, trendLabel, trendU
                                         className: "h-3 w-3 text-green-500"
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/page.tsx",
-                                        lineNumber: 667,
+                                        lineNumber: 674,
                                         columnNumber: 19
                                     }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$arrow$2d$down$2d$right$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__ArrowDownRight$3e$__["ArrowDownRight"], {
                                         className: "h-3 w-3 text-destructive"
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/page.tsx",
-                                        lineNumber: 669,
+                                        lineNumber: 676,
                                         columnNumber: 19
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -10560,7 +10570,7 @@ function KpiCard({ title, value, icon: Icon, subtitle, trend, trendLabel, trendU
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/dashboard/page.tsx",
-                                        lineNumber: 671,
+                                        lineNumber: 678,
                                         columnNumber: 17
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -10568,19 +10578,19 @@ function KpiCard({ title, value, icon: Icon, subtitle, trend, trendLabel, trendU
                                         children: trendLabel
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/page.tsx",
-                                        lineNumber: 674,
+                                        lineNumber: 681,
                                         columnNumber: 17
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/dashboard/page.tsx",
-                                lineNumber: 665,
+                                lineNumber: 672,
                                 columnNumber: 15
                             }, this)
                         ]
                     }, void 0, true, {
                         fileName: "[project]/app/dashboard/page.tsx",
-                        lineNumber: 660,
+                        lineNumber: 667,
                         columnNumber: 11
                     }, this),
                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10589,28 +10599,28 @@ function KpiCard({ title, value, icon: Icon, subtitle, trend, trendLabel, trendU
                             className: `h-5 w-5 ${iconStyles[variant]}`
                         }, void 0, false, {
                             fileName: "[project]/app/dashboard/page.tsx",
-                            lineNumber: 679,
+                            lineNumber: 686,
                             columnNumber: 13
                         }, this)
                     }, void 0, false, {
                         fileName: "[project]/app/dashboard/page.tsx",
-                        lineNumber: 678,
+                        lineNumber: 685,
                         columnNumber: 11
                     }, this)
                 ]
             }, void 0, true, {
                 fileName: "[project]/app/dashboard/page.tsx",
-                lineNumber: 659,
+                lineNumber: 666,
                 columnNumber: 9
             }, this)
         }, void 0, false, {
             fileName: "[project]/app/dashboard/page.tsx",
-            lineNumber: 658,
+            lineNumber: 665,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/app/dashboard/page.tsx",
-        lineNumber: 657,
+        lineNumber: 664,
         columnNumber: 5
     }, this);
 }
@@ -10633,12 +10643,12 @@ function KpiCardMini({ title, value, icon: Icon, variant = 'default' }) {
                         className: `h-4 w-4 ${iconStyles[variant]}`
                     }, void 0, false, {
                         fileName: "[project]/app/dashboard/page.tsx",
-                        lineNumber: 709,
+                        lineNumber: 716,
                         columnNumber: 11
                     }, this)
                 }, void 0, false, {
                     fileName: "[project]/app/dashboard/page.tsx",
-                    lineNumber: 708,
+                    lineNumber: 715,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -10649,7 +10659,7 @@ function KpiCardMini({ title, value, icon: Icon, variant = 'default' }) {
                             children: title
                         }, void 0, false, {
                             fileName: "[project]/app/dashboard/page.tsx",
-                            lineNumber: 712,
+                            lineNumber: 719,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -10657,24 +10667,24 @@ function KpiCardMini({ title, value, icon: Icon, variant = 'default' }) {
                             children: value
                         }, void 0, false, {
                             fileName: "[project]/app/dashboard/page.tsx",
-                            lineNumber: 713,
+                            lineNumber: 720,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/dashboard/page.tsx",
-                    lineNumber: 711,
+                    lineNumber: 718,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/app/dashboard/page.tsx",
-            lineNumber: 707,
+            lineNumber: 714,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/app/dashboard/page.tsx",
-        lineNumber: 706,
+        lineNumber: 713,
         columnNumber: 5
     }, this);
 }
@@ -10688,7 +10698,7 @@ function EmptyChart() {
                 className: "h-8 w-8 mb-2 opacity-30"
             }, void 0, false, {
                 fileName: "[project]/app/dashboard/page.tsx",
-                lineNumber: 724,
+                lineNumber: 731,
                 columnNumber: 7
             }, this),
             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -10696,13 +10706,13 @@ function EmptyChart() {
                 children: "Sin datos disponibles"
             }, void 0, false, {
                 fileName: "[project]/app/dashboard/page.tsx",
-                lineNumber: 725,
+                lineNumber: 732,
                 columnNumber: 7
             }, this)
         ]
     }, void 0, true, {
         fileName: "[project]/app/dashboard/page.tsx",
-        lineNumber: 723,
+        lineNumber: 730,
         columnNumber: 5
     }, this);
 }

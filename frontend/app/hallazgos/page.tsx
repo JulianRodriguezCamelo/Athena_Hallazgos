@@ -40,18 +40,11 @@ interface Hallazgo {
   vicepresidencia: string | null
   estado: string | null
   reportado_por: string | null
-  responsable_plan_accion: string | null
-  estado_plan_accion: string | null
   prorroga: string | null
-  id_plan_accion: string | null
-  nombre_plan_accion: string | null
-  descripcion_plan_accion: string | null
   observaciones: string | null
   aplicativo_afecta_ero: string | null
   fecha_finalizacion_evento: string | null
   reportado_para: string | null
-  estado_accion: string | null
-  responsable_accion: string | null
   fecha_cierre_final_prorroga: string | null
   vinculado_via_actividad?: boolean
 }
@@ -61,8 +54,6 @@ interface Actividad {
   hallazgo_id: number | null
   codigo_del_hallazgo: string | null
   orden: number | null
-  id_plan_accion: string | null
-  nombre_plan_accion: string | null
   descripcion: string | null
   estado_plan_accion: string | null
   responsable: string | null
@@ -228,11 +219,8 @@ function ActividadesModalTab({ hallazgoId }: { hallazgoId: number }) {
             </span>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-foreground leading-snug">
-                {act.nombre_plan_accion ?? act.descripcion ?? '—'}
+                {act.descripcion ?? '—'}
               </p>
-              {act.id_plan_accion && (
-                <p className="text-[11px] text-muted-foreground font-mono mt-0.5">{act.id_plan_accion}</p>
-              )}
             </div>
             {act.estado_plan_accion && <StatusBadge value={act.estado_plan_accion} />}
           </div>
@@ -244,7 +232,7 @@ function ActividadesModalTab({ hallazgoId }: { hallazgoId: number }) {
             {act.prorroga && <DetailField label="Prórroga" value={act.prorroga} />}
             {act.fecha_prorroga && <DetailField label="Fecha prórroga" value={formatDate(act.fecha_prorroga)} />}
           </div>
-          {act.descripcion && act.descripcion !== act.nombre_plan_accion && (
+          {act.descripcion && (
             <div className="px-4 pb-3">
               <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">Descripción</p>
               <p className="text-sm text-foreground bg-muted/40 rounded-lg p-3 leading-relaxed">{act.descripcion}</p>
@@ -783,8 +771,6 @@ function HallazgosTable({
               <TableHead className="font-semibold text-xs">Estado</TableHead>
               <TableHead className="font-semibold text-xs">F. Inicial</TableHead>
               <TableHead className="font-semibold text-xs">F. Cierre</TableHead>
-              <TableHead className="font-semibold text-xs">Responsable</TableHead>
-              <TableHead className="font-semibold text-xs">Estado Plan</TableHead>
               <TableHead className="w-12"></TableHead>
             </TableRow>
           </TableHeader>
@@ -810,19 +796,6 @@ function HallazgosTable({
                 </TableCell>
                 <TableCell className="whitespace-nowrap text-muted-foreground text-xs">
                   {formatDate(h.fecha_cierre_proyectada)}
-                </TableCell>
-                <TableCell className="max-w-[160px]">
-                  <p className="truncate text-muted-foreground text-xs" title={h.responsable_plan_accion ?? ''}>
-                    {h.responsable_plan_accion ?? '—'}
-                  </p>
-                  {h.vinculado_via_actividad && (
-                    <Badge variant="secondary" className="mt-1 text-[10px] px-1.5 py-0 h-4 bg-blue-100 text-blue-700 dark:bg-blue-950/40 dark:text-blue-400">
-                      vía act.
-                    </Badge>
-                  )}
-                </TableCell>
-                <TableCell className="whitespace-nowrap">
-                  <StatusBadge value={h.estado_plan_accion} />
                 </TableCell>
                 <TableCell>
                   <Button
@@ -893,12 +866,9 @@ function ActividadesTable({
                   {a.codigo_del_hallazgo ?? '—'}
                 </TableCell>
                 <TableCell className="max-w-xs">
-                  <p className="truncate text-foreground text-sm" title={a.nombre_plan_accion ?? ''}>
-                    {a.nombre_plan_accion ?? a.descripcion ?? '—'}
+                  <p className="truncate text-foreground text-sm" title={a.descripcion ?? ''}>
+                    {a.descripcion ?? '—'}
                   </p>
-                  {a.id_plan_accion && (
-                    <p className="text-[10px] text-muted-foreground font-mono mt-0.5">{a.id_plan_accion}</p>
-                  )}
                 </TableCell>
                 <TableCell className="whitespace-nowrap text-muted-foreground text-xs max-w-[140px]">
                   <p className="truncate" title={a.responsable ?? ''}>{a.responsable ?? '—'}</p>
@@ -948,17 +918,10 @@ function ActividadesTable({
 function ActividadDetailModal({ actividad, onClose }: { actividad: Actividad | null; onClose: () => void }) {
   if (!actividad) return null
   return (
-    <Modal open={!!actividad} onClose={onClose} title={`Actividad: ${actividad.id_plan_accion ?? 'Sin ID'}`} size="lg">
+    <Modal open={!!actividad} onClose={onClose} title="Actividad" size="lg">
       <div className="space-y-5 max-h-[65vh] overflow-y-auto pr-1">
-        {actividad.nombre_plan_accion && (
-          <div>
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Nombre del Plan</p>
-            <p className="text-sm text-foreground bg-muted/50 rounded-lg p-3">{actividad.nombre_plan_accion}</p>
-          </div>
-        )}
         <div className="grid grid-cols-2 gap-x-6 gap-y-4">
           <DetailField label="Hallazgo" value={actividad.codigo_del_hallazgo} />
-          <DetailField label="ID Plan de Acción" value={actividad.id_plan_accion} />
           <DetailField label="Estado Plan" value={actividad.estado_plan_accion} />
           <DetailField label="Responsable" value={actividad.responsable} />
           <DetailField label="Estado Acción" value={actividad.estado_accion} />
@@ -1278,26 +1241,6 @@ export default function HallazgosPage() {
                   <DetailField label="Fecha cierre proyectada" value={formatDate(selectedHallazgo.fecha_cierre_proyectada)} />
                   <DetailField label="Prórroga" value={selectedHallazgo.prorroga} />
                   <DetailField label="Fecha cierre prórroga" value={formatDate(selectedHallazgo.fecha_cierre_final_prorroga)} />
-                </div>
-
-                <div className="rounded-xl border border-border overflow-hidden">
-                  <div className="bg-muted/50 px-4 py-3 border-b border-border">
-                    <p className="text-xs font-semibold text-primary uppercase tracking-wider">Plan de acción</p>
-                  </div>
-                  <div className="p-4 grid grid-cols-2 gap-x-6 gap-y-4">
-                    <DetailField label="ID Plan" value={selectedHallazgo.id_plan_accion} />
-                    <DetailField label="Estado plan" value={selectedHallazgo.estado_plan_accion} />
-                    <DetailField label="Responsable plan" value={selectedHallazgo.responsable_plan_accion} />
-                    <DetailField label="Estado acción" value={selectedHallazgo.estado_accion} />
-                    <DetailField label="Responsable acción" value={selectedHallazgo.responsable_accion} />
-                    <DetailField label="Nombre del plan" value={selectedHallazgo.nombre_plan_accion} />
-                  </div>
-                  {selectedHallazgo.descripcion_plan_accion && (
-                    <div className="px-4 pb-4">
-                      <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">Descripción del plan</p>
-                      <p className="text-sm text-foreground bg-muted/50 rounded-lg p-3">{selectedHallazgo.descripcion_plan_accion}</p>
-                    </div>
-                  )}
                 </div>
 
                 {selectedHallazgo.observaciones && (
