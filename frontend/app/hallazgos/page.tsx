@@ -38,6 +38,7 @@ interface Hallazgo {
   fecha_cierre_proyectada: string | null
   dependencia_reporta_ero: string | null
   vicepresidencia: string | null
+  direccion: string | null
   estado: string | null
   reportado_por: string | null
   prorroga: string | null
@@ -232,12 +233,6 @@ function ActividadesModalTab({ hallazgoId }: { hallazgoId: number }) {
             {act.prorroga && <DetailField label="Prórroga" value={act.prorroga} />}
             {act.fecha_prorroga && <DetailField label="Fecha prórroga" value={formatDate(act.fecha_prorroga)} />}
           </div>
-          {act.descripcion && (
-            <div className="px-4 pb-3">
-              <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">Descripción</p>
-              <p className="text-sm text-foreground bg-muted/40 rounded-lg p-3 leading-relaxed">{act.descripcion}</p>
-            </div>
-          )}
           {act.observaciones && (
             <div className="px-4 pb-3">
               <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">Observaciones</p>
@@ -490,6 +485,7 @@ interface FiltersPanelProps {
   estado: string; setEstado: (v: string) => void
   dependencia: string; setDependencia: (v: string) => void
   vicepresidencia: string; setVicepresidencia: (v: string) => void
+  direccion: string; setDireccion: (v: string) => void
   responsable: string; setResponsable: (v: string) => void
   estadoPlan: string; setEstadoPlan: (v: string) => void
   vencido: boolean; setVencido: (v: boolean) => void
@@ -499,7 +495,7 @@ interface FiltersPanelProps {
   fechaInicialDesde: string; setFechaInicialDesde: (v: string) => void
   fechaInicialHasta: string; setFechaInicialHasta: (v: string) => void
   estados: string[]; dependencias: string[]; vicepresidencias: string[]
-  responsables: string[]; estadosPlan: string[]
+  direcciones: string[]; responsables: string[]; estadosPlan: string[]
   hasFilters: boolean; clearAll: () => void; total: number
 }
 
@@ -508,6 +504,7 @@ function FiltersPanel({
   estado, setEstado,
   dependencia, setDependencia,
   vicepresidencia, setVicepresidencia,
+  direccion, setDireccion,
   responsable, setResponsable,
   estadoPlan, setEstadoPlan,
   vencido, setVencido,
@@ -516,7 +513,7 @@ function FiltersPanel({
   fechaCierreHasta, setFechaCierreHasta,
   fechaInicialDesde, setFechaInicialDesde,
   fechaInicialHasta, setFechaInicialHasta,
-  estados, dependencias, vicepresidencias, responsables, estadosPlan,
+  estados, dependencias, vicepresidencias, direcciones, responsables, estadosPlan,
   hasFilters, clearAll, total,
 }: FiltersPanelProps) {
   const [isExpanded, setIsExpanded] = useState(false)
@@ -528,7 +525,7 @@ function FiltersPanel({
   const estadoPlanOptions = estadosPlan.map((e) => ({ value: e, label: e }))
 
   const activeFiltersCount = [
-    estado, dependencia, vicepresidencia, responsable, estadoPlan,
+    estado, dependencia, vicepresidencia, direccion, responsable, estadoPlan,
     fechaCierreDesde, fechaCierreHasta, fechaInicialDesde, fechaInicialHasta,
   ].filter(Boolean).length + (vencido ? 1 : 0) + (conProrroga ? 1 : 0)
 
@@ -605,9 +602,14 @@ function FiltersPanel({
                     Organización
                   </h4>
                   <div className="space-y-2">
-                    <Select value={dependencia} onChange={(e) => setDependencia(e.target.value)} options={depOptions} placeholder="Dependencia" />
                     {vicepresidencias.length > 0 && (
-                      <Select value={vicepresidencia} onChange={(e) => setVicepresidencia(e.target.value)} options={vpOptions} placeholder="Vicepresidencia" />
+                      <Select value={vicepresidencia} onChange={(e) => setVicepresidencia(e.target.value)} options={vpOptions} placeholder="Área / Vicepresidencia" />
+                    )}
+                    {direcciones.length > 0 && (
+                      <Select value={direccion} onChange={(e) => setDireccion(e.target.value)} options={direcciones.map((d) => ({ value: d, label: d }))} placeholder="Dirección" />
+                    )}
+                    {dependencias.length > 0 && (
+                      <Select value={dependencia} onChange={(e) => setDependencia(e.target.value)} options={depOptions} placeholder="Dependencia" />
                     )}
                   </div>
                 </div>
@@ -690,8 +692,14 @@ function FiltersPanel({
             )}
             {vicepresidencia && (
               <Badge variant="secondary" className="gap-1.5 pr-1.5">
-                VP: {vicepresidencia.length > 16 ? vicepresidencia.slice(0, 16) + '…' : vicepresidencia}
+                Área: {vicepresidencia.length > 16 ? vicepresidencia.slice(0, 16) + '…' : vicepresidencia}
                 <button onClick={() => setVicepresidencia('')} className="hover:bg-muted-foreground/20 rounded-full p-0.5"><X className="w-3 h-3" /></button>
+              </Badge>
+            )}
+            {direccion && (
+              <Badge variant="secondary" className="gap-1.5 pr-1.5">
+                Dir: {direccion.length > 16 ? direccion.slice(0, 16) + '…' : direccion}
+                <button onClick={() => setDireccion('')} className="hover:bg-muted-foreground/20 rounded-full p-0.5"><X className="w-3 h-3" /></button>
               </Badge>
             )}
             {responsable && (
@@ -850,7 +858,7 @@ function ActividadesTable({
           <TableHeader>
             <TableRow className="bg-muted/50 hover:bg-muted/50">
               <TableHead className="font-semibold text-xs">Hallazgo</TableHead>
-              <TableHead className="font-semibold text-xs">Nombre</TableHead>
+              <TableHead className="font-semibold text-xs">Plan de acción</TableHead>
               <TableHead className="font-semibold text-xs">Responsable</TableHead>
               <TableHead className="font-semibold text-xs">Estado Plan</TableHead>
               <TableHead className="font-semibold text-xs">Estado Acción</TableHead>
@@ -873,11 +881,11 @@ function ActividadesTable({
                 <TableCell className="whitespace-nowrap text-muted-foreground text-xs max-w-[140px]">
                   <p className="truncate" title={a.responsable ?? ''}>{a.responsable ?? '—'}</p>
                 </TableCell>
-                <TableCell className="whitespace-nowrap">
-                  <StatusBadge value={a.estado_plan_accion} />
+                <TableCell className="max-w-[160px]">
+                  <div className="truncate"><StatusBadge value={a.estado_plan_accion} /></div>
                 </TableCell>
-                <TableCell className="whitespace-nowrap">
-                  <StatusBadge value={a.estado_accion} />
+                <TableCell className="max-w-[160px]">
+                  <div className="truncate"><StatusBadge value={a.estado_accion} /></div>
                 </TableCell>
                 <TableCell className="whitespace-nowrap text-muted-foreground text-xs">
                   {formatDate(a.fecha_compromiso)}
@@ -975,6 +983,7 @@ export default function HallazgosPage() {
   const [estado, setEstado] = useState('')
   const [dependencia, setDependencia] = useState('')
   const [vicepresidencia, setVicepresidencia] = useState('')
+  const [direccion, setDireccion] = useState('')
   const [responsable, setResponsable] = useState('')
   const [estadoPlan, setEstadoPlan] = useState('')
   const [vencido, setVencido] = useState(false)
@@ -988,6 +997,7 @@ export default function HallazgosPage() {
   const [estados, setEstados] = useState<string[]>([])
   const [dependencias, setDependencias] = useState<string[]>([])
   const [vicepresidencias, setVicepresidencias] = useState<string[]>([])
+  const [direcciones, setDirecciones] = useState<string[]>([])
   const [responsables, setResponsables] = useState<string[]>([])
   const [estadosPlan, setEstadosPlan] = useState<string[]>([])
 
@@ -1004,13 +1014,13 @@ export default function HallazgosPage() {
 
   const clearAll = () => {
     setSearch(''); setEstado(''); setDependencia(''); setVicepresidencia('')
-    setResponsable(''); setEstadoPlan(''); setVencido(false); setConProrroga(false)
+    setDireccion(''); setResponsable(''); setEstadoPlan(''); setVencido(false); setConProrroga(false)
     setFechaCierreDesde(''); setFechaCierreHasta(''); setFechaInicialDesde(''); setFechaInicialHasta('')
   }
 
-  const hasFilters = !!search || !!estado || !!dependencia || !!vicepresidencia || !!responsable ||
-    !!estadoPlan || vencido || conProrroga || !!fechaCierreDesde || !!fechaCierreHasta ||
-    !!fechaInicialDesde || !!fechaInicialHasta
+  const hasFilters = !!search || !!estado || !!dependencia || !!vicepresidencia || !!direccion ||
+    !!responsable || !!estadoPlan || vencido || conProrroga || !!fechaCierreDesde ||
+    !!fechaCierreHasta || !!fechaInicialDesde || !!fechaInicialHasta
 
   // Load filter options once
   useEffect(() => {
@@ -1018,12 +1028,14 @@ export default function HallazgosPage() {
       hallazgosApi.estados(),
       hallazgosApi.dependencias(),
       hallazgosApi.vicepresidencias(),
+      hallazgosApi.direcciones(),
       hallazgosApi.responsables(),
       hallazgosApi.estadosPlan(),
-    ]).then(([est, dep, vp, resp, plan]) => {
+    ]).then(([est, dep, vp, dir, resp, plan]) => {
       if (est.status === 'fulfilled') setEstados((est.value.data as { estados: string[] }).estados)
       if (dep.status === 'fulfilled') setDependencias((dep.value.data as { dependencias: string[] }).dependencias)
       if (vp.status === 'fulfilled') setVicepresidencias((vp.value.data as { vicepresidencias: string[] }).vicepresidencias)
+      if (dir.status === 'fulfilled') setDirecciones((dir.value.data as { direcciones: string[] }).direcciones)
       if (resp.status === 'fulfilled') setResponsables((resp.value.data as { responsables: string[] }).responsables)
       if (plan.status === 'fulfilled') setEstadosPlan((plan.value.data as { estados_plan_accion: string[] }).estados_plan_accion)
     })
@@ -1039,6 +1051,7 @@ export default function HallazgosPage() {
         estado: estado || undefined,
         dependencia: dependencia || undefined,
         vicepresidencia: vicepresidencia || undefined,
+        direccion: direccion || undefined,
         responsable: responsable || undefined,
         estado_plan_accion: estadoPlan || undefined,
         vencido: vencido ? 'true' : undefined,
@@ -1054,7 +1067,7 @@ export default function HallazgosPage() {
     } catch { /* silent */ } finally {
       setHallazgosLoading(false)
     }
-  }, [debouncedSearch, estado, dependencia, vicepresidencia, responsable, estadoPlan, vencido, conProrroga, fechaCierreDesde, fechaCierreHasta, fechaInicialDesde, fechaInicialHasta])
+  }, [debouncedSearch, estado, dependencia, vicepresidencia, direccion, responsable, estadoPlan, vencido, conProrroga, fechaCierreDesde, fechaCierreHasta, fechaInicialDesde, fechaInicialHasta])
 
   const loadActividades = useCallback(async (p: number) => {
     setActividadesLoading(true)
@@ -1140,6 +1153,7 @@ export default function HallazgosPage() {
               estado={estado} setEstado={setEstado}
               dependencia={dependencia} setDependencia={setDependencia}
               vicepresidencia={vicepresidencia} setVicepresidencia={setVicepresidencia}
+              direccion={direccion} setDireccion={setDireccion}
               responsable={responsable} setResponsable={setResponsable}
               estadoPlan={estadoPlan} setEstadoPlan={setEstadoPlan}
               vencido={vencido} setVencido={setVencido}
@@ -1151,6 +1165,7 @@ export default function HallazgosPage() {
               estados={estados}
               dependencias={dependencias}
               vicepresidencias={vicepresidencias}
+              direcciones={direcciones}
               responsables={responsables}
               estadosPlan={estadosPlan}
               hasFilters={hasFilters}
@@ -1231,8 +1246,9 @@ export default function HallazgosPage() {
                 <div className="grid grid-cols-2 gap-x-6 gap-y-4">
                   <DetailField label="Código del hallazgo" value={selectedHallazgo.codigo_del_hallazgo} />
                   <DetailField label="Estado" value={selectedHallazgo.estado} />
+                  <DetailField label="Área / Vicepresidencia" value={selectedHallazgo.vicepresidencia} />
+                  <DetailField label="Dirección" value={selectedHallazgo.direccion} />
                   <DetailField label="Dependencia ERO" value={selectedHallazgo.dependencia_reporta_ero} />
-                  <DetailField label="Vicepresidencia" value={selectedHallazgo.vicepresidencia} />
                   <DetailField label="Reportado para" value={selectedHallazgo.reportado_para} />
                   <DetailField label="Reportado por" value={selectedHallazgo.reportado_por} />
                   <DetailField label="Aplicativo afecta ERO" value={selectedHallazgo.aplicativo_afecta_ero} />

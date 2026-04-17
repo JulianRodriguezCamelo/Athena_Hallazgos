@@ -10,7 +10,7 @@ class Actividad(db.Model):
         db.Integer, db.ForeignKey("hallazgos.id", ondelete="CASCADE"),
         nullable=False, index=True
     )
-    codigo_del_hallazgo = db.Column(db.String(100), nullable=True, index=True)
+    codigo_del_hallazgo = db.Column(db.Text, nullable=True, index=True)
     orden = db.Column(db.Integer, default=0)
 
     # Datos del plan / acción

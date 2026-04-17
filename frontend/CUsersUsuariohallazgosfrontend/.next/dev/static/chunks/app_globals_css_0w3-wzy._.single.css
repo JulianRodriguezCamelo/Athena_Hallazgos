@@ -1131,6 +1131,10 @@
     max-width: 140px;
   }
 
+  .max-w-\[160px\] {
+    max-width: 160px;
+  }
+
   .max-w-\[calc\(100\%-2rem\)\] {
     max-width: calc(100% - 2rem);
   }

@@ -18,7 +18,11 @@ def create_app(config_name: str = "default") -> Flask:
     )
 
     # Registrar blueprints
-    from app.routes import auth_bp, users_bp, hallazgos_bp, uploads_bp, dashboard_bp
+    from app.modules.auth.api import auth_bp
+    from app.modules.users.api import users_bp
+    from app.modules.hallazgos.api import hallazgos_bp
+    from app.modules.uploads.api import uploads_bp
+    from app.modules.dashboard.api import dashboard_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(users_bp)

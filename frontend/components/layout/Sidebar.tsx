@@ -34,13 +34,13 @@ const navItems = [
     href: '/dashboard',
     label: 'Dashboard',
     icon: LayoutDashboard,
-    roles: ['vicepresidente', 'directivo', 'tecnico'],
+    roles: ['vicepresidente', 'directivo', 'tecnico', 'gestor'],
   },
   {
     href: '/hallazgos',
     label: 'Hallazgos',
     icon: FileSearch,
-    roles: ['vicepresidente', 'directivo', 'tecnico'],
+    roles: ['vicepresidente', 'directivo', 'tecnico', 'gestor'],
   },
   {
     href: '/uploads',

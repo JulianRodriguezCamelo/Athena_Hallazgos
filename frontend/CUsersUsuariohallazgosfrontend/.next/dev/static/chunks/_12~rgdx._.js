@@ -5002,7 +5002,10 @@ function GestorDashboard() {
     const cerradas = metricas?.cerradas ?? 0;
     const cumplimiento = total > 0 ? Math.round(cerradas / total * 100) : 0;
     const hallazgosConActividades = groupActivitiesByHallazgo(actividades, hallazgos);
-    const filteredHallazgos = hallazgos.filter((h)=>h.codigo_del_hallazgo.toLowerCase().includes(searchTerm.toLowerCase()) || h.descripcion.toLowerCase().includes(searchTerm.toLowerCase()) || h.responsable_plan_accion?.toLowerCase().includes(searchTerm.toLowerCase()));
+    const filteredHallazgos = hallazgos.filter((h)=>{
+        const term = searchTerm.toLowerCase();
+        return (h.codigo_del_hallazgo?.toLowerCase() ?? '').includes(term) || (h.descripcion?.toLowerCase() ?? '').includes(term) || (h.responsable_plan_accion?.toLowerCase() ?? '').includes(term);
+    });
     (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$index$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["useEffect"])({
         "GestorDashboard.useEffect": ()=>{
             setHPage(1);
@@ -5030,7 +5033,7 @@ function GestorDashboard() {
                             strokeWidth: "4"
                         }, void 0, false, {
                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                            lineNumber: 783,
+                            lineNumber: 786,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("path", {
@@ -5039,20 +5042,20 @@ function GestorDashboard() {
                             d: "M4 12a8 8 0 018-8v8z"
                         }, void 0, false, {
                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                            lineNumber: 784,
+                            lineNumber: 787,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                    lineNumber: 782,
+                    lineNumber: 785,
                     columnNumber: 9
                 }, this),
                 "Cargando…"
             ]
         }, void 0, true, {
             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-            lineNumber: 781,
+            lineNumber: 784,
             columnNumber: 7
         }, this);
     }
@@ -5074,12 +5077,12 @@ function GestorDashboard() {
                                             className: "h-5 w-5 text-primary"
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 800,
+                                            lineNumber: 803,
                                             columnNumber: 17
                                         }, this)
                                     }, void 0, false, {
                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                        lineNumber: 799,
+                                        lineNumber: 802,
                                         columnNumber: 15
                                     }, this),
                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5089,7 +5092,7 @@ function GestorDashboard() {
                                                 children: "Panel del Gestor"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                lineNumber: 803,
+                                                lineNumber: 806,
                                                 columnNumber: 17
                                             }, this),
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -5101,30 +5104,30 @@ function GestorDashboard() {
                                                         children: user?.dependencia ?? 'Sin dependencia'
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                        lineNumber: 805,
+                                                        lineNumber: 808,
                                                         columnNumber: 65
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                lineNumber: 804,
+                                                lineNumber: 807,
                                                 columnNumber: 17
                                             }, this)
                                         ]
                                     }, void 0, true, {
                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                        lineNumber: 802,
+                                        lineNumber: 805,
                                         columnNumber: 15
                                     }, this)
                                 ]
                             }, void 0, true, {
                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                lineNumber: 798,
+                                lineNumber: 801,
                                 columnNumber: 13
                             }, this)
                         }, void 0, false, {
                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                            lineNumber: 797,
+                            lineNumber: 800,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5141,14 +5144,14 @@ function GestorDashboard() {
                                             className: (0, __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$utils$2e$ts__$5b$app$2d$client$5d$__$28$ecmascript$29$__["cn"])('h-3.5 w-3.5', refreshing && 'animate-spin')
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 812,
+                                            lineNumber: 815,
                                             columnNumber: 15
                                         }, this),
                                         "Actualizar"
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                    lineNumber: 811,
+                                    lineNumber: 814,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Dialog"], {
@@ -5159,7 +5162,7 @@ function GestorDashboard() {
                                                 className: "gap-2"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                lineNumber: 816,
+                                                lineNumber: 819,
                                                 columnNumber: 38
                                             }, this),
                                             children: [
@@ -5167,14 +5170,14 @@ function GestorDashboard() {
                                                     className: "h-3.5 w-3.5"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                    lineNumber: 817,
+                                                    lineNumber: 820,
                                                     columnNumber: 17
                                                 }, this),
                                                 "Nuevo Plan"
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 816,
+                                            lineNumber: 819,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DialogContent"], {
@@ -5185,20 +5188,20 @@ function GestorDashboard() {
                                                             children: "Crear Plan de Acción"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                            lineNumber: 822,
+                                                            lineNumber: 825,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DialogDescription"], {
                                                             children: "Defina el plan de acción para atender un hallazgo."
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                            lineNumber: 823,
+                                                            lineNumber: 826,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                    lineNumber: 821,
+                                                    lineNumber: 824,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5212,20 +5215,20 @@ function GestorDashboard() {
                                                                     children: "Hallazgo asociado"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                    lineNumber: 829,
+                                                                    lineNumber: 832,
                                                                     columnNumber: 21
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
                                                                     placeholder: "Buscar hallazgo..."
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                    lineNumber: 830,
+                                                                    lineNumber: 833,
                                                                     columnNumber: 21
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                            lineNumber: 828,
+                                                            lineNumber: 831,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5236,20 +5239,20 @@ function GestorDashboard() {
                                                                     children: "Descripción del plan"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                    lineNumber: 833,
+                                                                    lineNumber: 836,
                                                                     columnNumber: 21
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$textarea$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Textarea"], {
                                                                     placeholder: "Describa las acciones a realizar..."
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                    lineNumber: 834,
+                                                                    lineNumber: 837,
                                                                     columnNumber: 21
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                            lineNumber: 832,
+                                                            lineNumber: 835,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5263,20 +5266,20 @@ function GestorDashboard() {
                                                                             children: "Responsable"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                            lineNumber: 838,
+                                                                            lineNumber: 841,
                                                                             columnNumber: 23
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
                                                                             placeholder: "Nombre del responsable"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                            lineNumber: 839,
+                                                                            lineNumber: 842,
                                                                             columnNumber: 23
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                    lineNumber: 837,
+                                                                    lineNumber: 840,
                                                                     columnNumber: 21
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5287,32 +5290,32 @@ function GestorDashboard() {
                                                                             children: "Fecha compromiso"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                            lineNumber: 842,
+                                                                            lineNumber: 845,
                                                                             columnNumber: 23
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
                                                                             type: "date"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                            lineNumber: 843,
+                                                                            lineNumber: 846,
                                                                             columnNumber: 23
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                    lineNumber: 841,
+                                                                    lineNumber: 844,
                                                                     columnNumber: 21
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                            lineNumber: 836,
+                                                            lineNumber: 839,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                    lineNumber: 827,
+                                                    lineNumber: 830,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dialog$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DialogFooter"], {
@@ -5322,44 +5325,44 @@ function GestorDashboard() {
                                                             children: "Cancelar"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                            lineNumber: 848,
+                                                            lineNumber: 851,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
                                                             children: "Crear plan"
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                            lineNumber: 849,
+                                                            lineNumber: 852,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                    lineNumber: 847,
+                                                    lineNumber: 850,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 820,
+                                            lineNumber: 823,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                    lineNumber: 815,
+                                    lineNumber: 818,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                            lineNumber: 810,
+                            lineNumber: 813,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                    lineNumber: 796,
+                    lineNumber: 799,
                     columnNumber: 9
                 }, this),
                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$tabs$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Tabs"], {
@@ -5378,7 +5381,7 @@ function GestorDashboard() {
                                             className: "h-4 w-4"
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 860,
+                                            lineNumber: 863,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -5386,13 +5389,13 @@ function GestorDashboard() {
                                             children: "Resumen"
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 861,
+                                            lineNumber: 864,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                    lineNumber: 859,
+                                    lineNumber: 862,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$tabs$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["TabsTrigger"], {
@@ -5403,7 +5406,7 @@ function GestorDashboard() {
                                             className: "h-4 w-4"
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 864,
+                                            lineNumber: 867,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -5411,13 +5414,13 @@ function GestorDashboard() {
                                             children: "Hallazgos"
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 865,
+                                            lineNumber: 868,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                    lineNumber: 863,
+                                    lineNumber: 866,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$tabs$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["TabsTrigger"], {
@@ -5428,7 +5431,7 @@ function GestorDashboard() {
                                             className: "h-4 w-4"
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 868,
+                                            lineNumber: 871,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -5436,13 +5439,13 @@ function GestorDashboard() {
                                             children: "Actividades"
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 869,
+                                            lineNumber: 872,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                    lineNumber: 867,
+                                    lineNumber: 870,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$tabs$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["TabsTrigger"], {
@@ -5453,7 +5456,7 @@ function GestorDashboard() {
                                             className: "h-4 w-4"
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 872,
+                                            lineNumber: 875,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -5461,19 +5464,19 @@ function GestorDashboard() {
                                             children: "Seguimiento"
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 873,
+                                            lineNumber: 876,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                    lineNumber: 871,
+                                    lineNumber: 874,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                            lineNumber: 858,
+                            lineNumber: 861,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$tabs$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["TabsContent"], {
@@ -5490,7 +5493,7 @@ function GestorDashboard() {
                                             subtitle: "Hallazgos en gestión"
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 881,
+                                            lineNumber: 884,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(KpiTile, {
@@ -5501,7 +5504,7 @@ function GestorDashboard() {
                                             subtitle: "Ejecutándose ahora"
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 882,
+                                            lineNumber: 885,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(KpiTile, {
@@ -5512,7 +5515,7 @@ function GestorDashboard() {
                                             subtitle: "Requieren atención"
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 883,
+                                            lineNumber: 886,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(KpiTile, {
@@ -5523,7 +5526,7 @@ function GestorDashboard() {
                                             subtitle: "En los próximos 7 días"
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 884,
+                                            lineNumber: 887,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(KpiTile, {
@@ -5534,13 +5537,13 @@ function GestorDashboard() {
                                             subtitle: `${cerradas} de ${total} cerrados`
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 885,
+                                            lineNumber: 888,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                    lineNumber: 880,
+                                    lineNumber: 883,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5552,7 +5555,7 @@ function GestorDashboard() {
                                             icon: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$upload$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Upload$3e$__["Upload"]
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 890,
+                                            lineNumber: 893,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(KpiTile, {
@@ -5562,7 +5565,7 @@ function GestorDashboard() {
                                             variant: "info"
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 891,
+                                            lineNumber: 894,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(KpiTile, {
@@ -5571,7 +5574,7 @@ function GestorDashboard() {
                                             icon: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$calendar$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Calendar$3e$__["Calendar"]
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 892,
+                                            lineNumber: 895,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(KpiTile, {
@@ -5580,13 +5583,13 @@ function GestorDashboard() {
                                             icon: __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$activity$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Activity$3e$__["Activity"]
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 893,
+                                            lineNumber: 896,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                    lineNumber: 889,
+                                    lineNumber: 892,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5600,7 +5603,7 @@ function GestorDashboard() {
                                             centerSubLabel: "Total"
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 899,
+                                            lineNumber: 902,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(EnhancedDonutCard, {
@@ -5611,7 +5614,7 @@ function GestorDashboard() {
                                             centerSubLabel: "Hallazgos"
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 906,
+                                            lineNumber: 909,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -5629,7 +5632,7 @@ function GestorDashboard() {
                                                                         children: "Índice de Cierre"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                        lineNumber: 919,
+                                                                        lineNumber: 922,
                                                                         columnNumber: 23
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
@@ -5637,31 +5640,31 @@ function GestorDashboard() {
                                                                         children: "Mis hallazgos cerrados vs total"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                        lineNumber: 920,
+                                                                        lineNumber: 923,
                                                                         columnNumber: 23
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                lineNumber: 918,
+                                                                lineNumber: 921,
                                                                 columnNumber: 21
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$target$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Target$3e$__["Target"], {
                                                                 className: "h-4 w-4 text-muted-foreground"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                lineNumber: 922,
+                                                                lineNumber: 925,
                                                                 columnNumber: 21
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                        lineNumber: 917,
+                                                        lineNumber: 920,
                                                         columnNumber: 19
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                    lineNumber: 916,
+                                                    lineNumber: 919,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -5698,17 +5701,17 @@ function GestorDashboard() {
                                                                             }
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                            lineNumber: 941,
+                                                                            lineNumber: 944,
                                                                             columnNumber: 25
                                                                         }, this)
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                        lineNumber: 928,
+                                                                        lineNumber: 931,
                                                                         columnNumber: 23
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                    lineNumber: 927,
+                                                                    lineNumber: 930,
                                                                     columnNumber: 21
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5722,7 +5725,7 @@ function GestorDashboard() {
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                            lineNumber: 945,
+                                                                            lineNumber: 948,
                                                                             columnNumber: 23
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -5734,19 +5737,19 @@ function GestorDashboard() {
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                            lineNumber: 953,
+                                                                            lineNumber: 956,
                                                                             columnNumber: 23
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                    lineNumber: 944,
+                                                                    lineNumber: 947,
                                                                     columnNumber: 21
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                            lineNumber: 926,
+                                                            lineNumber: 929,
                                                             columnNumber: 19
                                                         }, this),
                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5757,7 +5760,7 @@ function GestorDashboard() {
                                                                         className: "h-4 w-4 text-green-500"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                        lineNumber: 959,
+                                                                        lineNumber: 962,
                                                                         columnNumber: 25
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -5765,7 +5768,7 @@ function GestorDashboard() {
                                                                         children: "Buen desempeño"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                        lineNumber: 960,
+                                                                        lineNumber: 963,
                                                                         columnNumber: 25
                                                                     }, this)
                                                                 ]
@@ -5775,7 +5778,7 @@ function GestorDashboard() {
                                                                         className: "h-4 w-4 text-amber-500"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                        lineNumber: 964,
+                                                                        lineNumber: 967,
                                                                         columnNumber: 25
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -5783,32 +5786,32 @@ function GestorDashboard() {
                                                                         children: "Requiere atención"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                        lineNumber: 965,
+                                                                        lineNumber: 968,
                                                                         columnNumber: 25
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true)
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                            lineNumber: 956,
+                                                            lineNumber: 959,
                                                             columnNumber: 19
                                                         }, this)
                                                     ]
                                                 }, void 0, true, {
                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                    lineNumber: 925,
+                                                    lineNumber: 928,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 915,
+                                            lineNumber: 918,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                    lineNumber: 897,
+                                    lineNumber: 900,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -5828,7 +5831,7 @@ function GestorDashboard() {
                                                                         children: "Tiempo Promedio por Etapa"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                        lineNumber: 979,
+                                                                        lineNumber: 982,
                                                                         columnNumber: 23
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
@@ -5836,31 +5839,31 @@ function GestorDashboard() {
                                                                         children: "Días promedio en cada fase del workflow"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                        lineNumber: 980,
+                                                                        lineNumber: 983,
                                                                         columnNumber: 23
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                lineNumber: 978,
+                                                                lineNumber: 981,
                                                                 columnNumber: 21
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$timer$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Timer$3e$__["Timer"], {
                                                                 className: "h-4 w-4 text-muted-foreground"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                lineNumber: 982,
+                                                                lineNumber: 985,
                                                                 columnNumber: 21
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                        lineNumber: 977,
+                                                        lineNumber: 980,
                                                         columnNumber: 19
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                    lineNumber: 976,
+                                                    lineNumber: 979,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -5886,7 +5889,7 @@ function GestorDashboard() {
                                                                     hide: true
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                    lineNumber: 994,
+                                                                    lineNumber: 997,
                                                                     columnNumber: 23
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$YAxis$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["YAxis"], {
@@ -5899,18 +5902,18 @@ function GestorDashboard() {
                                                                     stroke: "var(--muted-foreground)"
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                    lineNumber: 995,
+                                                                    lineNumber: 998,
                                                                     columnNumber: 23
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$chart$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ChartTooltip"], {
                                                                     content: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$chart$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["ChartTooltipContent"], {}, void 0, false, {
                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                        lineNumber: 1000,
+                                                                        lineNumber: 1003,
                                                                         columnNumber: 46
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                    lineNumber: 1000,
+                                                                    lineNumber: 1003,
                                                                     columnNumber: 23
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$cartesian$2f$Bar$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Bar"], {
@@ -5927,7 +5930,7 @@ function GestorDashboard() {
                                                                                 fill: CHART_COLORS_HEX[i % CHART_COLORS_HEX.length]
                                                                             }, i, false, {
                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                lineNumber: 1003,
+                                                                                lineNumber: 1006,
                                                                                 columnNumber: 27
                                                                             }, this)),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$recharts$2f$es6$2f$component$2f$LabelList$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["LabelList"], {
@@ -5937,61 +5940,61 @@ function GestorDashboard() {
                                                                             formatter: (v)=>`${v ?? 0} días`
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                            lineNumber: 1005,
+                                                                            lineNumber: 1008,
                                                                             columnNumber: 25
                                                                         }, this)
                                                                     ]
                                                                 }, void 0, true, {
                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                    lineNumber: 1001,
+                                                                    lineNumber: 1004,
                                                                     columnNumber: 23
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                            lineNumber: 993,
+                                                            lineNumber: 996,
                                                             columnNumber: 21
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                        lineNumber: 986,
+                                                        lineNumber: 989,
                                                         columnNumber: 19
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                    lineNumber: 985,
+                                                    lineNumber: 988,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 975,
+                                            lineNumber: 978,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(ResponsablesCriticosCard, {
                                             responsables: responsablesCriticos
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 1012,
+                                            lineNumber: 1015,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                    lineNumber: 974,
+                                    lineNumber: 977,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(BitacoraCard, {
                                     entries: bitacora
                                 }, void 0, false, {
                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                    lineNumber: 1016,
+                                    lineNumber: 1019,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                            lineNumber: 878,
+                            lineNumber: 881,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$tabs$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["TabsContent"], {
@@ -6008,7 +6011,7 @@ function GestorDashboard() {
                                                     className: "absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                    lineNumber: 1023,
+                                                    lineNumber: 1026,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$input$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Input"], {
@@ -6018,13 +6021,13 @@ function GestorDashboard() {
                                                     onChange: (e)=>setSearchTerm(e.target.value)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                    lineNumber: 1024,
+                                                    lineNumber: 1027,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 1022,
+                                            lineNumber: 1025,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -6034,18 +6037,18 @@ function GestorDashboard() {
                                                 className: "h-4 w-4"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                lineNumber: 1032,
+                                                lineNumber: 1035,
                                                 columnNumber: 17
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 1031,
+                                            lineNumber: 1034,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                    lineNumber: 1021,
+                                    lineNumber: 1024,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -6063,7 +6066,7 @@ function GestorDashboard() {
                                                                 children: "Hallazgos en Gestión"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                lineNumber: 1040,
+                                                                lineNumber: 1043,
                                                                 columnNumber: 21
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
@@ -6071,13 +6074,13 @@ function GestorDashboard() {
                                                                 children: "Hallazgos asignados a mi dependencia"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                lineNumber: 1041,
+                                                                lineNumber: 1044,
                                                                 columnNumber: 21
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                        lineNumber: 1039,
+                                                        lineNumber: 1042,
                                                         columnNumber: 19
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$Badge$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Badge"], {
@@ -6088,23 +6091,23 @@ function GestorDashboard() {
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                        lineNumber: 1043,
+                                                        lineNumber: 1046,
                                                         columnNumber: 19
                                                     }, this)
                                                 ]
                                             }, void 0, true, {
                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                lineNumber: 1038,
+                                                lineNumber: 1041,
                                                 columnNumber: 17
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 1037,
+                                            lineNumber: 1040,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$separator$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Separator"], {}, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 1046,
+                                            lineNumber: 1049,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -6114,7 +6117,7 @@ function GestorDashboard() {
                                                 children: "Sin registros"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                lineNumber: 1049,
+                                                lineNumber: 1052,
                                                 columnNumber: 19
                                             }, this) : /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Fragment"], {
                                                 children: [
@@ -6132,7 +6135,7 @@ function GestorDashboard() {
                                                                                 children: "Código"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                lineNumber: 1056,
+                                                                                lineNumber: 1059,
                                                                                 columnNumber: 29
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -6140,7 +6143,7 @@ function GestorDashboard() {
                                                                                 children: "Descripción"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                lineNumber: 1057,
+                                                                                lineNumber: 1060,
                                                                                 columnNumber: 29
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -6148,7 +6151,7 @@ function GestorDashboard() {
                                                                                 children: "Prioridad"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                lineNumber: 1058,
+                                                                                lineNumber: 1061,
                                                                                 columnNumber: 29
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -6156,7 +6159,7 @@ function GestorDashboard() {
                                                                                 children: "Semáforo"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                lineNumber: 1059,
+                                                                                lineNumber: 1062,
                                                                                 columnNumber: 29
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -6164,7 +6167,7 @@ function GestorDashboard() {
                                                                                 children: "Estado"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                lineNumber: 1060,
+                                                                                lineNumber: 1063,
                                                                                 columnNumber: 29
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -6172,7 +6175,7 @@ function GestorDashboard() {
                                                                                 children: "Responsable"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                lineNumber: 1061,
+                                                                                lineNumber: 1064,
                                                                                 columnNumber: 29
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -6180,7 +6183,7 @@ function GestorDashboard() {
                                                                                 children: "Cierre"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                lineNumber: 1062,
+                                                                                lineNumber: 1065,
                                                                                 columnNumber: 29
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("th", {
@@ -6188,18 +6191,18 @@ function GestorDashboard() {
                                                                                 children: "Acciones"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                lineNumber: 1063,
+                                                                                lineNumber: 1066,
                                                                                 columnNumber: 29
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                        lineNumber: 1055,
+                                                                        lineNumber: 1058,
                                                                         columnNumber: 27
                                                                     }, this)
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                    lineNumber: 1054,
+                                                                    lineNumber: 1057,
                                                                     columnNumber: 25
                                                                 }, this),
                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("tbody", {
@@ -6209,19 +6212,19 @@ function GestorDashboard() {
                                                                             children: [
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
                                                                                     className: "px-4 py-2.5 font-mono text-[11px] text-primary whitespace-nowrap",
-                                                                                    children: h.codigo_del_hallazgo
+                                                                                    children: h.codigo_del_hallazgo ?? '—'
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                    lineNumber: 1069,
+                                                                                    lineNumber: 1072,
                                                                                     columnNumber: 31
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
                                                                                     className: "px-4 py-2.5 max-w-xs truncate text-foreground/80",
-                                                                                    title: h.descripcion,
-                                                                                    children: h.descripcion
+                                                                                    title: h.descripcion ?? '',
+                                                                                    children: h.descripcion ?? '—'
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                    lineNumber: 1072,
+                                                                                    lineNumber: 1075,
                                                                                     columnNumber: 31
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -6231,12 +6234,12 @@ function GestorDashboard() {
                                                                                         children: PRIORIDAD_CONFIG[h.prioridad].label
                                                                                     }, void 0, false, {
                                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                        lineNumber: 1076,
+                                                                                        lineNumber: 1079,
                                                                                         columnNumber: 33
                                                                                     }, this)
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                    lineNumber: 1075,
+                                                                                    lineNumber: 1078,
                                                                                     columnNumber: 31
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -6244,7 +6247,7 @@ function GestorDashboard() {
                                                                                     children: semaforoBadge(h.dias_restantes)
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                    lineNumber: 1080,
+                                                                                    lineNumber: 1083,
                                                                                     columnNumber: 31
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -6252,7 +6255,7 @@ function GestorDashboard() {
                                                                                     children: estadoBadge(h.estado)
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                    lineNumber: 1081,
+                                                                                    lineNumber: 1084,
                                                                                     columnNumber: 31
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -6260,7 +6263,7 @@ function GestorDashboard() {
                                                                                     children: h.responsable_plan_accion ?? '—'
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                    lineNumber: 1082,
+                                                                                    lineNumber: 1085,
                                                                                     columnNumber: 31
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -6268,7 +6271,7 @@ function GestorDashboard() {
                                                                                     children: h.fecha_cierre_proyectada ? formatDateTime(h.fecha_cierre_proyectada) : '—'
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                    lineNumber: 1083,
+                                                                                    lineNumber: 1086,
                                                                                     columnNumber: 31
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("td", {
@@ -6282,19 +6285,19 @@ function GestorDashboard() {
                                                                                                     className: "h-7 w-7"
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                                    lineNumber: 1088,
+                                                                                                    lineNumber: 1091,
                                                                                                     columnNumber: 64
                                                                                                 }, this),
                                                                                                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$ellipsis$2d$vertical$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__MoreVertical$3e$__["MoreVertical"], {
                                                                                                     className: "h-3.5 w-3.5"
                                                                                                 }, void 0, false, {
                                                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                                    lineNumber: 1089,
+                                                                                                    lineNumber: 1092,
                                                                                                     columnNumber: 37
                                                                                                 }, this)
                                                                                             }, void 0, false, {
                                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                                lineNumber: 1088,
+                                                                                                lineNumber: 1091,
                                                                                                 columnNumber: 35
                                                                                             }, this),
                                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dropdown$2d$menu$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DropdownMenuContent"], {
@@ -6306,14 +6309,14 @@ function GestorDashboard() {
                                                                                                                 className: "h-3.5 w-3.5 mr-2"
                                                                                                             }, void 0, false, {
                                                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                                                lineNumber: 1092,
+                                                                                                                lineNumber: 1095,
                                                                                                                 columnNumber: 55
                                                                                                             }, this),
                                                                                                             "Ver detalle"
                                                                                                         ]
                                                                                                     }, void 0, true, {
                                                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                                        lineNumber: 1092,
+                                                                                                        lineNumber: 1095,
                                                                                                         columnNumber: 37
                                                                                                     }, this),
                                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dropdown$2d$menu$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DropdownMenuItem"], {
@@ -6322,47 +6325,10 @@ function GestorDashboard() {
                                                                                                                 className: "h-3.5 w-3.5 mr-2"
                                                                                                             }, void 0, false, {
                                                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                                                lineNumber: 1093,
-                                                                                                                columnNumber: 55
-                                                                                                            }, this),
-                                                                                                            "Editar plan"
-                                                                                                        ]
-                                                                                                    }, void 0, true, {
-                                                                                                        fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                                        lineNumber: 1093,
-                                                                                                        columnNumber: 37
-                                                                                                    }, this),
-                                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dropdown$2d$menu$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DropdownMenuItem"], {
-                                                                                                        children: [
-                                                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$upload$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Upload$3e$__["Upload"], {
-                                                                                                                className: "h-3.5 w-3.5 mr-2"
-                                                                                                            }, void 0, false, {
-                                                                                                                fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                                                lineNumber: 1094,
-                                                                                                                columnNumber: 55
-                                                                                                            }, this),
-                                                                                                            "Subir evidencia"
-                                                                                                        ]
-                                                                                                    }, void 0, true, {
-                                                                                                        fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                                        lineNumber: 1094,
-                                                                                                        columnNumber: 37
-                                                                                                    }, this),
-                                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dropdown$2d$menu$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DropdownMenuSeparator"], {}, void 0, false, {
-                                                                                                        fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                                        lineNumber: 1095,
-                                                                                                        columnNumber: 37
-                                                                                                    }, this),
-                                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dropdown$2d$menu$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DropdownMenuItem"], {
-                                                                                                        children: [
-                                                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$play$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Play$3e$__["Play"], {
-                                                                                                                className: "h-3.5 w-3.5 mr-2"
-                                                                                                            }, void 0, false, {
-                                                                                                                fileName: "[project]/app/dashboard/GestorDashboard.tsx",
                                                                                                                 lineNumber: 1096,
                                                                                                                 columnNumber: 55
                                                                                                             }, this),
-                                                                                                            "Cambiar estado"
+                                                                                                            "Editar plan"
                                                                                                         ]
                                                                                                     }, void 0, true, {
                                                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
@@ -6371,57 +6337,94 @@ function GestorDashboard() {
                                                                                                     }, this),
                                                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dropdown$2d$menu$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DropdownMenuItem"], {
                                                                                                         children: [
-                                                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$calendar$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Calendar$3e$__["Calendar"], {
+                                                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$upload$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Upload$3e$__["Upload"], {
                                                                                                                 className: "h-3.5 w-3.5 mr-2"
                                                                                                             }, void 0, false, {
                                                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
                                                                                                                 lineNumber: 1097,
                                                                                                                 columnNumber: 55
                                                                                                             }, this),
-                                                                                                            "Solicitar prórroga"
+                                                                                                            "Subir evidencia"
                                                                                                         ]
                                                                                                     }, void 0, true, {
                                                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
                                                                                                         lineNumber: 1097,
                                                                                                         columnNumber: 37
+                                                                                                    }, this),
+                                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dropdown$2d$menu$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DropdownMenuSeparator"], {}, void 0, false, {
+                                                                                                        fileName: "[project]/app/dashboard/GestorDashboard.tsx",
+                                                                                                        lineNumber: 1098,
+                                                                                                        columnNumber: 37
+                                                                                                    }, this),
+                                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dropdown$2d$menu$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DropdownMenuItem"], {
+                                                                                                        children: [
+                                                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$play$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Play$3e$__["Play"], {
+                                                                                                                className: "h-3.5 w-3.5 mr-2"
+                                                                                                            }, void 0, false, {
+                                                                                                                fileName: "[project]/app/dashboard/GestorDashboard.tsx",
+                                                                                                                lineNumber: 1099,
+                                                                                                                columnNumber: 55
+                                                                                                            }, this),
+                                                                                                            "Cambiar estado"
+                                                                                                        ]
+                                                                                                    }, void 0, true, {
+                                                                                                        fileName: "[project]/app/dashboard/GestorDashboard.tsx",
+                                                                                                        lineNumber: 1099,
+                                                                                                        columnNumber: 37
+                                                                                                    }, this),
+                                                                                                    /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$dropdown$2d$menu$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["DropdownMenuItem"], {
+                                                                                                        children: [
+                                                                                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$calendar$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Calendar$3e$__["Calendar"], {
+                                                                                                                className: "h-3.5 w-3.5 mr-2"
+                                                                                                            }, void 0, false, {
+                                                                                                                fileName: "[project]/app/dashboard/GestorDashboard.tsx",
+                                                                                                                lineNumber: 1100,
+                                                                                                                columnNumber: 55
+                                                                                                            }, this),
+                                                                                                            "Solicitar prórroga"
+                                                                                                        ]
+                                                                                                    }, void 0, true, {
+                                                                                                        fileName: "[project]/app/dashboard/GestorDashboard.tsx",
+                                                                                                        lineNumber: 1100,
+                                                                                                        columnNumber: 37
                                                                                                     }, this)
                                                                                                 ]
                                                                                             }, void 0, true, {
                                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                                lineNumber: 1091,
+                                                                                                lineNumber: 1094,
                                                                                                 columnNumber: 35
                                                                                             }, this)
                                                                                         ]
                                                                                     }, void 0, true, {
                                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                        lineNumber: 1087,
+                                                                                        lineNumber: 1090,
                                                                                         columnNumber: 33
                                                                                     }, this)
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                    lineNumber: 1086,
+                                                                                    lineNumber: 1089,
                                                                                     columnNumber: 31
                                                                                 }, this)
                                                                             ]
                                                                         }, h.id, true, {
                                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                            lineNumber: 1068,
+                                                                            lineNumber: 1071,
                                                                             columnNumber: 29
                                                                         }, this))
                                                                 }, void 0, false, {
                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                    lineNumber: 1066,
+                                                                    lineNumber: 1069,
                                                                     columnNumber: 25
                                                                 }, this)
                                                             ]
                                                         }, void 0, true, {
                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                            lineNumber: 1053,
+                                                            lineNumber: 1056,
                                                             columnNumber: 23
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                        lineNumber: 1052,
+                                                        lineNumber: 1055,
                                                         columnNumber: 21
                                                     }, this),
                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6432,31 +6435,31 @@ function GestorDashboard() {
                                                             onChange: setHPage
                                                         }, void 0, false, {
                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                            lineNumber: 1107,
+                                                            lineNumber: 1110,
                                                             columnNumber: 23
                                                         }, this)
                                                     }, void 0, false, {
                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                        lineNumber: 1106,
+                                                        lineNumber: 1109,
                                                         columnNumber: 21
                                                     }, this)
                                                 ]
                                             }, void 0, true)
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 1047,
+                                            lineNumber: 1050,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                    lineNumber: 1036,
+                                    lineNumber: 1039,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                            lineNumber: 1020,
+                            lineNumber: 1023,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$tabs$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["TabsContent"], {
@@ -6472,12 +6475,12 @@ function GestorDashboard() {
                                                 className: "h-4 w-4 text-primary"
                                             }, void 0, false, {
                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                lineNumber: 1119,
+                                                lineNumber: 1122,
                                                 columnNumber: 17
                                             }, this)
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 1118,
+                                            lineNumber: 1121,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6487,7 +6490,7 @@ function GestorDashboard() {
                                                     children: "Actividades por Hallazgo"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                    lineNumber: 1122,
+                                                    lineNumber: 1125,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -6495,19 +6498,19 @@ function GestorDashboard() {
                                                     children: "Gestione el progreso de cada plan de acción"
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                    lineNumber: 1123,
+                                                    lineNumber: 1126,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 1121,
+                                            lineNumber: 1124,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                    lineNumber: 1117,
+                                    lineNumber: 1120,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6516,18 +6519,18 @@ function GestorDashboard() {
                                             hallazgo: h
                                         }, h.id, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 1128,
+                                            lineNumber: 1131,
                                             columnNumber: 17
                                         }, this))
                                 }, void 0, false, {
                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                    lineNumber: 1126,
+                                    lineNumber: 1129,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                            lineNumber: 1116,
+                            lineNumber: 1119,
                             columnNumber: 11
                         }, this),
                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$tabs$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["TabsContent"], {
@@ -6551,7 +6554,7 @@ function GestorDashboard() {
                                                                         children: "Alertas Activas"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                        lineNumber: 1141,
+                                                                        lineNumber: 1144,
                                                                         columnNumber: 23
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
@@ -6559,31 +6562,31 @@ function GestorDashboard() {
                                                                         children: "Requieren atención inmediata"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                        lineNumber: 1142,
+                                                                        lineNumber: 1145,
                                                                         columnNumber: 23
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                lineNumber: 1140,
+                                                                lineNumber: 1143,
                                                                 columnNumber: 21
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$bell$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Bell$3e$__["Bell"], {
                                                                 className: "h-4 w-4 text-destructive"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                lineNumber: 1144,
+                                                                lineNumber: 1147,
                                                                 columnNumber: 21
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                        lineNumber: 1139,
+                                                        lineNumber: 1142,
                                                         columnNumber: 19
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                    lineNumber: 1138,
+                                                    lineNumber: 1141,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -6597,7 +6600,7 @@ function GestorDashboard() {
                                                                             className: "h-5 w-5 text-destructive shrink-0"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                            lineNumber: 1151,
+                                                                            lineNumber: 1154,
                                                                             columnNumber: 25
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6606,26 +6609,26 @@ function GestorDashboard() {
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                                                                     className: "text-sm font-medium",
                                                                                     children: [
-                                                                                        h.codigo_del_hallazgo,
+                                                                                        h.codigo_del_hallazgo ?? '—',
                                                                                         " vencido"
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                    lineNumber: 1153,
+                                                                                    lineNumber: 1156,
                                                                                     columnNumber: 27
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                                                                     className: "text-xs text-muted-foreground truncate",
-                                                                                    children: h.descripcion
+                                                                                    children: h.descripcion ?? '—'
                                                                                 }, void 0, false, {
                                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                    lineNumber: 1154,
+                                                                                    lineNumber: 1157,
                                                                                     columnNumber: 27
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                            lineNumber: 1152,
+                                                                            lineNumber: 1155,
                                                                             columnNumber: 25
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -6634,13 +6637,13 @@ function GestorDashboard() {
                                                                             children: "Atender"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                            lineNumber: 1156,
+                                                                            lineNumber: 1159,
                                                                             columnNumber: 25
                                                                         }, this)
                                                                     ]
                                                                 }, h.id, true, {
                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                    lineNumber: 1150,
+                                                                    lineNumber: 1153,
                                                                     columnNumber: 23
                                                                 }, this)),
                                                             hallazgos.filter((h)=>h.dias_restantes >= 0 && h.dias_restantes <= 7).map((h)=>/*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6650,7 +6653,7 @@ function GestorDashboard() {
                                                                             className: "h-5 w-5 text-amber-500 shrink-0"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                            lineNumber: 1161,
+                                                                            lineNumber: 1164,
                                                                             columnNumber: 25
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6659,12 +6662,12 @@ function GestorDashboard() {
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
                                                                                     className: "text-sm font-medium",
                                                                                     children: [
-                                                                                        h.codigo_del_hallazgo,
+                                                                                        h.codigo_del_hallazgo ?? '—',
                                                                                         " próximo a vencer"
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                    lineNumber: 1163,
+                                                                                    lineNumber: 1166,
                                                                                     columnNumber: 27
                                                                                 }, this),
                                                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -6675,13 +6678,13 @@ function GestorDashboard() {
                                                                                     ]
                                                                                 }, void 0, true, {
                                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                    lineNumber: 1164,
+                                                                                    lineNumber: 1167,
                                                                                     columnNumber: 27
                                                                                 }, this)
                                                                             ]
                                                                         }, void 0, true, {
                                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                            lineNumber: 1162,
+                                                                            lineNumber: 1165,
                                                                             columnNumber: 25
                                                                         }, this),
                                                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$button$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Button"], {
@@ -6690,30 +6693,30 @@ function GestorDashboard() {
                                                                             children: "Ver"
                                                                         }, void 0, false, {
                                                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                            lineNumber: 1166,
+                                                                            lineNumber: 1169,
                                                                             columnNumber: 25
                                                                         }, this)
                                                                     ]
                                                                 }, h.id, true, {
                                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                    lineNumber: 1160,
+                                                                    lineNumber: 1163,
                                                                     columnNumber: 23
                                                                 }, this))
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                        lineNumber: 1148,
+                                                        lineNumber: 1151,
                                                         columnNumber: 19
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                    lineNumber: 1147,
+                                                    lineNumber: 1150,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 1137,
+                                            lineNumber: 1140,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Card"], {
@@ -6730,7 +6733,7 @@ function GestorDashboard() {
                                                                         children: "Cumplimiento SLA"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                        lineNumber: 1178,
+                                                                        lineNumber: 1181,
                                                                         columnNumber: 23
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardDescription"], {
@@ -6738,31 +6741,31 @@ function GestorDashboard() {
                                                                         children: "Estado de acuerdos de nivel de servicio"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                        lineNumber: 1179,
+                                                                        lineNumber: 1182,
                                                                         columnNumber: 23
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                lineNumber: 1177,
+                                                                lineNumber: 1180,
                                                                 columnNumber: 21
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$lucide$2d$react$2f$dist$2f$esm$2f$icons$2f$timer$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__$3c$export__default__as__Timer$3e$__["Timer"], {
                                                                 className: "h-4 w-4 text-muted-foreground"
                                                             }, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                lineNumber: 1181,
+                                                                lineNumber: 1184,
                                                                 columnNumber: 21
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                        lineNumber: 1176,
+                                                        lineNumber: 1179,
                                                         columnNumber: 19
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                    lineNumber: 1175,
+                                                    lineNumber: 1178,
                                                     columnNumber: 17
                                                 }, this),
                                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$card$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["CardContent"], {
@@ -6779,7 +6782,7 @@ function GestorDashboard() {
                                                                                 children: "Hallazgos en SLA"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                lineNumber: 1188,
+                                                                                lineNumber: 1191,
                                                                                 columnNumber: 25
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -6787,13 +6790,13 @@ function GestorDashboard() {
                                                                                 children: "78%"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                lineNumber: 1189,
+                                                                                lineNumber: 1192,
                                                                                 columnNumber: 25
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                        lineNumber: 1187,
+                                                                        lineNumber: 1190,
                                                                         columnNumber: 23
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$progress$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Progress"], {
@@ -6801,13 +6804,13 @@ function GestorDashboard() {
                                                                         className: "h-2"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                        lineNumber: 1191,
+                                                                        lineNumber: 1194,
                                                                         columnNumber: 23
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                lineNumber: 1186,
+                                                                lineNumber: 1189,
                                                                 columnNumber: 21
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6820,7 +6823,7 @@ function GestorDashboard() {
                                                                                 children: "Tiempo promedio de cierre"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                lineNumber: 1195,
+                                                                                lineNumber: 1198,
                                                                                 columnNumber: 25
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("span", {
@@ -6828,13 +6831,13 @@ function GestorDashboard() {
                                                                                 children: "18 días"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                lineNumber: 1196,
+                                                                                lineNumber: 1199,
                                                                                 columnNumber: 25
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                        lineNumber: 1194,
+                                                                        lineNumber: 1197,
                                                                         columnNumber: 23
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -6842,18 +6845,18 @@ function GestorDashboard() {
                                                                         children: "SLA objetivo: 30 días"
                                                                     }, void 0, false, {
                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                        lineNumber: 1198,
+                                                                        lineNumber: 1201,
                                                                         columnNumber: 23
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                lineNumber: 1193,
+                                                                lineNumber: 1196,
                                                                 columnNumber: 21
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$components$2f$ui$2f$separator$2e$tsx__$5b$app$2d$client$5d$__$28$ecmascript$29$__["Separator"], {}, void 0, false, {
                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                lineNumber: 1200,
+                                                                lineNumber: 1203,
                                                                 columnNumber: 21
                                                             }, this),
                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6866,7 +6869,7 @@ function GestorDashboard() {
                                                                                 children: "31"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                lineNumber: 1203,
+                                                                                lineNumber: 1206,
                                                                                 columnNumber: 25
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -6874,13 +6877,13 @@ function GestorDashboard() {
                                                                                 children: "En tiempo"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                lineNumber: 1204,
+                                                                                lineNumber: 1207,
                                                                                 columnNumber: 25
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                        lineNumber: 1202,
+                                                                        lineNumber: 1205,
                                                                         columnNumber: 23
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6890,7 +6893,7 @@ function GestorDashboard() {
                                                                                 children: "6"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                lineNumber: 1207,
+                                                                                lineNumber: 1210,
                                                                                 columnNumber: 25
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -6898,13 +6901,13 @@ function GestorDashboard() {
                                                                                 children: "En riesgo"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                lineNumber: 1208,
+                                                                                lineNumber: 1211,
                                                                                 columnNumber: 25
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                        lineNumber: 1206,
+                                                                        lineNumber: 1209,
                                                                         columnNumber: 23
                                                                     }, this),
                                                                     /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6914,7 +6917,7 @@ function GestorDashboard() {
                                                                                 children: "4"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                lineNumber: 1211,
+                                                                                lineNumber: 1214,
                                                                                 columnNumber: 25
                                                                             }, this),
                                                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("p", {
@@ -6922,42 +6925,42 @@ function GestorDashboard() {
                                                                                 children: "Fuera de SLA"
                                                                             }, void 0, false, {
                                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                                lineNumber: 1212,
+                                                                                lineNumber: 1215,
                                                                                 columnNumber: 25
                                                                             }, this)
                                                                         ]
                                                                     }, void 0, true, {
                                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                        lineNumber: 1210,
+                                                                        lineNumber: 1213,
                                                                         columnNumber: 23
                                                                     }, this)
                                                                 ]
                                                             }, void 0, true, {
                                                                 fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                                lineNumber: 1201,
+                                                                lineNumber: 1204,
                                                                 columnNumber: 21
                                                             }, this)
                                                         ]
                                                     }, void 0, true, {
                                                         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                        lineNumber: 1185,
+                                                        lineNumber: 1188,
                                                         columnNumber: 19
                                                     }, this)
                                                 }, void 0, false, {
                                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                                    lineNumber: 1184,
+                                                    lineNumber: 1187,
                                                     columnNumber: 17
                                                 }, this)
                                             ]
                                         }, void 0, true, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 1174,
+                                            lineNumber: 1177,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                    lineNumber: 1135,
+                                    lineNumber: 1138,
                                     columnNumber: 13
                                 }, this),
                                 /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("div", {
@@ -6967,43 +6970,43 @@ function GestorDashboard() {
                                             responsables: responsablesCriticos
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 1222,
+                                            lineNumber: 1225,
                                             columnNumber: 15
                                         }, this),
                                         /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(BitacoraCard, {
                                             entries: bitacora
                                         }, void 0, false, {
                                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                            lineNumber: 1223,
+                                            lineNumber: 1226,
                                             columnNumber: 15
                                         }, this)
                                     ]
                                 }, void 0, true, {
                                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                                    lineNumber: 1221,
+                                    lineNumber: 1224,
                                     columnNumber: 13
                                 }, this)
                             ]
                         }, void 0, true, {
                             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                            lineNumber: 1134,
+                            lineNumber: 1137,
                             columnNumber: 11
                         }, this)
                     ]
                 }, void 0, true, {
                     fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-                    lineNumber: 857,
+                    lineNumber: 860,
                     columnNumber: 9
                 }, this)
             ]
         }, void 0, true, {
             fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-            lineNumber: 793,
+            lineNumber: 796,
             columnNumber: 7
         }, this)
     }, void 0, false, {
         fileName: "[project]/app/dashboard/GestorDashboard.tsx",
-        lineNumber: 792,
+        lineNumber: 795,
         columnNumber: 5
     }, this);
 }
@@ -8355,7 +8358,8 @@ const navItems = [
         roles: [
             'vicepresidente',
             'directivo',
-            'tecnico'
+            'tecnico',
+            'gestor'
         ]
     },
     {
@@ -8365,7 +8369,8 @@ const navItems = [
         roles: [
             'vicepresidente',
             'directivo',
-            'tecnico'
+            'tecnico',
+            'gestor'
         ]
     },
     {

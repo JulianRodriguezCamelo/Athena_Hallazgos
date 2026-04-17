@@ -131,7 +131,8 @@ const hallazgosApi = {
     dependencias: ()=>request('/api/hallazgos/dependencias'),
     responsables: ()=>request('/api/hallazgos/responsables'),
     estadosPlan: ()=>request('/api/hallazgos/estados_plan'),
-    vicepresidencias: ()=>request('/api/hallazgos/vicepresidencias')
+    vicepresidencias: ()=>request('/api/hallazgos/vicepresidencias'),
+    direcciones: ()=>request('/api/hallazgos/direcciones')
 };
 const actividadesApi = {
     list: (params)=>request('/api/hallazgos/actividades', {

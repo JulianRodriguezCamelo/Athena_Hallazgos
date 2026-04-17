@@ -98,8 +98,8 @@ interface ChartItem { name: string; value: number; fill?: string }
 
 interface HallazgoRow {
   id: number
-  codigo_del_hallazgo: string
-  descripcion: string
+  codigo_del_hallazgo: string | null
+  descripcion: string | null
   estado: string
   estado_plan_accion: string | null
   responsable_plan_accion: string | null
@@ -763,11 +763,14 @@ export default function GestorDashboard() {
 
   const hallazgosConActividades = groupActivitiesByHallazgo(actividades, hallazgos)
 
-  const filteredHallazgos = hallazgos.filter(h =>
-    h.codigo_del_hallazgo.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    h.descripcion.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    h.responsable_plan_accion?.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const filteredHallazgos = hallazgos.filter(h => {
+    const term = searchTerm.toLowerCase()
+    return (
+      (h.codigo_del_hallazgo?.toLowerCase() ?? '').includes(term) ||
+      (h.descripcion?.toLowerCase() ?? '').includes(term) ||
+      (h.responsable_plan_accion?.toLowerCase() ?? '').includes(term)
+    )
+  })
 
   useEffect(() => {
     setHPage(1)
@@ -1067,10 +1070,10 @@ export default function GestorDashboard() {
                           {pagedHallazgos.map((h) => (
                             <tr key={h.id} className="hover:bg-muted/20 transition-colors">
                               <td className="px-4 py-2.5 font-mono text-[11px] text-primary whitespace-nowrap">
-                                {h.codigo_del_hallazgo}
+                                {h.codigo_del_hallazgo ?? '—'}
                               </td>
-                              <td className="px-4 py-2.5 max-w-xs truncate text-foreground/80" title={h.descripcion}>
-                                {h.descripcion}
+                              <td className="px-4 py-2.5 max-w-xs truncate text-foreground/80" title={h.descripcion ?? ''}>
+                                {h.descripcion ?? '—'}
                               </td>
                               <td className="px-4 py-2.5">
                                 <Badge className={PRIORIDAD_CONFIG[h.prioridad].color}>
@@ -1150,8 +1153,8 @@ export default function GestorDashboard() {
                       <div key={h.id} className="flex items-center gap-3 p-3 rounded-lg bg-destructive/5 border border-destructive/20">
                         <AlertTriangle className="h-5 w-5 text-destructive shrink-0" />
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium">{h.codigo_del_hallazgo} vencido</p>
-                          <p className="text-xs text-muted-foreground truncate">{h.descripcion}</p>
+                          <p className="text-sm font-medium">{h.codigo_del_hallazgo ?? '—'} vencido</p>
+                          <p className="text-xs text-muted-foreground truncate">{h.descripcion ?? '—'}</p>
                         </div>
                         <Button size="sm" variant="destructive">Atender</Button>
                       </div>
@@ -1160,7 +1163,7 @@ export default function GestorDashboard() {
                       <div key={h.id} className="flex items-center gap-3 p-3 rounded-lg bg-amber-500/5 border border-amber-500/20">
                         <Clock className="h-5 w-5 text-amber-500 shrink-0" />
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium">{h.codigo_del_hallazgo} próximo a vencer</p>
+                          <p className="text-sm font-medium">{h.codigo_del_hallazgo ?? '—'} próximo a vencer</p>
                           <p className="text-xs text-muted-foreground">{h.dias_restantes} días restantes</p>
                         </div>
                         <Button size="sm" variant="outline">Ver</Button>

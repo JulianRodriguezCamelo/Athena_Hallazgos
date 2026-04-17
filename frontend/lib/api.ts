@@ -105,6 +105,7 @@ export const hallazgosApi = {
   responsables: () => request('/api/hallazgos/responsables'),
   estadosPlan: () => request('/api/hallazgos/estados_plan'),
   vicepresidencias: () => request('/api/hallazgos/vicepresidencias'),
+  direcciones: () => request('/api/hallazgos/direcciones'),
 }
 
 // ── Actividades ───────────────────────────────────────────────────────────────
