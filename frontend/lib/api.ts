@@ -147,6 +147,13 @@ export const gestorApi = {
   tiempoPromedio: () => request('/api/dashboard/gestor/tiempo-promedio'),
 }
 
+// ── Notificaciones ────────────────────────────────────────────────────────────
+export const notificacionesApi = {
+  list: () => request('/api/notificaciones/'),
+  markRead: (id: number) => request(`/api/notificaciones/${id}/read`, { method: 'PATCH' }),
+  markAllRead: () => request('/api/notificaciones/read-all', { method: 'PATCH' }),
+}
+
 // ── Users ─────────────────────────────────────────────────────────────────────
 export const usersApi = {
   list: () => request('/api/users/'),

@@ -38,6 +38,12 @@ services:
       DB_USER: postgres
       DB_PASSWORD: postgres
       CORS_ORIGINS: http://localhost:3000
+      MAIL_SERVER: smtp.gmail.com
+      MAIL_PORT: 587
+      MAIL_USE_TLS: "true"
+      MAIL_USERNAME: iaciberseguridad1@gmail.com
+      MAIL_PASSWORD: tqvh ltra vsco lmwz
+      MAIL_DEFAULT_SENDER: iaciberseguridad1@gmail.com
     depends_on:
       db:
         condition: service_healthy

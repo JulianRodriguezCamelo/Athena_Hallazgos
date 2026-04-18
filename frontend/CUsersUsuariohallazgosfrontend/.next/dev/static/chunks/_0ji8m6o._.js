@@ -15,6 +15,8 @@ __turbopack_context__.s([
     ()=>gestorApi,
     "hallazgosApi",
     ()=>hallazgosApi,
+    "notificacionesApi",
+    ()=>notificacionesApi,
     "uploadsApi",
     ()=>uploadsApi,
     "usersApi",
@@ -186,6 +188,15 @@ const gestorApi = {
     responsablesCriticos: ()=>request('/api/dashboard/gestor/responsables-criticos'),
     bitacora: ()=>request('/api/dashboard/gestor/bitacora'),
     tiempoPromedio: ()=>request('/api/dashboard/gestor/tiempo-promedio')
+};
+const notificacionesApi = {
+    list: ()=>request('/api/notificaciones/'),
+    markRead: (id)=>request(`/api/notificaciones/${id}/read`, {
+            method: 'PATCH'
+        }),
+    markAllRead: ()=>request('/api/notificaciones/read-all', {
+            method: 'PATCH'
+        })
 };
 const usersApi = {
     list: ()=>request('/api/users/'),

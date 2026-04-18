@@ -1,7 +1,7 @@
 import os
 from flask import Flask
 from config import config
-from app.extensions import db, jwt, cors
+from app.extensions import db, jwt, cors, mail
 
 
 def create_app(config_name: str = "default") -> Flask:
@@ -11,6 +11,7 @@ def create_app(config_name: str = "default") -> Flask:
     # Inicializar extensiones
     db.init_app(app)
     jwt.init_app(app)
+    mail.init_app(app)
     cors.init_app(
         app,
         resources={r"/api/*": {"origins": app.config["CORS_ORIGINS"]}},
@@ -23,17 +24,19 @@ def create_app(config_name: str = "default") -> Flask:
     from app.modules.hallazgos.api import hallazgos_bp
     from app.modules.uploads.api import uploads_bp
     from app.modules.dashboard.api import dashboard_bp
+    from app.modules.notifcations.api import notifications_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(users_bp)
     app.register_blueprint(hallazgos_bp)
     app.register_blueprint(uploads_bp)
     app.register_blueprint(dashboard_bp)
+    app.register_blueprint(notifications_bp)
 
     # Crear tablas y usuario admin por defecto
     with app.app_context():
         # Importar modelos para que SQLAlchemy los registre antes de create_all
-        from app.models import hallazgo, actividad, user, upload_history  # noqa: F401
+        from app.models import hallazgo, actividad, user, upload_history, notificacitions  # noqa: F401
 
         # Asegurar que el valor 'gestor' exista en el ENUM de PostgreSQL
         from sqlalchemy import text

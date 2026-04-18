@@ -25,6 +25,11 @@ def create_user(data: dict):
     if service.get_by_email(data["email"]):
         return None, "El email ya está registrado"
     user = service.create(data)
+    try:
+        from app.modules.notifcations.service import NotificationService
+        NotificationService.notificar_usuario_registrado(user, password_temporal=data["password"])
+    except Exception:
+        pass
     return user.to_dict(), None
 
 

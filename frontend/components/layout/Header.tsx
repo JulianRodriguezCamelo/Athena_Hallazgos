@@ -1,13 +1,13 @@
 'use client'
 
-import { Bell, Moon, Sun } from 'lucide-react'
+import { Moon, Sun } from 'lucide-react'
 import { useTheme } from 'next-themes'
-
 import { useAuth } from '@/lib/auth'
 import { ROL_LABELS } from '@/lib/utils'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import { SidebarTrigger } from '@/components/ui/sidebar'
 import { Separator } from '@/components/ui/separator'
+import NotificationPanel from './NotificationPanel'
 
 interface HeaderProps {
   title: string
@@ -16,6 +16,7 @@ interface HeaderProps {
 export default function Header({ title }: HeaderProps) {
   const { user } = useAuth()
   const { theme, setTheme } = useTheme()
+
   return (
     <header className="bg-card border-b border-border px-4 lg:px-6 h-14 flex items-center justify-between sticky top-0 z-20 shadow-sm">
       <div className="flex items-center gap-3">
@@ -25,22 +26,18 @@ export default function Header({ title }: HeaderProps) {
       </div>
 
       <div className="flex items-center gap-2">
-        {/* Dark mode toggle */}
-        <button suppressHydrationWarning
-            onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-            className="relative p-1.5 rounded-md text-muted-foreground hover:bg-muted transition-colors"
-            aria-label="Cambiar tema"
-            title={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
-          >
-            {theme === 'dark' ? (
-              <Sun className="w-4 h-4" />
-            ) : (
-              <Moon className="w-4 h-4" />
-            )}
-          </button>
-        <button className="relative p-1.5 rounded-md text-muted-foreground hover:bg-muted transition-colors">
-          <Bell className="w-4 h-4" />
+        <button
+          suppressHydrationWarning
+          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+          className="relative p-1.5 rounded-md text-muted-foreground hover:bg-muted transition-colors"
+          aria-label="Cambiar tema"
+          title={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
+        >
+          {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
         </button>
+
+        <NotificationPanel />
+
         <Separator orientation="vertical" className="h-5 hidden sm:block" />
         <div className="hidden sm:flex items-center gap-2">
           <Avatar className="w-7 h-7">
