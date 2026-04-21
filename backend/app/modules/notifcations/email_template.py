@@ -74,7 +74,7 @@ def build_email_html(
 
 
 def build_bienvenida_html(user_name: str, email: str, rol: str, password_temporal: str = None) -> str:
-    rol_label = {"vicepresidente": "Vicepresidente", "directivo": "Directivo", "gestor": "Gestor", "tecnico": "Técnico"}.get(rol, rol.capitalize())
+    rol_label = {"vicepresidente": "Vicepresidente", "directivo": "Directivo", "gestor": "Gestor", "profesional": "Profesional"}.get(rol, rol.capitalize())
     dashboard_url = "https://athena.fiduprevisora.com/dashboard"
 
     password_block = ""
@@ -138,7 +138,7 @@ def build_resumen_semanal_html(
     actividades_proximas: list,
     stats: dict,
 ) -> str:
-    rol_label = {"vicepresidente": "Vicepresidente", "directivo": "Directivo", "gestor": "Gestor", "tecnico": "Técnico"}.get(rol, rol.capitalize())
+    rol_label = {"vicepresidente": "Vicepresidente", "directivo": "Directivo", "gestor": "Gestor", "profesional": "Profesional"}.get(rol, rol.capitalize())
     semana = date.today().strftime("%d %b %Y")
 
     def stat_cell(label, value, color="#f97316"):

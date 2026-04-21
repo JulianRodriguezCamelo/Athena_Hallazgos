@@ -6,7 +6,7 @@ from app.models.user import User
 ROLES_HIERARCHY = {
     "vicepresidente": 3,
     "directivo": 2,
-    "tecnico": 1,
+    "profesional": 1,
 }
 
 

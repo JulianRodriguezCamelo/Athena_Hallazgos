@@ -478,6 +478,104 @@ function Pagination({ page, meta, setPage }: { page: number; meta: Meta; setPage
   )
 }
 
+// ─── Combobox Filter ─────────────────────────────────────────────────────────
+
+function ComboboxFilter({
+  value, onChange, options, placeholder,
+}: {
+  value: string
+  onChange: (v: string) => void
+  options: string[]
+  placeholder: string
+}) {
+  const [open, setOpen] = useState(false)
+  const [query, setQuery] = useState('')
+  const ref = useRef<HTMLDivElement>(null)
+
+  const filtered = query.trim()
+    ? options.filter((o) => o.toLowerCase().includes(query.toLowerCase()))
+    : options
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        setOpen(false)
+        setQuery('')
+      }
+    }
+    document.addEventListener('mousedown', handleClick)
+    return () => document.removeEventListener('mousedown', handleClick)
+  }, [])
+
+  function select(v: string) {
+    onChange(v)
+    setOpen(false)
+    setQuery('')
+  }
+
+  return (
+    <div ref={ref} className="relative w-full">
+      <button
+        type="button"
+        onClick={() => { setOpen((o) => !o); setQuery('') }}
+        className={cn(
+          'w-full flex items-center justify-between gap-2 h-9 px-3 rounded-md border text-xs',
+          'bg-background border-input shadow-sm hover:bg-muted/40 transition-colors',
+          value ? 'text-foreground' : 'text-muted-foreground',
+        )}
+      >
+        <span className="truncate">{value || placeholder}</span>
+        <div className="flex items-center gap-1 shrink-0">
+          {value && (
+            <span
+              role="button"
+              tabIndex={0}
+              onClick={(e) => { e.stopPropagation(); onChange('') }}
+              onKeyDown={(e) => e.key === 'Enter' && (e.stopPropagation(), onChange(''))}
+              className="hover:text-destructive rounded-full"
+            >
+              <X className="w-3 h-3" />
+            </span>
+          )}
+          <ChevronDown className={cn('w-3.5 h-3.5 transition-transform', open && 'rotate-180')} />
+        </div>
+      </button>
+
+      {open && (
+        <div className="absolute z-50 mt-1 w-full rounded-md border border-border bg-popover shadow-lg">
+          <div className="p-2 border-b border-border">
+            <input
+              autoFocus
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder="Escribir para filtrar…"
+              className="w-full h-7 px-2 text-xs rounded-sm border border-input bg-background focus:outline-none focus:ring-1 focus:ring-ring"
+            />
+          </div>
+          <ul className="max-h-52 overflow-y-auto py-1">
+            {filtered.length === 0 ? (
+              <li className="px-3 py-2 text-xs text-muted-foreground">Sin resultados</li>
+            ) : (
+              filtered.map((o) => (
+                <li
+                  key={o}
+                  onClick={() => select(o)}
+                  className={cn(
+                    'px-3 py-1.5 text-xs cursor-pointer hover:bg-muted/50 truncate',
+                    value === o && 'bg-primary/10 text-primary font-medium',
+                  )}
+                >
+                  {o}
+                </li>
+              ))
+            )}
+          </ul>
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ─── Filters Panel ────────────────────────────────────────────────────────────
 
 interface FiltersPanelProps {
@@ -603,10 +701,10 @@ function FiltersPanel({
                   </h4>
                   <div className="space-y-2">
                     {vicepresidencias.length > 0 && (
-                      <Select value={vicepresidencia} onChange={(e) => setVicepresidencia(e.target.value)} options={vpOptions} placeholder="Área / Vicepresidencia" />
+                      <ComboboxFilter value={vicepresidencia} onChange={setVicepresidencia} options={vicepresidencias} placeholder="Área / Vicepresidencia" />
                     )}
                     {direcciones.length > 0 && (
-                      <Select value={direccion} onChange={(e) => setDireccion(e.target.value)} options={direcciones.map((d) => ({ value: d, label: d }))} placeholder="Dirección" />
+                      <ComboboxFilter value={direccion} onChange={setDireccion} options={direcciones} placeholder="Dirección" />
                     )}
                     {dependencias.length > 0 && (
                       <Select value={dependencia} onChange={(e) => setDependencia(e.target.value)} options={depOptions} placeholder="Dependencia" />
@@ -621,7 +719,7 @@ function FiltersPanel({
                     Responsable
                   </h4>
                   <div className="space-y-2">
-                    <Select value={responsable} onChange={(e) => setResponsable(e.target.value)} options={respOptions} placeholder="Responsable" />
+                    <ComboboxFilter value={responsable} onChange={setResponsable} options={responsables} placeholder="Responsable" />
                   </div>
                 </div>
 
@@ -794,7 +892,7 @@ function HallazgosTable({
                   </p>
                 </TableCell>
                 <TableCell className="whitespace-nowrap text-muted-foreground text-xs max-w-[140px]">
-                  <p className="truncate" title={h.dependencia_reporta_ero ?? ''}>{h.dependencia_reporta_ero ?? '—'}</p>
+                  <p className="truncate" title={h.dependencia_reporta_ero ?? h.direccion ?? ''}>{h.dependencia_reporta_ero ?? h.direccion ?? '—'}</p>
                 </TableCell>
                 <TableCell className="whitespace-nowrap">
                   <StatusBadge value={h.estado} />
@@ -860,10 +958,8 @@ function ActividadesTable({
               <TableHead className="font-semibold text-xs">Hallazgo</TableHead>
               <TableHead className="font-semibold text-xs">Plan de acción</TableHead>
               <TableHead className="font-semibold text-xs">Responsable</TableHead>
-              <TableHead className="font-semibold text-xs">Estado Plan</TableHead>
               <TableHead className="font-semibold text-xs">Estado Acción</TableHead>
               <TableHead className="font-semibold text-xs">F. Compromiso</TableHead>
-              <TableHead className="font-semibold text-xs">Prórroga</TableHead>
               <TableHead className="w-12"></TableHead>
             </TableRow>
           </TableHeader>
@@ -882,20 +978,10 @@ function ActividadesTable({
                   <p className="truncate" title={a.responsable ?? ''}>{a.responsable ?? '—'}</p>
                 </TableCell>
                 <TableCell className="max-w-[160px]">
-                  <div className="truncate"><StatusBadge value={a.estado_plan_accion} /></div>
-                </TableCell>
-                <TableCell className="max-w-[160px]">
                   <div className="truncate"><StatusBadge value={a.estado_accion} /></div>
                 </TableCell>
                 <TableCell className="whitespace-nowrap text-muted-foreground text-xs">
                   {formatDate(a.fecha_compromiso)}
-                </TableCell>
-                <TableCell className="whitespace-nowrap text-muted-foreground text-xs">
-                  {a.prorroga === 'Si' || a.prorroga === 'Sí' ? (
-                    <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 text-[10px]">
-                      {formatDate(a.fecha_prorroga) || 'Sí'}
-                    </Badge>
-                  ) : '—'}
                 </TableCell>
                 <TableCell>
                   <Button

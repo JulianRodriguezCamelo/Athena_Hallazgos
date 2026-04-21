@@ -5,7 +5,7 @@ import pandas as pd
 
 COLUMN_MAP = {
     r"c[oó]digo.*evento":              "codigo_del_hallazgo",
-    r"^num(ero)?$":                    "codigo_del_hallazgo",
+    r"^n[uú]m(ero)?\.?$":              "codigo_del_hallazgo",
 
     r"descripcion.*hechos|descripcionhechos": "descripcion",
     r"^descripci[oó]n$":               "descripcion",
@@ -224,6 +224,7 @@ def parse_excel(file_path: str) -> tuple[list[dict], list[tuple[int, dict]], lis
     hallazgos: list[dict] = []
     actividades_data: list[tuple[int, dict]] = []
     seen_codigos: dict[str, int] = {}
+    seen_actividades: set[tuple] = set()
     errors: list[str] = []
 
     for idx, row in df.iterrows():
@@ -260,7 +261,10 @@ def parse_excel(file_path: str) -> tuple[list[dict], list[tuple[int, dict]], lis
             orden = sum(1 for h_idx, _ in actividades_data if h_idx == hallazgo_idx) + 1
             act = _record_to_actividad(record, codigo or group_key, orden)
             if _actividad_tiene_datos(act):
-                actividades_data.append((hallazgo_idx, act))
+                dedup_key = (hallazgo_idx, act.get("descripcion"), str(act.get("fecha_compromiso")))
+                if dedup_key not in seen_actividades:
+                    seen_actividades.add(dedup_key)
+                    actividades_data.append((hallazgo_idx, act))
 
         except Exception as e:
             errors.append(f"Fila {row_num}: {str(e)}")

@@ -1,6 +1,6 @@
 # Hallazgos ERO — Findings Management System
 
-A full-stack web application for managing operational risk findings (ERO — _Eventos de Riesgo Operacional_) at **Fiduprevisora**. It supports importing findings from Excel reports, tracking action plans, and visualizing KPIs through an interactive dashboard.
+A full-stack web application for managing operational risk findings (ERO — _Eventos de Riesgo Operacional_) at **Fiduprevisora**. It supports importing findings from Excel reports, tracking action plans, sending email notifications, and visualizing KPIs through an interactive dashboard.
 
 ---
 
@@ -25,24 +25,26 @@ A full-stack web application for managing operational risk findings (ERO — _Ev
 Hallazgos ERO provides a centralized platform to:
 
 - **Import** operational findings from Excel files (`.xlsx` / `.xls`) exported from the ERO system.
-- **Track** action plans and their statuses per finding, filtered by department and role.
+- **Track** action plans and their activity sub-tasks per finding, filtered by department and role.
 - **Visualize** KPIs through a dashboard with charts: status distribution, timelines, top responsible parties, and extension tracking.
-- **Manage** users with role-based access control.
+- **Notify** users via email when findings are approaching their deadlines or assigned to them.
+- **Manage** users with role-based access control (four roles: vicepresidente, directivo, gestor, tecnico).
 
 ---
 
 ## Tech Stack
 
-| Layer     | Technology                                       |
-| --------- | ------------------------------------------------ |
-| Frontend  | Next.js 16, React 19, TypeScript, Tailwind CSS 4 |
-| UI        | shadcn/ui, Lucide React, Recharts                |
-| Backend   | Python, Flask 3.x                                |
-| ORM       | Flask-SQLAlchemy                                 |
-| Database  | PostgreSQL 15                                    |
-| Auth      | Flask-JWT-Extended (Bearer tokens, 8h expiry)    |
-| Excel     | pandas + openpyxl + xlrd                         |
-| Container | Docker Compose                                   |
+| Layer     | Technology                                          |
+| --------- | --------------------------------------------------- |
+| Frontend  | Next.js 16, React 19, TypeScript, Tailwind CSS 4    |
+| UI        | shadcn/ui, Lucide React, Recharts                   |
+| Backend   | Python 3.11+, Flask 3.x                             |
+| ORM       | Flask-SQLAlchemy                                    |
+| Database  | PostgreSQL 15                                       |
+| Auth      | Flask-JWT-Extended (Bearer tokens, 8h expiry)       |
+| Excel     | pandas + openpyxl + xlrd                            |
+| Email     | Flask-Mail (Gmail SMTP)                             |
+| Container | Docker Compose 3.9                                  |
 
 ---
 
@@ -53,50 +55,59 @@ hallazgos/
 ├── docker-compose.yml
 ├── backend/
 │   ├── app/
-│   │   ├── __init__.py          # Flask application factory
-│   │   ├── extensions.py        # db, jwt, cors instances
+│   │   ├── __init__.py              # Flask application factory
+│   │   ├── extensions.py            # db, jwt, cors, mail instances
 │   │   ├── models/
-│   │   │   ├── user.py          # User model (roles: vicepresidente | directivo | tecnico)
-│   │   │   ├── hallazgo.py      # Finding model (19 ERO Excel fields)
-│   │   │   └── upload_history.py
-│   │   ├── routes/
-│   │   │   ├── auth.py          # Authentication endpoints
-│   │   │   ├── users.py         # User CRUD (VP only)
-│   │   │   ├── hallazgos.py     # Findings endpoints with role-based filtering
-│   │   │   ├── uploads.py       # Excel file upload & history
-│   │   │   └── dashboard.py     # KPI metrics & charts
-│   │   ├── services/
-│   │   │   └── excel_parser.py  # Flexible Excel column → model mapping
+│   │   │   ├── user.py              # User (roles: vicepresidente | directivo | gestor | tecnico)
+│   │   │   ├── hallazgo.py          # Finding model (39 ERO fields)
+│   │   │   ├── actividad.py         # Activity/sub-task model (1 finding → N activities)
+│   │   │   ├── notificacion.py      # Notification model
+│   │   │   └── upload_history.py    # Upload history tracking
+│   │   ├── modules/
+│   │   │   ├── auth/                # Login, JWT validation
+│   │   │   ├── hallazgos/           # Findings CRUD with role-based filtering
+│   │   │   ├── uploads/             # Excel file upload & history
+│   │   │   ├── dashboard/           # KPI metrics & charts
+│   │   │   ├── users/               # User management (VP only)
+│   │   │   └── notifcations/        # Email notification system
+│   │   ├── schemas/                 # DTO validation schemas
 │   │   └── utils/
-│   │       └── decorators.py    # @role_required, @min_role, get_current_user()
+│   │       └── decorators.py        # @role_required, @min_role, get_current_user()
 │   ├── config.py
-│   ├── app.py                   # Entry point
-│   ├── seed_data.py             # Sample users for testing
+│   ├── app.py                       # Entry point
+│   ├── seed_data.py                 # Sample users for testing
 │   └── requirements.txt
 └── frontend/
     ├── app/
-    │   ├── dashboard/           # Dashboard page
-    │   ├── hallazgos/           # Findings list & detail pages
-    │   ├── uploads/             # File upload page
-    │   ├── usuarios/            # User management page
-    │   └── login/               # Login page
-    ├── components/              # Shared UI components
-    ├── hooks/                   # Custom React hooks
-    └── lib/                     # Utilities & API client
+    │   ├── dashboard/               # Dashboard pages (VP, Directivo, Gestor views)
+    │   ├── hallazgos/               # Findings list & detail pages
+    │   ├── uploads/                 # File upload page
+    │   ├── usuarios/                # User management page (VP only)
+    │   └── login/                   # Login page
+    ├── components/
+    │   ├── layout/                  # Header, sidebar, navigation
+    │   ├── charts/                  # Recharts visualization components
+    │   └── ui/                      # shadcn/ui component library
+    ├── hooks/                       # Custom React hooks
+    └── lib/                         # Utilities & API client (api.ts)
 ```
+
+Each backend module follows a consistent internal structure: `api.py` (routes) → `controller.py` (request handling) → `service.py` (business logic).
 
 ---
 
 ## Features
 
-- **Excel Import** — Upload `.xlsx` / `.xls` files; the parser flexibly maps column names to the internal model. Upload history is tracked per user.
-- **Findings Browser** — Paginated, filterable list of findings. Filters include status, department, responsible party, and date range. Data visible is scoped to the user's role.
-- **Dashboard** — Visual KPIs including:
-- Total findings, open/closed counts
-- Distribution by status and by department
-- Top responsible parties
-- 12-month activity timeline
-- Extension (prórroga) tracking
+- **Excel Import** — Upload `.xlsx` / `.xls` files; the parser flexibly maps column names to the internal model and tracks per-row errors. Upload history is recorded per user.
+- **Findings Browser** — Paginated, filterable list of findings. Filters include status, department, responsible party, and date range. Visible data is scoped to the user's role.
+- **Activity Tracking** — Each finding can have multiple ordered activity sub-tasks (`Actividad`), each with its own status, responsible party, deadline, and extension (prórroga) flag.
+- **Email Notifications** — Automated alerts when findings approach their SLA deadlines or are assigned to users. Notifications are stored and can be marked as read.
+- **Dashboard** — Visual KPIs scoped by role:
+  - Total findings, open/closed counts
+  - Distribution by status and by department
+  - Top responsible parties
+  - 12-month activity timeline
+  - Extension (prórroga) tracking
 - **User Management** — VP-only CRUD for users; each user has a role and a department (_dependencia_).
 - **JWT Authentication** — Secure token-based login with 8-hour token expiry.
 
@@ -104,15 +115,18 @@ hallazgos/
 
 ## Roles & Permissions
 
-| Action                   | vicepresidente | directivo | tecnico |
-| ------------------------ | :------------: | :-------: | :-----: |
-| View all findings        |       ✅       |    ❌     |   ❌    |
-| View department findings |       ✅       |    ✅     |   ❌    |
-| View own findings        |       ✅       |    ✅     |   ✅    |
-| Upload Excel files       |       ✅       |    ✅     |   ❌    |
-| View all upload history  |       ✅       | own only  |   ❌    |
-| Create / edit users      |       ✅       |    ❌     |   ❌    |
-| Access global dashboard  |       ✅       |    ❌     |   ❌    |
+| Action                        | vicepresidente | directivo | gestor | tecnico |
+| ----------------------------- | :------------: | :-------: | :----: | :-----: |
+| View all findings             |       ✅       |    ❌     |   ✅   |   ❌    |
+| View department findings      |       ✅       |    ✅     |   ✅   |   ❌    |
+| View own findings/assignments |       ✅       |    ✅     |   ✅   |   ✅    |
+| Create / edit findings        |       ✅       |    ❌     |   ✅   |   ❌    |
+| Upload Excel files            |       ✅       |    ✅     |   ✅   |   ❌    |
+| View all upload history       |       ✅       | own only  |   ✅   |   ❌    |
+| Create / edit users           |       ✅       |    ❌     |   ❌   |   ❌    |
+| Access global dashboard       |       ✅       |    ❌     |   ✅   |   ❌    |
+| Access department dashboard   |       ✅       |    ✅     |   ✅   |   ❌    |
+| Receive notifications         |       ✅       |    ✅     |   ✅   |   ✅    |
 
 ---
 
@@ -130,7 +144,7 @@ hallazgos/
 | Method | Endpoint             | Description                 |
 | ------ | -------------------- | --------------------------- |
 | GET    | `/api/hallazgos/`    | Paginated list with filters |
-| GET    | `/api/hallazgos/:id` | Finding detail              |
+| GET    | `/api/hallazgos/:id` | Finding detail with activities |
 | PUT    | `/api/hallazgos/:id` | Update editable fields      |
 
 ### Uploads
@@ -150,6 +164,22 @@ hallazgos/
 | GET    | `/api/dashboard/por-responsable` | Top responsible parties    |
 | GET    | `/api/dashboard/timeline`        | Last 12 months activity    |
 | GET    | `/api/dashboard/prorrogas`       | Extension totals           |
+
+### Users
+
+| Method | Endpoint          | Description                    |
+| ------ | ----------------- | ------------------------------ |
+| GET    | `/api/users/`     | List all users (VP only)       |
+| POST   | `/api/users/`     | Create user (VP only)          |
+| PUT    | `/api/users/:id`  | Update user (VP only)          |
+| DELETE | `/api/users/:id`  | Delete user (VP only)          |
+
+### Notifications
+
+| Method | Endpoint                          | Description                  |
+| ------ | --------------------------------- | ---------------------------- |
+| GET    | `/api/notificaciones/`            | List notifications for user  |
+| PATCH  | `/api/notificaciones/:id/read`    | Mark notification as read    |
 
 ---
 
@@ -224,9 +254,13 @@ DB_USER=postgres
 DB_PASSWORD=postgres
 
 CORS_ORIGINS=http://localhost:3000
+
+# Email notifications (Gmail SMTP)
+MAIL_USERNAME=your-gmail@gmail.com
+MAIL_PASSWORD=your-app-password
 ```
 
-For the frontend, set `NEXT_PUBLIC_API_URL` in the environment or a `.env.local` file:
+For the frontend, set `NEXT_PUBLIC_API_URL` in a `.env.local` file:
 
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:5000

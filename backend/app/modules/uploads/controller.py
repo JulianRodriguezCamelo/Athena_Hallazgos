@@ -7,6 +7,7 @@ from app.extensions import db
 from app.models.hallazgo import Hallazgo
 from app.models.actividad import Actividad
 from app.models.upload_history import UploadHistory
+from app.models.notificacitions import Notificacition
 from app.modules.uploads.service import parse_excel
 from config import Config
 
@@ -93,7 +94,7 @@ def process_upload(user, file):
 
 def get_history(user, page: int, per_page: int):
     query = UploadHistory.query
-    if user.rol == "directivo":
+    if user.rol == "gestor":
         query = query.filter_by(uploaded_by_id=user.id)
     paginated = query.order_by(UploadHistory.uploaded_at.desc()).paginate(
         page=page, per_page=per_page, error_out=False
@@ -112,7 +113,10 @@ def delete_upload(user, upload_id: int):
     upload = UploadHistory.query.get_or_404(upload_id)
     if user.rol == "directivo" and upload.uploaded_by_id != user.id:
         return False, "No tiene permisos para eliminar esta carga"
-    Hallazgo.query.filter_by(upload_id=upload_id).delete()
+    hallazgo_ids = [h.id for h in Hallazgo.query.filter_by(upload_id=upload_id).with_entities(Hallazgo.id)]
+    if hallazgo_ids:
+        Notificacition.query.filter(Notificacition.hallazgo_id.in_(hallazgo_ids)).delete(synchronize_session=False)
+    Hallazgo.query.filter_by(upload_id=upload_id).delete(synchronize_session=False)
     db.session.delete(upload)
     db.session.commit()
     return True, None

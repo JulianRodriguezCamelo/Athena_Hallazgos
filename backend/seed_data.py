@@ -41,14 +41,14 @@ USERS = [
         "nombre": "Técnico Juan García",
         "email": "j.garcia@fiduprevisora.com",
         "password": "Tec2025*",
-        "rol": "tecnico",
+        "rol": "profesional",
         "dependencia": "Tecnología",
     },
     {
         "nombre": "Técnica María Rodríguez",
         "email": "m.rodriguez@fiduprevisora.com",
         "password": "Tec2025*",
-        "rol": "tecnico",
+        "rol": "profesional",
         "dependencia": "Software",
     },
 ]

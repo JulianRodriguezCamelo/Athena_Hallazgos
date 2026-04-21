@@ -15,7 +15,7 @@ backend/
 │   ├── __init__.py          # Factory de la app Flask
 │   ├── extensions.py        # db, jwt, cors
 │   ├── models/
-│   │   ├── user.py          # Roles: vicepresidente | directivo | tecnico
+│   │   ├── user.py          # Roles: vicepresidente | directivo | profesional
 │   │   ├── hallazgo.py      # 19 campos del Excel ERO
 │   │   └── upload_history.py
 │   ├── routes/
@@ -36,7 +36,7 @@ backend/
 
 ## Roles y permisos
 
-| Acción                     | vicepresidente | directivo | tecnico |
+| Acción                     | vicepresidente | directivo | profesional |
 |----------------------------|:--------------:|:---------:|:-------:|
 | Ver todos los hallazgos    | ✅             | ❌        | ❌      |
 | Ver hallazgos dependencia  | ✅             | ✅        | ❌      |

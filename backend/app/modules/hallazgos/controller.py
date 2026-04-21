@@ -195,6 +195,79 @@ def list_actividades(user, filters: dict, page: int, per_page: int):
     }
 
 
+def _is_completada(estado: str | None) -> bool:
+    if not estado:
+        return False
+    lower = estado.lower()
+    return any(k in lower for k in ("cerrado", "completado", "cumplido"))
+
+
+def update_actividad_estado(user, actividad_id: int, estado: str):
+    actividad = Actividad.query.get(actividad_id)
+    if not actividad:
+        return None
+    if not service.get_by_id(user, actividad.hallazgo_id):
+        return None
+    actividad.estado_accion = estado
+    db.session.commit()
+    return actividad
+
+
+def get_checklist(user, page: int, per_page: int):
+    from datetime import datetime, timezone
+    now = datetime.now(timezone.utc)
+
+    query = service.base_query(user).order_by(
+        nullslast(Hallazgo.fecha_cierre_proyectada.asc())
+    )
+    paginated = query.paginate(page=page, per_page=per_page, error_out=False)
+
+    hallazgo_ids = [h.id for h in paginated.items]
+    all_acts = (
+        Actividad.query
+        .filter(Actividad.hallazgo_id.in_(hallazgo_ids))
+        .order_by(Actividad.orden)
+        .all()
+    ) if hallazgo_ids else []
+
+    acts_map: dict[int, list] = {}
+    seen_acts: dict[int, set] = {}
+    for a in all_acts:
+        key = (a.descripcion, str(a.fecha_compromiso))
+        if key not in seen_acts.setdefault(a.hallazgo_id, set()):
+            seen_acts[a.hallazgo_id].add(key)
+            acts_map.setdefault(a.hallazgo_id, []).append(a)
+
+    result = []
+    for h in paginated.items:
+        actividades = acts_map.get(h.id, [])
+        total = len(actividades)
+        completadas = sum(1 for a in actividades if _is_completada(a.estado_accion))
+
+        fcp = h.fecha_cierre_proyectada
+        if fcp:
+            if fcp.tzinfo is None:
+                fcp = fcp.replace(tzinfo=timezone.utc)
+            dias_restantes = (fcp - now).days
+        else:
+            dias_restantes = None
+
+        d = h.to_dict()
+        d["actividades"] = [a.to_dict() for a in actividades]
+        d["total_actividades"] = total
+        d["actividades_completadas"] = completadas
+        d["progreso"] = round((completadas / total) * 100) if total > 0 else 0
+        d["dias_restantes"] = dias_restantes
+        result.append(d)
+
+    return {
+        "hallazgos": result,
+        "total": paginated.total,
+        "pages": paginated.pages,
+        "page": paginated.page,
+    }
+
+
 def get_estados(user):
     ids = service.base_query(user).with_entities(Hallazgo.id)
     return [e[0] for e in service.distinct_estados(ids) if e[0]]

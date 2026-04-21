@@ -78,6 +78,27 @@ def list_all_actividades():
     return jsonify(controller.list_actividades(user, filters, page, per_page)), 200
 
 
+@hallazgos_bp.route("/actividades/<int:actividad_id>/estado", methods=["PATCH"])
+@jwt_required()
+def patch_actividad_estado(actividad_id):
+    user = get_current_user()
+    data = request.get_json() or {}
+    estado = data.get("estado_accion", "")
+    actividad = controller.update_actividad_estado(user, actividad_id, estado)
+    if actividad is None:
+        return jsonify({"error": "Actividad no encontrada o sin permisos"}), 404
+    return jsonify({"actividad": actividad.to_dict()}), 200
+
+
+@hallazgos_bp.route("/checklist", methods=["GET"])
+@jwt_required()
+def get_checklist():
+    user = get_current_user()
+    page = int(request.args.get("page", 1))
+    per_page = int(request.args.get("per_page", 15))
+    return jsonify(controller.get_checklist(user, page, per_page)), 200
+
+
 @hallazgos_bp.route("/estados", methods=["GET"])
 @jwt_required()
 def get_estados():

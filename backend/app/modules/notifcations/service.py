@@ -245,7 +245,7 @@ class NotificationService:
                 ))
                 .all()
             )
-        # tecnico
+        # profesional
         return (
             Hallazgo.query
             .filter(or_(

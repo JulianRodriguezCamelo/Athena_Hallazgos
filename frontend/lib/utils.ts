@@ -36,11 +36,11 @@ export function getEstadoColor(estado: string | null | undefined): string {
 export const ROL_LABELS: Record<string, string> = {
   vicepresidente: 'Vicepresidente',
   directivo: 'Directivo',
-  tecnico: 'Técnico',
+  profesional: 'Profesional',
 }
 
 export const ROL_COLORS: Record<string, string> = {
   vicepresidente: 'bg-primary/10 text-primary',
   directivo: 'bg-accent/10 text-accent',
-  tecnico: 'bg-muted text-muted-foreground',
+  profesional: 'bg-muted text-muted-foreground',
 }

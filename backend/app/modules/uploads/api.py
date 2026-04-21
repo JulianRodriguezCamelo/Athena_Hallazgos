@@ -1,14 +1,14 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required
 from app.modules.uploads import controller
-from app.utils.decorators import get_current_user, min_role
+from app.utils.decorators import get_current_user, min_role, role_required
 
 uploads_bp = Blueprint("uploads", __name__, url_prefix="/api/uploads")
 
 
 @uploads_bp.route("/", methods=["POST"])
 @jwt_required()
-@min_role("directivo")
+@role_required("vicepresidente", "gestor")
 def upload_excel():
     user = get_current_user()
 
@@ -32,7 +32,7 @@ def upload_excel():
 
 @uploads_bp.route("/history", methods=["GET"])
 @jwt_required()
-@min_role("directivo")
+@role_required("vicepresidente", "gestor")
 def upload_history():
     user = get_current_user()
     page = int(request.args.get("page", 1))
@@ -48,7 +48,7 @@ def upload_history():
 
 @uploads_bp.route("/history/<int:upload_id>", methods=["GET"])
 @jwt_required()
-@min_role("directivo")
+@role_required("vicepresidente", "gestor")
 def get_upload_detail(upload_id):
     user = get_current_user()
     upload, error = controller.get_upload_detail(user, upload_id)
@@ -59,7 +59,7 @@ def get_upload_detail(upload_id):
 
 @uploads_bp.route("/history/<int:upload_id>", methods=["DELETE"])
 @jwt_required()
-@min_role("directivo")
+@role_required("vicepresidente", "gestor")
 def delete_upload(upload_id):
     user = get_current_user()
     success, error = controller.delete_upload(user, upload_id)

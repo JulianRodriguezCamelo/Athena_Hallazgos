@@ -1,6 +1,6 @@
 from app.modules.users import service
 
-VALID_ROLES = {"vicepresidente", "directivo", "tecnico", "gestor"}
+VALID_ROLES = {"vicepresidente", "directivo", "profesional", "gestor"}
 
 
 def list_users(current_user):

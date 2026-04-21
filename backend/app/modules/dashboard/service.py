@@ -9,11 +9,11 @@ def base_query(user):
     query = Hallazgo.query
     if user.rol == "vicepresidente":
         return query
-    if user.rol in ("directivo", "tecnico"):
+    if user.rol in ("directivo", "profesional"):
         if user.vicepresidencia:
-            return query.filter(Hallazgo.vicepresidencia == user.vicepresidencia)
+            return query.filter(Hallazgo.vicepresidencia.ilike(user.vicepresidencia))
         if user.dependencia:
-            return query.filter(Hallazgo.dependencia_reporta_ero == user.dependencia)
+            return query.filter(Hallazgo.dependencia_reporta_ero.ilike(user.dependencia))
         return query
     if user.rol == "gestor":
         return gestor_query(user)
@@ -42,11 +42,12 @@ def count_por_estado(hallazgo_ids):
 
 
 def count_por_dependencia(hallazgo_ids):
+    area = func.coalesce(Hallazgo.dependencia_reporta_ero, Hallazgo.direccion).label("area")
     return (
-        db.session.query(Hallazgo.dependencia_reporta_ero, func.count(Hallazgo.id).label("total"))
-        .filter(Hallazgo.dependencia_reporta_ero.isnot(None))
+        db.session.query(area, func.count(Hallazgo.id).label("total"))
+        .filter(func.coalesce(Hallazgo.dependencia_reporta_ero, Hallazgo.direccion).isnot(None))
         .filter(Hallazgo.id.in_(hallazgo_ids))
-        .group_by(Hallazgo.dependencia_reporta_ero)
+        .group_by(area)
         .order_by(func.count(Hallazgo.id).desc())
         .limit(15)
         .all()

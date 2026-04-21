@@ -139,6 +139,18 @@ const hallazgosApi = {
 const actividadesApi = {
     list: (params)=>request('/api/hallazgos/actividades', {
             params
+        }),
+    updateEstado: (id, estado_accion)=>request(`/api/hallazgos/actividades/${id}/estado`, {
+            method: 'PATCH',
+            body: {
+                estado_accion
+            }
+        }),
+    checklist: (page = 1, perPage = 15)=>request('/api/hallazgos/checklist', {
+            params: {
+                page,
+                per_page: perPage
+            }
         })
 };
 const uploadsApi = {
@@ -281,7 +293,7 @@ function AuthProvider({ children }) {
             logout,
             isVice: user?.rol === 'vicepresidente',
             isDirectivo: user?.rol === 'directivo',
-            isTecnico: user?.rol === 'tecnico',
+            isProfesional: user?.rol === 'profesional',
             isGestor: user?.rol === 'gestor'
         },
         children: children

@@ -47,7 +47,7 @@ def get_por_estado(user):
 def get_por_dependencia(user):
     ids = service.base_query(user).with_entities(Hallazgo.id)
     results = service.count_por_dependencia(ids)
-    return [{"dependencia": r.dependencia_reporta_ero, "total": r.total} for r in results]
+    return [{"dependencia": r.area, "total": r.total} for r in results]
 
 
 def get_por_responsable(user):
@@ -352,7 +352,7 @@ def gestor_tiempo_promedio(user):
         if inicio.tzinfo is None:
             inicio = inicio.replace(tzinfo=timezone.utc)
         dias = (now - inicio).days
-        if "análisis" in estado_lower or "analisis" in estado_lower or "abierto" in estado_lower:
+        if "análisis" in estado_lower or "analisis" in estado_lower or "abierto" in estado_lower or "pendiente" in estado_lower:
             buckets["Análisis"].append(dias)
         elif "ejecuci" in estado_lower or "proceso" in estado_lower:
             buckets["Ejecución"].append(dias)

@@ -46,19 +46,19 @@ interface FormData {
   dependencia: string
 }
 
-const EMPTY_FORM: FormData = { nombre: '', email: '', password: '', rol: 'tecnico', dependencia: '' }
+const EMPTY_FORM: FormData = { nombre: '', email: '', password: '', rol: 'profesional', dependencia: '' }
 
 const ROL_OPTIONS = [
   { value: 'vicepresidente', label: 'Vicepresidente' },
   { value: 'directivo',      label: 'Directivo' },
-  { value: 'tecnico',        label: 'Técnico' },
+  { value: 'profesional',    label: 'Profesional' },
   { value: 'gestor',         label: 'Gestor' },
 ]
 
 const ROL_BADGE: Record<string, 'default' | 'accent' | 'ghost'> = {
   vicepresidente: 'default',
   directivo: 'accent',
-  tecnico: 'ghost',
+  profesional: 'ghost',
 }
 
 export default function UsuariosPage() {

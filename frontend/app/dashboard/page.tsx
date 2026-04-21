@@ -333,16 +333,17 @@ export default function DashboardPage() {
                   )}
                 </CardContent>
               </Card>
+              
 
-              {/* Estado del plan de acción */}
+              {/* Estado del Plan de Acción */}
               <Card>
                 <CardHeader className="pb-2">
                   <div className="flex items-center justify-between">
                     <div>
-                      <CardTitle className="text-sm font-medium">Plan de Acción</CardTitle>
-                      <CardDescription className="text-xs">Estado de los planes de cierre</CardDescription>
+                      <CardTitle className="text-sm font-medium">Estado del Plan de Acción</CardTitle>
+                      <CardDescription className="text-xs">Distribución por estado del plan</CardDescription>
                     </div>
-                    <Shield className="h-4 w-4 text-muted-foreground" />
+                    <Activity className="h-4 w-4 text-muted-foreground" />
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -364,7 +365,7 @@ export default function DashboardPage() {
                             stroke="var(--background)"
                           >
                             {planConFill.map((entry, index) => (
-                              <Cell key={`cell-${index}`} fill={entry.fill} />
+                              <Cell key={`cell-plan-${index}`} fill={entry.fill} />
                             ))}
                           </Pie>
                           <ChartTooltip content={<ChartTooltipContent />} />
@@ -374,7 +375,7 @@ export default function DashboardPage() {
                         {planConFill.map((item) => (
                           <div key={item.name} className="flex items-center gap-1.5">
                             <div className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: item.fill }} />
-                            <span className="text-xs text-muted-foreground">{item.name}</span>
+                            <span className="text-xs text-muted-foreground truncate max-w-[90px]">{item.name}</span>
                             <span className="text-xs font-semibold">{item.value}</span>
                           </div>
                         ))}
@@ -495,10 +496,10 @@ export default function DashboardPage() {
                   <div className="flex items-center justify-between">
                     <div>
                       <CardTitle className="text-sm font-medium">
-                        {isVice ? 'Hallazgos por Dirección' : 'Hallazgos por Responsable'}
+                        {isVice ? 'Hallazgos por Vicepresidencia' : 'Hallazgos por Responsable'}
                       </CardTitle>
                       <CardDescription className="text-xs">
-                        {isVice ? 'Distribución por área organizacional' : 'Top responsables asignados'}
+                        {isVice ? 'Distribución por Vicepresidencia' : 'Top responsables asignados'}
                       </CardDescription>
                     </div>
                     <BarChart3 className="h-4 w-4 text-muted-foreground" />

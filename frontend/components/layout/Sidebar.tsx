@@ -9,6 +9,7 @@ import {
   Users,
   LogOut,
   ShieldAlert,
+  ClipboardList,
 } from 'lucide-react'
 import { useAuth } from '@/lib/auth'
 import { cn } from '@/lib/utils'
@@ -34,19 +35,25 @@ const navItems = [
     href: '/dashboard',
     label: 'Dashboard',
     icon: LayoutDashboard,
-    roles: ['vicepresidente', 'directivo', 'tecnico', 'gestor'],
+    roles: ['vicepresidente', 'directivo', 'profesional', 'gestor'],
   },
   {
     href: '/hallazgos',
     label: 'Hallazgos',
     icon: FileSearch,
-    roles: ['vicepresidente', 'directivo', 'tecnico', 'gestor'],
+    roles: ['vicepresidente', 'directivo', 'profesional', 'gestor'],
+  },
+  {
+    href: '/mis-actividades',
+    label: 'Mis Actividades',
+    icon: ClipboardList,
+    roles: ['directivo', 'profesional', 'gestor'],
   },
   {
     href: '/uploads',
     label: 'Carga de datos',
     icon: Upload,
-    roles: ['vicepresidente', 'directivo'],
+    roles: ['vicepresidente', 'gestor'],
   },
   {
     href: '/usuarios',
