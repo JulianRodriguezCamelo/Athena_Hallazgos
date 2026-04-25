@@ -59,3 +59,11 @@ def delete_user(user_id):
     if not success:
         return jsonify({"error": error}), 400
     return jsonify({"message": "Usuario desactivado exitosamente"}), 200
+
+@users_bp.route("/dependencias", methods=["GET"])
+@jwt_required()
+@role_required("vicepresidente")
+def list_dependencias():
+    current_user = get_current_user()
+    dependencias = controller.distinct_dependencias_user(current_user)
+    return jsonify({"dependencias": dependencias}), 200

@@ -243,6 +243,95 @@ def build_resumen_semanal_html(
 </html>"""
 
 
+def build_recordatorio_html(
+    nombre_responsable: str,
+    hallazgos_data: list,
+    actividades_data: list,
+    gestor_nombre: str,
+    filtro_url: str,
+) -> str:
+    def hallazgo_rows(items):
+        if not items:
+            return '<tr><td colspan="3" style="color:#475569;font-size:13px;padding:16px 0;text-align:center;">Sin hallazgos vencidos asignados</td></tr>'
+        rows = ""
+        for h in items:
+            rows += f"""
+            <tr style="border-bottom:1px solid #21262d;">
+              <td style="color:#e2e8f0;font-size:12px;padding:10px 8px;font-weight:600;white-space:nowrap;">{h.get("codigo","—")}</td>
+              <td style="color:#94a3b8;font-size:12px;padding:10px 8px;max-width:200px;">{h.get("descripcion","")[:70]}{"..." if len(h.get("descripcion","")) > 70 else ""}</td>
+              <td style="color:#e53935;font-size:12px;padding:10px 8px;white-space:nowrap;font-weight:500;">{h.get("fecha_vence","—")}</td>
+            </tr>"""
+        return rows
+
+    def actividad_rows(items):
+        if not items:
+            return '<tr><td colspan="3" style="color:#475569;font-size:13px;padding:16px 0;text-align:center;">Sin actividades pendientes</td></tr>'
+        rows = ""
+        for a in items:
+            rows += f"""
+            <tr style="border-bottom:1px solid #21262d;">
+              <td style="color:#94a3b8;font-size:12px;padding:10px 8px;max-width:200px;">{a.get("descripcion","")[:70]}{"..." if len(a.get("descripcion","")) > 70 else ""}</td>
+              <td style="color:#e2e8f0;font-size:12px;padding:10px 8px;font-weight:500;">{a.get("hallazgo_codigo","—")}</td>
+              <td style="color:#e53935;font-size:12px;padding:10px 8px;white-space:nowrap;font-weight:500;">{a.get("fecha_compromiso","—")}</td>
+            </tr>"""
+        return rows
+
+    return f"""<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"/><title>Recordatorio de Hallazgos — Athena</title></head>
+<body style="margin:0;padding:0;background-color:#0d1117;font-family:'Segoe UI',Helvetica,Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#0d1117;padding:40px 16px;">
+<tr><td align="center">
+<table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;width:100%;">
+  {_header()}
+  <tr><td style="padding:0 0 24px;">
+    <div style="color:#f8fafc;font-size:24px;font-weight:700;line-height:1.3;">Hola, <span style="color:#f97316;">{nombre_responsable}</span></div>
+    <div style="color:#64748b;font-size:14px;margin-top:8px;line-height:1.5;">
+      <strong style="color:#94a3b8;">{gestor_nombre}</strong> te envía un recordatorio sobre hallazgos y actividades pendientes bajo tu responsabilidad.
+    </div>
+  </td></tr>
+
+  <tr><td style="padding-bottom:24px;">
+    <div style="color:#f1f5f9;font-size:14px;font-weight:700;margin-bottom:12px;">
+      Hallazgos vencidos
+      <span style="color:#e53935;font-size:12px;font-weight:600;margin-left:8px;">({len(hallazgos_data)} pendientes)</span>
+    </div>
+    <table width="100%" cellpadding="0" cellspacing="0" style="background:#161b22;border:1px solid #21262d;border-radius:12px;overflow:hidden;">
+      <tr><td style="padding:4px 0 0;background:linear-gradient(90deg,#e53935,#b71c1c);height:3px;font-size:0;">&nbsp;</td></tr>
+      <tr style="background:#1e2530;">
+        <th style="color:#64748b;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:10px 8px;text-align:left;font-weight:600;">Código</th>
+        <th style="color:#64748b;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:10px 8px;text-align:left;font-weight:600;">Hallazgo</th>
+        <th style="color:#64748b;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:10px 8px;text-align:left;font-weight:600;">Vencía</th>
+      </tr>
+      {hallazgo_rows(hallazgos_data)}
+    </table>
+  </td></tr>
+
+  <tr><td style="padding-bottom:28px;">
+    <div style="color:#f1f5f9;font-size:14px;font-weight:700;margin-bottom:12px;">
+      Actividades pendientes
+      <span style="color:#f97316;font-size:12px;font-weight:600;margin-left:8px;">({len(actividades_data)} sin cerrar)</span>
+    </div>
+    <table width="100%" cellpadding="0" cellspacing="0" style="background:#161b22;border:1px solid #21262d;border-radius:12px;overflow:hidden;">
+      <tr><td style="padding:4px 0 0;background:linear-gradient(90deg,#f97316,#ea580c);height:3px;font-size:0;">&nbsp;</td></tr>
+      <tr style="background:#1e2530;">
+        <th style="color:#64748b;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:10px 8px;text-align:left;font-weight:600;">Actividad</th>
+        <th style="color:#64748b;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:10px 8px;text-align:left;font-weight:600;">Hallazgo</th>
+        <th style="color:#64748b;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:10px 8px;text-align:left;font-weight:600;">Comprometida</th>
+      </tr>
+      {actividad_rows(actividades_data)}
+    </table>
+  </td></tr>
+
+  {_cta(filtro_url, label="Ver mis hallazgos pendientes")}
+  {_footer()}
+</table>
+</td></tr>
+</table>
+</body>
+</html>"""
+
+
 # ── Bloques compartidos ──────────────────────────────────────────────────────
 
 def _header() -> str:

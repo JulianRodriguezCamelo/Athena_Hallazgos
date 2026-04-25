@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { useSocket } from '@/hooks/useSocket'
 import { Bell, Check, CheckCheck, AlertTriangle, Clock, RefreshCw, Tag, Zap } from 'lucide-react'
 import { toast } from 'sonner'
 import { notificacionesApi } from '@/lib/api'
@@ -45,9 +46,21 @@ export default function NotificationPanel() {
     }
   }, [])
 
+  const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null
+
+  const handleNewNotification = useCallback((notif: unknown) => {
+    setNotifs(prev => {
+      const n = notif as Notificacion
+      if (prev.some(x => x.id === n.id)) return prev
+      return [n, ...prev]
+    })
+  }, [])
+
+  useSocket(token, handleNewNotification)
+
   useEffect(() => {
     fetchNotifs()
-    const interval = setInterval(fetchNotifs, 60_000)
+    const interval = setInterval(fetchNotifs, 120_000)
     return () => clearInterval(interval)
   }, [fetchNotifs])
 

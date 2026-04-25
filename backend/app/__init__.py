@@ -2,6 +2,7 @@ import os
 from flask import Flask
 from config import config
 from app.extensions import db, jwt, cors, mail
+from app.modules.scheduler.scheduler import init_scheduler 
 
 
 def create_app(config_name: str = "default") -> Flask:
@@ -12,6 +13,11 @@ def create_app(config_name: str = "default") -> Flask:
     db.init_app(app)
     jwt.init_app(app)
     mail.init_app(app)
+    from app.extensions import socketio
+    socketio.init_app(app, cors_allowed_origins="*", async_mode="eventlet",
+                  logger=False, engineio_logger=False)
+    from app.sockets import register_handlers
+    register_handlers(socketio)
     cors.init_app(
         app,
         resources={r"/api/*": {"origins": app.config["CORS_ORIGINS"]}},
@@ -33,6 +39,7 @@ def create_app(config_name: str = "default") -> Flask:
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(notifications_bp)
 
+
     # Crear tablas y usuario admin por defecto
     with app.app_context():
         # Importar modelos para que SQLAlchemy los registre antes de create_all
@@ -50,6 +57,8 @@ def create_app(config_name: str = "default") -> Flask:
 
         db.create_all()
         _seed_admin()
+    
+    init_scheduler(app)
 
     return app
 

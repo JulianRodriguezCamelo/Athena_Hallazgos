@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx shadcn@latest add card badge table dialog avatar separator label scroll-area tooltip --overwrite -y)"
+      "Bash(npx shadcn@latest add card badge table dialog avatar separator label scroll-area tooltip --overwrite -y)",
+      "Bash(docker-compose exec -T db psql -U postgres -d hallazgos_db -c ' *)"
     ]
   }
 }

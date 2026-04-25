@@ -149,6 +149,7 @@ export const gestorApi = {
   responsablesCriticos: () => request('/api/dashboard/gestor/responsables-criticos'),
   bitacora: () => request('/api/dashboard/gestor/bitacora'),
   tiempoPromedio: () => request('/api/dashboard/gestor/tiempo-promedio'),
+  enviarRecordatorios: () => request('/api/dashboard/gestor/enviar-recordatorios', { method: 'POST' }),
 }
 
 // ── Notificaciones ────────────────────────────────────────────────────────────
@@ -167,4 +168,5 @@ export const usersApi = {
   update: (id: number, data: Record<string, unknown>) =>
     request(`/api/users/${id}`, { method: 'PUT', body: data }),
   delete: (id: number) => request(`/api/users/${id}`, { method: 'DELETE' }),
+  dependencias: () => request('/api/users/dependencias'),
 }

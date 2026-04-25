@@ -166,6 +166,12 @@ def gestor_responsables_criticos():
     return jsonify({"data": controller.gestor_responsables_criticos(get_current_user())}), 200
 
 
+@dashboard_bp.route("/gestor/enviar-recordatorios", methods=["POST"])
+@jwt_required()
+def gestor_enviar_recordatorios():
+    return jsonify(controller.gestor_enviar_recordatorios(get_current_user())), 200
+
+
 @dashboard_bp.route("/gestor/bitacora", methods=["GET"])
 @jwt_required()
 def gestor_bitacora():

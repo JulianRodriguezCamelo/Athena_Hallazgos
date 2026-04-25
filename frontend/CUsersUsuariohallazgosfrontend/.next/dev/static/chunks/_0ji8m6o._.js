@@ -23,7 +23,7 @@ __turbopack_context__.s([
     ()=>usersApi
 ]);
 var __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$build$2f$polyfills$2f$process$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__ = /*#__PURE__*/ __turbopack_context__.i("[project]/node_modules/next/dist/build/polyfills/process.js [app-client] (ecmascript)");
-const API_URL = ("TURBOPACK compile-time value", "http://localhost:5000") || 'http://localhost:5000';
+const API_URL = ("TURBOPACK compile-time value", "http://127.0.0.1:5000") || 'http://localhost:5000';
 function getToken() {
     if ("TURBOPACK compile-time falsy", 0) //TURBOPACK unreachable
     ;
@@ -223,7 +223,8 @@ const usersApi = {
         }),
     delete: (id)=>request(`/api/users/${id}`, {
             method: 'DELETE'
-        })
+        }),
+    dependencias: ()=>request('/api/users/dependencias')
 };
 if (typeof globalThis.$RefreshHelpers$ === 'object' && globalThis.$RefreshHelpers !== null) {
     __turbopack_context__.k.registerExports(__turbopack_context__.m, globalThis.$RefreshHelpers$);

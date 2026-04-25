@@ -51,3 +51,7 @@ def delete_user(user_id: int, current_user_id: int):
     user = service.get_by_id(user_id)
     service.deactivate(user)
     return True, None
+
+
+def distinct_dependencias_user(current_user):
+    return [d[0] for d in service.distinct_dependencias()]

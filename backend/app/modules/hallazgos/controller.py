@@ -132,7 +132,32 @@ def update_hallazgo(user, hallazgo_id: int, data: dict):
     hallazgo = service.get_by_id(user, hallazgo_id)
     if not hallazgo:
         return None
-    return service.update(hallazgo, data, CAMPOS_EDITABLES)
+
+    prev_responsable_plan = hallazgo.responsable_plan_accion
+    prev_responsable_accion = hallazgo.responsable_accion
+    prev_estado = hallazgo.estado
+    prev_prorroga = hallazgo.prorroga
+
+    updated = service.update(hallazgo, data, CAMPOS_EDITABLES)
+
+    try:
+        from app.modules.notifcations.service import NotificationService
+        nuevo_rp = data.get("responsable_plan_accion")
+        if nuevo_rp and nuevo_rp != prev_responsable_plan:
+            NotificationService.notificar_asignacion(updated, "responsable_plan_accion", nuevo_rp, user)
+        nuevo_ra = data.get("responsable_accion")
+        if nuevo_ra and nuevo_ra != prev_responsable_accion:
+            NotificationService.notificar_asignacion(updated, "responsable_accion", nuevo_ra, user)
+        nuevo_estado = data.get("estado")
+        if nuevo_estado and nuevo_estado != prev_estado:
+            NotificationService.notificar_actualizacion_estado(updated, prev_estado or "—", nuevo_estado, user)
+        nueva_prorroga = data.get("prorroga")
+        if nueva_prorroga and nueva_prorroga != prev_prorroga:
+            NotificationService.notificar_prorroga(updated, nueva_prorroga, user)
+    except Exception:
+        pass
+
+    return updated
 
 
 def get_actividades(user, hallazgo_id: int):
@@ -208,9 +233,21 @@ def update_actividad_estado(user, actividad_id: int, estado: str):
         return None
     if not service.get_by_id(user, actividad.hallazgo_id):
         return None
+
+    prev_estado = actividad.estado_accion
     actividad.estado_accion = estado
     db.session.commit()
+
+    try:
+        from app.modules.notifcations.service import NotificationService
+        if estado != prev_estado and actividad.hallazgo:
+            NotificationService.notificar_actualizacion_estado(
+                actividad.hallazgo, prev_estado or "—", estado, user)
+    except Exception:
+        pass
+
     return actividad
+
 
 
 def get_checklist(user, page: int, per_page: int):

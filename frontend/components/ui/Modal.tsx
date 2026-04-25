@@ -20,7 +20,7 @@ interface ModalProps {
 const sizeMap = {
   sm: 'sm:max-w-md',
   md: 'sm:max-w-lg',
-  lg: 'sm:max-w-2xl',
+  lg: 'sm:max-w-3xl',
   xl: 'sm:max-w-4xl',
   '2xl': 'sm:max-w-5xl',
   '3xl': 'sm:max-w-6xl',

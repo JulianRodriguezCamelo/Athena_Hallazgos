@@ -63,3 +63,11 @@ def mark_all_read():
 def trigger_resumen_semanal():
     resultado = controller.trigger_resumen_semanal()
     return jsonify(resultado), 200
+
+@notifications_bp.route("/test-scheduler", methods=["POST"])
+@jwt_required()
+def test_scheduler():
+    from app.modules.scheduler.scheduler import scheduler
+    for job in scheduler.get_jobs():
+        job.func()
+    return jsonify({"ok": True, "jobs": [j.id for j in scheduler.get_jobs()]}), 200

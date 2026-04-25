@@ -34,6 +34,11 @@ class NotificationService:
         )
         db.session.add(notificacion)
         db.session.commit()
+        try:
+            from app.extensions import socketio
+            socketio.emit("new_notification", notificacion.to_dict(), room=f"user_{user_id}")
+        except Exception:
+            pass
         return notificacion
 
     # ── Notificación genérica (hallazgo) ─────────────────────────────────────
@@ -163,7 +168,9 @@ class NotificationService:
         proximos_h = [
             h for h in hallazgos
             if h.fecha_cierre_proyectada and hoy <= h.fecha_cierre_proyectada.date() <= limite
+            and (h.estado or "").lower() not in ("cerrado", "closed", "resuelto")
         ]
+
         proximos_a = (
             Actividad.query
             .filter(
@@ -234,7 +241,14 @@ class NotificationService:
         if rol == "vicepresidente":
             return Hallazgo.query.all()
         if rol == "directivo":
-            return Hallazgo.query.filter_by(vicepresidencia=user.vicepresidencia).all()
+            filtros = []
+            if user.vicepresidencia:
+                filtros.append(Hallazgo.vicepresidencia.ilike(user.vicepresidencia))
+            if user.dependencia:
+                filtros.append(Hallazgo.dependencia_reporta_ero.ilike(user.dependencia))
+            if not filtros:
+                return []
+            return Hallazgo.query.filter(or_(*filtros)).all()
         if rol == "gestor":
             return (
                 Hallazgo.query
@@ -254,6 +268,31 @@ class NotificationService:
             ))
             .all()
         )
+    
+       # ── Alertas y notificaciones ────────────────────────────────────────────────────────────
+
+    @classmethod
+    def alerta_vencimiento_automatica(cls, entidad, tipo: str):
+        try:
+            if tipo == "hallazgo":
+                hallazgo = entidad
+                usuarios = cls._usuarios_a_notificar_hallazgo(hallazgo)
+                title = f"Vencimiento próximo — {hallazgo.codigo_del_hallazgo or f'#{hallazgo.id}'}"
+                msg = f"El hallazgo vence el {hallazgo.fecha_cierre_proyectada}."
+                hallazgo_id = hallazgo.id
+            else:
+                from app.models.hallazgo import Hallazgo
+                hallazgo = Hallazgo.query.get(entidad.hallazgo_id)
+                usuarios = cls._usuarios_a_notificar_hallazgo(hallazgo) if hallazgo else []
+                title = f"Actividad por vencer — {entidad.codigo_del_hallazgo or f'#{entidad.id}'}"
+                msg = f"La actividad vence el {entidad.fecha_compromiso}."
+                hallazgo_id = entidad.hallazgo_id
+            for u in usuarios:
+                cls._guardar(u.id, hallazgo_id, title, msg, "vencimiento", email_sent=False)
+        except Exception:
+            pass
+
+
 
     @staticmethod
     def _usuarios_a_notificar_hallazgo(hallazgo):
@@ -269,3 +308,53 @@ class NotificationService:
             ))
             .all()
         )
+
+    @classmethod
+    def notificar_asignacion(cls, hallazgo, campo: str, nuevo_responsable: str, actor):
+        try:
+            from app.models.user import User
+            from app.modules.notifcations.email_template import build_email_html
+            from datetime import datetime, timezone
+            usuario = User.query.filter(User.nombre.ilike(f"%{nuevo_responsable}%")).first()
+            title = f"Nueva asignación — {hallazgo.codigo_del_hallazgo or f'#{hallazgo.id}'}"
+            msg = f"Has sido asignado como responsable ({campo.replace('_', ' ')})."
+            if usuario:
+                cls._guardar(usuario.id, hallazgo.id, title, msg, "asignacion", email_sent=True)
+                cls._send(usuario.email, title, build_email_html(
+                    nombre=usuario.nombre, tipo="asignacion", titulo=title, mensaje=msg,
+                    prioridad="alta", fecha=str(datetime.now(timezone.utc).date()), area="",
+                ))
+            vps = User.query.filter_by(rol="vicepresidente", activo=True).all()
+            for vp in vps:
+                if not usuario or vp.id != usuario.id:
+                    cls._guardar(vp.id, hallazgo.id, title, msg, "asignacion", email_sent=False)
+        except Exception:
+            pass
+
+    @classmethod
+    def notificar_actualizacion_estado(cls, hallazgo, estado_anterior: str, estado_nuevo: str, actor):
+        try:
+            usuarios = cls._usuarios_a_notificar_hallazgo(hallazgo)
+            title = f"Estado actualizado — {hallazgo.codigo_del_hallazgo or f'#{hallazgo.id}'}"
+            msg = f"Estado cambió de '{estado_anterior}' a '{estado_nuevo}'."
+            for u in usuarios:
+                cls._guardar(u.id, hallazgo.id, title, msg, "actualizacion", email_sent=False)
+        except Exception:
+            pass
+
+    @classmethod
+    def notificar_prorroga(cls, hallazgo, nueva_prorroga: str, actor):
+        try:
+            from app.modules.notifcations.email_template import build_email_html
+            from datetime import datetime, timezone
+            usuarios = cls._usuarios_a_notificar_hallazgo(hallazgo)
+            title = f"Prórroga registrada — {hallazgo.codigo_del_hallazgo or f'#{hallazgo.id}'}"
+            msg = f"Se registró prórroga: '{nueva_prorroga}'."
+            for u in usuarios:
+                cls._guardar(u.id, hallazgo.id, title, msg, "prorroga", email_sent=True)
+                cls._send(u.email, title, build_email_html(
+                    nombre=u.nombre, tipo="prorroga", titulo=title, mensaje=msg,
+                    prioridad="alta", fecha=str(datetime.now(timezone.utc).date()), area="",
+                ))
+        except Exception:
+            pass

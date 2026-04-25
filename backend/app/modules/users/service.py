@@ -54,3 +54,9 @@ def update(user: User, data: dict):
 def deactivate(user: User):
     user.activo = False
     db.session.commit()
+
+
+def distinct_dependencias():
+    return db.session.query(User.dependencia)\
+        .filter(User.dependencia.isnot(None))\
+        .distinct().all()

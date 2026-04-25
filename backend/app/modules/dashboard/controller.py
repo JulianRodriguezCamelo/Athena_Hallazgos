@@ -16,8 +16,12 @@ def get_metrics(user):
         Actividad.query.filter(Actividad.hallazgo_id.in_(hallazgo_ids)).count()
         if hallazgo_ids else 0
     )
-    abiertas = q.filter(Hallazgo.estado.ilike("%abierto%")).count()
-    cerradas = q.filter(Hallazgo.estado.ilike("%cerrado%")).count()
+    abiertas = q.filter(
+        db.or_(Hallazgo.estado.ilike("%abierto%"), Hallazgo.estado.ilike("%abierta%"))
+    ).count()
+    cerradas = q.filter(
+        db.or_(Hallazgo.estado.ilike("%cerrado%"), Hallazgo.estado.ilike("%cerrada%"))
+    ).count()
     cerradas_hoy = q.filter(
         db.func.date(Hallazgo.fecha_cierre_proyectada) == now.date()
     ).count()
@@ -25,6 +29,7 @@ def get_metrics(user):
     vencidos = q.filter(
         Hallazgo.fecha_cierre_proyectada < now,
         ~Hallazgo.estado.ilike("%cerrado%"),
+        ~Hallazgo.estado.ilike("%cerrada%"),
     ).count()
 
     return {
@@ -79,6 +84,7 @@ def get_prorrogas(user):
     vencidas = q.filter(
         Hallazgo.fecha_cierre_final_prorroga < now,
         ~Hallazgo.estado.ilike("%cerrado%"),
+        ~Hallazgo.estado.ilike("%cerrada%"),
     ).count()
     return {"total_prorrogas": total_prorrogas, "prorrogas_vencidas": vencidas}
 
@@ -99,10 +105,16 @@ def directivo_mis_metricas(user):
 
     return {
         "total": q.count(),
-        "abiertas": q.filter(Hallazgo.estado.ilike("%abierto%")).count(),
-        "cerradas": q.filter(Hallazgo.estado.ilike("%cerrado%")).count(),
+        "abiertas": q.filter(
+            db.or_(Hallazgo.estado.ilike("%abierto%"), Hallazgo.estado.ilike("%abierta%"))
+        ).count(),
+        "cerradas": q.filter(
+            db.or_(Hallazgo.estado.ilike("%cerrado%"), Hallazgo.estado.ilike("%cerrada%"))
+        ).count(),
         "vencidos": q.filter(
-            Hallazgo.fecha_cierre_proyectada < now, ~Hallazgo.estado.ilike("%cerrado%")
+            Hallazgo.fecha_cierre_proyectada < now,
+            ~Hallazgo.estado.ilike("%cerrado%"),
+            ~Hallazgo.estado.ilike("%cerrada%"),
         ).count(),
         "con_prorroga": q.filter(Hallazgo.prorroga.isnot(None), Hallazgo.prorroga != "").count(),
         "mis_actividades": Actividad.query.filter(
@@ -320,6 +332,112 @@ def gestor_responsables_criticos(user):
         })
     result.sort(key=lambda x: (x["hallazgos_vencidos"], x["hallazgos_activos"]), reverse=True)
     return result[:5]
+
+
+def gestor_enviar_recordatorios(gestor):
+    from app.models.user import User
+    from app.models.actividad import Actividad
+    from app.modules.notifcations.service import NotificationService
+    from app.modules.notifcations.email_template import build_recordatorio_html
+
+    q = service.gestor_query(gestor)
+    now = datetime.now(timezone.utc)
+    responsables = gestor_responsables_criticos(gestor)
+    resultados = []
+
+    for resp in responsables:
+        nombre = resp["nombre"]
+
+        # Buscar usuario registrado por nombre
+        usuario = User.query.filter(
+            User.nombre.ilike(f"%{nombre}%"), User.activo == True
+        ).first()
+
+        # Hallazgos vencidos de este responsable
+        hallazgos_vencidos = q.filter(
+            db.or_(
+                Hallazgo.responsable_plan_accion.ilike(f"%{nombre}%"),
+                Hallazgo.responsable_accion.ilike(f"%{nombre}%"),
+            ),
+            Hallazgo.fecha_cierre_proyectada < now,
+            ~Hallazgo.estado.ilike("%cerrad%"),
+        ).all()
+
+        # Actividades sin cerrar de este responsable
+        hallazgo_ids = q.with_entities(Hallazgo.id)
+        actividades_pendientes = Actividad.query.filter(
+            Actividad.hallazgo_id.in_(hallazgo_ids),
+            db.or_(
+                Actividad.responsable_accion.ilike(f"%{nombre}%"),
+                Actividad.responsable.ilike(f"%{nombre}%"),
+            ),
+            ~Actividad.estado_accion.ilike("%cerrad%"),
+            ~Actividad.estado_accion.ilike("%completad%"),
+            ~Actividad.estado_accion.ilike("%cumplid%"),
+        ).all()
+
+        hallazgos_data = [
+            {
+                "codigo": h.codigo_del_hallazgo or f"#{h.id}",
+                "descripcion": h.descripcion or h.nombre_plan_accion or "",
+                "fecha_vence": h.fecha_cierre_proyectada.strftime("%d %b %Y") if h.fecha_cierre_proyectada else "—",
+            }
+            for h in hallazgos_vencidos[:10]
+        ]
+        actividades_data = [
+            {
+                "descripcion": a.descripcion or "",
+                "hallazgo_codigo": a.codigo_del_hallazgo or f"#{a.hallazgo_id}",
+                "fecha_compromiso": a.fecha_compromiso.strftime("%d %b %Y") if a.fecha_compromiso else "—",
+            }
+            for a in actividades_pendientes[:10]
+        ]
+
+        nombre_encoded = nombre.replace(" ", "+")
+        filtro_url = f"https://athena.fiduprevisora.com/dashboard/hallazgos?responsable={nombre_encoded}"
+
+        # Notificación en sistema (a todos independientemente del rol)
+        titulo_notif = f"Recordatorio de seguimiento — {len(hallazgos_vencidos)} hallazgos vencidos"
+        msg_notif = f"Tienes {len(hallazgos_vencidos)} hallazgos vencidos y {len(actividades_pendientes)} actividades pendientes por gestionar."
+
+        if usuario:
+            try:
+                NotificationService._guardar(
+                    usuario.id, None, titulo_notif, msg_notif, "alerta"
+                )
+            except Exception:
+                pass
+
+            # Email al responsable
+            try:
+                html = build_recordatorio_html(
+                    nombre_responsable=nombre,
+                    hallazgos_data=hallazgos_data,
+                    actividades_data=actividades_data,
+                    gestor_nombre=gestor.nombre,
+                    filtro_url=filtro_url,
+                )
+                NotificationService._send(
+                    to=usuario.email,
+                    subject=f"[RECORDATORIO] {len(hallazgos_vencidos)} hallazgos vencidos requieren tu atención — Athena",
+                    html=html,
+                    fallback=msg_notif,
+                )
+                email_enviado = True
+            except Exception:
+                email_enviado = False
+        else:
+            email_enviado = False
+
+        resultados.append({
+            "nombre": nombre,
+            "usuario_encontrado": usuario is not None,
+            "email_enviado": email_enviado,
+            "hallazgos_vencidos": len(hallazgos_vencidos),
+            "actividades_pendientes": len(actividades_pendientes),
+        })
+
+    return {"enviados": resultados}
 
 
 def gestor_bitacora(user):

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { UserPlus, Pencil, UserX, UserCheck, Users } from 'lucide-react'
-import { usersApi, hallazgosApi } from '@/lib/api'
+import { usersApi } from '@/lib/api'
 import { ROL_LABELS, cn } from '@/lib/utils'
 import { useAuth } from '@/lib/auth'
 import DashboardShell from '@/components/layout/DashboardShell'
@@ -78,7 +78,7 @@ export default function UsuariosPage() {
     try {
       const [res, deps] = await Promise.all([
         usersApi.list(),
-        hallazgosApi.dependencias(),
+        usersApi.dependencias(),
       ])
       setUsers((res.data as { users: User[] }).users)
       setDependencias((deps.data as { dependencias: string[] }).dependencias)

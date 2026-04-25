@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
-import { gestorApi } from '@/lib/api'
+import { useEffect, useState, useCallback, useRef } from 'react'
+import { gestorApi, hallazgosApi, uploadsApi } from '@/lib/api'
 import { useAuth } from '@/lib/auth'
 import {
   Clock,
@@ -60,6 +60,8 @@ import {
   DialogTrigger,
   DialogFooter,
 } from '@/components/ui/dialog'
+import Select from '@/components/ui/Select'
+import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import {
   ChartContainer,
@@ -534,7 +536,7 @@ function HallazgoCard({ hallazgo }: { hallazgo: HallazgoWithActividades }) {
       </DialogTrigger>
 
       {/* ── Detail Modal ─────────────────────────────────────────────────── */}
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 flex-wrap">
             <span className="font-mono text-primary">{hallazgo.codigo}</span>
@@ -768,6 +770,23 @@ function BitacoraCard({ entries }: { entries: BitacoraEntry[] }) {
 
 // ─── Responsables Críticos ────────────────────────────────────────────────────
 function ResponsablesCriticosCard({ responsables }: { responsables: ResponsableCritico[] }) {
+  const [enviando, setEnviando] = useState(false)
+  const [feedback, setFeedback] = useState<{ ok: boolean; msg: string } | null>(null)
+
+  async function handleEnviarRecordatorios() {
+    setEnviando(true)
+    setFeedback(null)
+    try {
+      await gestorApi.enviarRecordatorios()
+      setFeedback({ ok: true, msg: 'Recordatorios enviados correctamente' })
+    } catch {
+      setFeedback({ ok: false, msg: 'Error al enviar recordatorios' })
+    } finally {
+      setEnviando(false)
+      setTimeout(() => setFeedback(null), 4000)
+    }
+  }
+
   return (
     <Card>
       <CardHeader className="pb-2">
@@ -807,12 +826,311 @@ function ResponsablesCriticosCard({ responsables }: { responsables: ResponsableC
             ))}
           </div>
         )}
-        <Button variant="outline" size="sm" className="w-full mt-3 gap-1.5">
+        {feedback && (
+          <p className={cn('text-xs mt-2 text-center', feedback.ok ? 'text-green-500' : 'text-destructive')}>
+            {feedback.msg}
+          </p>
+        )}
+        <Button
+          variant="outline"
+          size="sm"
+          className="w-full mt-3 gap-1.5"
+          onClick={handleEnviarRecordatorios}
+          disabled={enviando}
+        >
           <Bell className="h-3.5 w-3.5" />
-          Enviar recordatorios
+          {enviando ? 'Enviando…' : 'Enviar recordatorios'}
         </Button>
       </CardContent>
     </Card>
+  )
+}
+
+// ─── Modales de hallazgo ─────────────────────────────────────────────────────
+
+const ESTADOS_HALLAZGO = [
+  'Abierta', 'En Proceso', 'En Revisión', 'Pendiente de Validación', 'Cerrada', 'Vencida',
+]
+
+function ModalVerDetalle({ h, open, onClose }: { h: HallazgoRow | null; open: boolean; onClose: () => void }) {
+  if (!h) return null
+  const rows: [string, string | null][] = [
+    ['Código', h.codigo_del_hallazgo],
+    ['Estado', h.estado],
+    ['Estado plan', h.estado_plan_accion],
+    ['Prioridad', h.prioridad],
+    ['Responsable plan', h.responsable_plan_accion],
+    ['Responsable acción', h.responsable_accion],
+    ['Dependencia', h.dependencia_reporta_ero],
+    ['Cierre proyectado', h.fecha_cierre_proyectada ? fmtDate(h.fecha_cierre_proyectada) : null],
+    ['Prórroga', h.prorroga],
+    ['Días restantes', String(h.dias_restantes)],
+  ]
+  return (
+    <Dialog open={open} onOpenChange={v => !v && onClose()}>
+      <DialogContent className="max-w-lg">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Eye className="h-4 w-4" />
+            Detalle — {h.codigo_del_hallazgo ?? `#${h.id}`}
+          </DialogTitle>
+          <DialogDescription className="text-xs line-clamp-2">{h.descripcion}</DialogDescription>
+        </DialogHeader>
+        <div className="grid grid-cols-2 gap-x-6 gap-y-3 py-2">
+          {rows.map(([label, val]) => (
+            <div key={label}>
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">{label}</p>
+              <p className="text-sm mt-0.5">{val ?? '—'}</p>
+            </div>
+          ))}
+        </div>
+        <DialogFooter>
+          <Button variant="outline" size="sm" onClick={onClose}>Cerrar</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+function ModalEditarPlan({ h, open, onClose, onSaved }: { h: HallazgoRow | null; open: boolean; onClose: () => void; onSaved: () => void }) {
+  const [form, setForm] = useState({ responsable_plan_accion: '', responsable_accion: '', estado_plan_accion: '', fecha_cierre_proyectada: '' })
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+
+  useEffect(() => {
+    if (h) setForm({
+      responsable_plan_accion: h.responsable_plan_accion ?? '',
+      responsable_accion: h.responsable_accion ?? '',
+      estado_plan_accion: h.estado_plan_accion ?? '',
+      fecha_cierre_proyectada: h.fecha_cierre_proyectada ? h.fecha_cierre_proyectada.slice(0, 10) : '',
+    })
+  }, [h])
+
+  async function handleSave() {
+    if (!h) return
+    setSaving(true)
+    setError('')
+    try {
+      await hallazgosApi.update(h.id, form)
+      onSaved()
+      onClose()
+    } catch {
+      setError('Error al guardar. Intenta de nuevo.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  if (!h) return null
+  return (
+    <Dialog open={open} onOpenChange={v => !v && onClose()}>
+      <DialogContent className="max-w-md">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Edit3 className="h-4 w-4" />
+            Editar plan — {h.codigo_del_hallazgo ?? `#${h.id}`}
+          </DialogTitle>
+        </DialogHeader>
+        <div className="space-y-4 py-1">
+          <div className="space-y-1.5">
+            <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Responsable plan de acción</Label>
+            <Input value={form.responsable_plan_accion} onChange={e => setForm(f => ({ ...f, responsable_plan_accion: e.target.value }))} placeholder="Nombre del responsable" />
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Responsable de acción</Label>
+            <Input value={form.responsable_accion} onChange={e => setForm(f => ({ ...f, responsable_accion: e.target.value }))} placeholder="Nombre del responsable" />
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Estado plan</Label>
+            <Input value={form.estado_plan_accion} onChange={e => setForm(f => ({ ...f, estado_plan_accion: e.target.value }))} placeholder="Estado del plan de acción" />
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Fecha cierre proyectada</Label>
+            <Input type="date" value={form.fecha_cierre_proyectada} onChange={e => setForm(f => ({ ...f, fecha_cierre_proyectada: e.target.value }))} />
+          </div>
+          {error && <p className="text-xs text-destructive">{error}</p>}
+        </div>
+        <DialogFooter>
+          <Button variant="outline" size="sm" onClick={onClose} disabled={saving}>Cancelar</Button>
+          <Button size="sm" onClick={handleSave} disabled={saving}>{saving ? 'Guardando…' : 'Guardar'}</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+function ModalSubirEvidencia({ h, open, onClose }: { h: HallazgoRow | null; open: boolean; onClose: () => void }) {
+  const inputRef = useRef<HTMLInputElement>(null)
+  const [file, setFile] = useState<File | null>(null)
+  const [uploading, setUploading] = useState(false)
+  const [result, setResult] = useState<{ ok: boolean; msg: string } | null>(null)
+
+  function handleClose() {
+    setFile(null)
+    setResult(null)
+    onClose()
+  }
+
+  async function handleUpload() {
+    if (!file) return
+    setUploading(true)
+    setResult(null)
+    try {
+      await uploadsApi.upload(file)
+      setResult({ ok: true, msg: 'Evidencia subida correctamente.' })
+      setFile(null)
+      if (inputRef.current) inputRef.current.value = ''
+    } catch {
+      setResult({ ok: false, msg: 'Error al subir el archivo. Intenta de nuevo.' })
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  if (!h) return null
+  return (
+    <Dialog open={open} onOpenChange={v => !v && handleClose()}>
+      <DialogContent className="max-w-sm">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Upload className="h-4 w-4" />
+            Subir evidencia — {h.codigo_del_hallazgo ?? `#${h.id}`}
+          </DialogTitle>
+          <DialogDescription className="text-xs">Selecciona un archivo (PDF, imagen, Excel)</DialogDescription>
+        </DialogHeader>
+        <div className="space-y-3 py-1">
+          <input
+            ref={inputRef}
+            type="file"
+            accept=".pdf,.png,.jpg,.jpeg,.xlsx,.xls,.doc,.docx"
+            className="block w-full text-sm text-muted-foreground file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-medium file:bg-primary file:text-primary-foreground hover:file:bg-primary/90 cursor-pointer"
+            onChange={e => setFile(e.target.files?.[0] ?? null)}
+          />
+          {file && <p className="text-xs text-muted-foreground">Archivo: {file.name} ({(file.size / 1024).toFixed(1)} KB)</p>}
+          {result && <p className={cn('text-xs', result.ok ? 'text-green-500' : 'text-destructive')}>{result.msg}</p>}
+        </div>
+        <DialogFooter>
+          <Button variant="outline" size="sm" onClick={handleClose} disabled={uploading}>Cancelar</Button>
+          <Button size="sm" onClick={handleUpload} disabled={!file || uploading}>{uploading ? 'Subiendo…' : 'Subir'}</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+function ModalCambiarEstado({ h, open, onClose, onSaved }: { h: HallazgoRow | null; open: boolean; onClose: () => void; onSaved: () => void }) {
+  const [estado, setEstado] = useState('')
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+
+  useEffect(() => { if (h) setEstado(h.estado ?? '') }, [h])
+
+  async function handleSave() {
+    if (!h || !estado) return
+    setSaving(true)
+    setError('')
+    try {
+      await hallazgosApi.update(h.id, { estado })
+      onSaved()
+      onClose()
+    } catch {
+      setError('Error al cambiar el estado. Intenta de nuevo.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  if (!h) return null
+  return (
+    <Dialog open={open} onOpenChange={v => !v && onClose()}>
+      <DialogContent className="max-w-sm">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Play className="h-4 w-4" />
+            Cambiar estado — {h.codigo_del_hallazgo ?? `#${h.id}`}
+          </DialogTitle>
+          <DialogDescription className="text-xs line-clamp-2">{h.descripcion}</DialogDescription>
+        </DialogHeader>
+        <div className="space-y-3 py-1">
+          <div className="space-y-1.5">
+            <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Estado actual</Label>
+            <p className="text-sm">{h.estado ?? '—'}</p>
+          </div>
+          <Select
+            label="Nuevo estado"
+            value={estado}
+            options={ESTADOS_HALLAZGO.map(e => ({ value: e, label: e }))}
+            onChange={e => setEstado(e.target.value)}
+          />
+          {error && <p className="text-xs text-destructive">{error}</p>}
+        </div>
+        <DialogFooter>
+          <Button variant="outline" size="sm" onClick={onClose} disabled={saving}>Cancelar</Button>
+          <Button size="sm" onClick={handleSave} disabled={!estado || saving}>{saving ? 'Guardando…' : 'Confirmar'}</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+function ModalSolicitarProrroga({ h, open, onClose, onSaved }: { h: HallazgoRow | null; open: boolean; onClose: () => void; onSaved: () => void }) {
+  const [fecha, setFecha] = useState('')
+  const [justificacion, setJustificacion] = useState('')
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState('')
+
+  useEffect(() => { if (!open) { setFecha(''); setJustificacion(''); setError('') } }, [open])
+
+  async function handleSave() {
+    if (!h || !fecha) return
+    setSaving(true)
+    setError('')
+    try {
+      const prorroga = justificacion ? `${fecha} — ${justificacion}` : fecha
+      await hallazgosApi.update(h.id, { prorroga, fecha_cierre_proyectada: fecha })
+      onSaved()
+      onClose()
+    } catch {
+      setError('Error al registrar la prórroga. Intenta de nuevo.')
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  if (!h) return null
+  return (
+    <Dialog open={open} onOpenChange={v => !v && onClose()}>
+      <DialogContent className="max-w-sm">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <Calendar className="h-4 w-4" />
+            Solicitar prórroga — {h.codigo_del_hallazgo ?? `#${h.id}`}
+          </DialogTitle>
+          <DialogDescription className="text-xs">Establece una nueva fecha de cierre y una justificación.</DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4 py-1">
+          <div className="space-y-1.5">
+            <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Nueva fecha de cierre</Label>
+            <Input type="date" value={fecha} min={new Date().toISOString().slice(0, 10)} onChange={e => setFecha(e.target.value)} />
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Justificación</Label>
+            <Textarea
+              placeholder="Describe el motivo de la prórroga…"
+              className="resize-none text-sm"
+              rows={3}
+              value={justificacion}
+              onChange={e => setJustificacion(e.target.value)}
+            />
+          </div>
+          {error && <p className="text-xs text-destructive">{error}</p>}
+        </div>
+        <DialogFooter>
+          <Button variant="outline" size="sm" onClick={onClose} disabled={saving}>Cancelar</Button>
+          <Button size="sm" onClick={handleSave} disabled={!fecha || saving}>{saving ? 'Guardando…' : 'Registrar'}</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   )
 }
 
@@ -837,6 +1155,17 @@ export default function GestorDashboard() {
   const [hPage, setHPage] = useState(1)
   const [aPage, setAPage] = useState(1)
   const [activeTab, setActiveTab] = useState('overview')
+
+  // Modales de hallazgo
+  type ModalType = 'detalle' | 'editar' | 'evidencia' | 'estado' | 'prorroga' | null
+  const [modalOpen, setModalOpen] = useState<ModalType>(null)
+  const [modalHallazgo, setModalHallazgo] = useState<HallazgoRow | null>(null)
+
+  function openModal(type: ModalType, h: HallazgoRow) {
+    setModalHallazgo(h)
+    setModalOpen(type)
+  }
+  function closeModal() { setModalOpen(null) }
 
   const loadData = useCallback(async (refresh = false) => {
     if (refresh) setRefreshing(true)
@@ -962,9 +1291,11 @@ export default function GestorDashboard() {
             Actualizar
           </Button>
           <Dialog>
-            <DialogTrigger render={<Button size="sm" className="gap-2" />}>
-              <FileText className="h-3.5 w-3.5" />
-              Nuevo Plan
+            <DialogTrigger asChild>
+              <Button size="sm" className="gap-2">
+                <FileText className="h-3.5 w-3.5" />
+                Nuevo Plan
+              </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
@@ -1133,16 +1464,18 @@ export default function GestorDashboard() {
                             <td className="px-4 py-2.5 text-muted-foreground whitespace-nowrap">{fmtDate(h.fecha_cierre_proyectada)}</td>
                             <td className="px-4 py-2.5">
                               <DropdownMenu>
-                                <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="h-7 w-7" />}>
-                                  <MoreVertical className="h-3.5 w-3.5" />
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="icon" className="h-7 w-7">
+                                    <MoreVertical className="h-3.5 w-3.5" />
+                                  </Button>
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent align="end">
-                                  <DropdownMenuItem><Eye className="h-3.5 w-3.5 mr-2" />Ver detalle</DropdownMenuItem>
-                                  <DropdownMenuItem><Edit3 className="h-3.5 w-3.5 mr-2" />Editar plan</DropdownMenuItem>
-                                  <DropdownMenuItem><Upload className="h-3.5 w-3.5 mr-2" />Subir evidencia</DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => openModal('detalle', h)}><Eye className="h-3.5 w-3.5 mr-2" />Ver detalle</DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => openModal('editar', h)}><Edit3 className="h-3.5 w-3.5 mr-2" />Editar plan</DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => openModal('evidencia', h)}><Upload className="h-3.5 w-3.5 mr-2" />Subir evidencia</DropdownMenuItem>
                                   <DropdownMenuSeparator />
-                                  <DropdownMenuItem><Play className="h-3.5 w-3.5 mr-2" />Cambiar estado</DropdownMenuItem>
-                                  <DropdownMenuItem><Calendar className="h-3.5 w-3.5 mr-2" />Solicitar prórroga</DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => openModal('estado', h)}><Play className="h-3.5 w-3.5 mr-2" />Cambiar estado</DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => openModal('prorroga', h)}><Calendar className="h-3.5 w-3.5 mr-2" />Solicitar prórroga</DropdownMenuItem>
                                 </DropdownMenuContent>
                               </DropdownMenu>
                             </td>
@@ -1288,6 +1621,13 @@ export default function GestorDashboard() {
           </div>
         </TabsContent>
       </Tabs>
+
+      {/* ── Modales ─────────────────────────────────────────────────────── */}
+      <ModalVerDetalle h={modalHallazgo} open={modalOpen === 'detalle'} onClose={closeModal} />
+      <ModalEditarPlan h={modalHallazgo} open={modalOpen === 'editar'} onClose={closeModal} onSaved={() => loadData(true)} />
+      <ModalSubirEvidencia h={modalHallazgo} open={modalOpen === 'evidencia'} onClose={closeModal} />
+      <ModalCambiarEstado h={modalHallazgo} open={modalOpen === 'estado'} onClose={closeModal} onSaved={() => loadData(true)} />
+      <ModalSolicitarProrroga h={modalHallazgo} open={modalOpen === 'prorroga'} onClose={closeModal} onSaved={() => loadData(true)} />
     </div>
   )
 }

@@ -6,6 +6,3 @@ from app.extensions import socketio
 
 env = os.environ.get("FLASK_ENV", "development")
 app = create_app(env)
-
-if __name__ == "__main__":
-    socketio.run(app, host="0.0.0.0", port=5000, debug=(env == "development"))
