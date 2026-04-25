@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import { UserPlus, Pencil, UserX, UserCheck, Users } from 'lucide-react'
-import { usersApi } from '@/lib/api'
+import { usersApi, hallazgosApi } from '@/lib/api'
 import { ROL_LABELS, cn } from '@/lib/utils'
 import { useAuth } from '@/lib/auth'
 import DashboardShell from '@/components/layout/DashboardShell'
@@ -34,6 +34,7 @@ interface User {
   nombre: string
   email: string
   rol: string
+  vicepresidencia: string | null
   dependencia: string | null
   activo: boolean
 }
@@ -43,10 +44,11 @@ interface FormData {
   email: string
   password: string
   rol: string
+  vicepresidencia: string
   dependencia: string
 }
 
-const EMPTY_FORM: FormData = { nombre: '', email: '', password: '', rol: 'profesional', dependencia: '' }
+const EMPTY_FORM: FormData = { nombre: '', email: '', password: '', rol: 'profesional', vicepresidencia: '', dependencia: '' }
 
 const ROL_OPTIONS = [
   { value: 'vicepresidente', label: 'Vicepresidente' },
@@ -71,17 +73,20 @@ export default function UsuariosPage() {
   const [form, setForm] = useState<FormData>(EMPTY_FORM)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState('')
+  const [vicepresidencias, setVicepresidencias] = useState<string[]>([])
   const [dependencias, setDependencias] = useState<string[]>([])
 
   const load = useCallback(async () => {
     setLoading(true)
     try {
-      const [res, deps] = await Promise.all([
+      const [res, vices, dirs] = await Promise.all([
         usersApi.list(),
-        usersApi.dependencias(),
+        hallazgosApi.vicepresidencias(),
+        hallazgosApi.direcciones(),
       ])
       setUsers((res.data as { users: User[] }).users)
-      setDependencias((deps.data as { dependencias: string[] }).dependencias)
+      setVicepresidencias((vices.data as { vicepresidencias: string[] }).vicepresidencias)
+      setDependencias((dirs.data as { direcciones: string[] }).direcciones)
     } finally {
       setLoading(false)
     }
@@ -98,7 +103,7 @@ export default function UsuariosPage() {
 
   function openEdit(u: User) {
     setEditing(u)
-    setForm({ nombre: u.nombre, email: u.email, password: '', rol: u.rol, dependencia: u.dependencia ?? '' })
+    setForm({ nombre: u.nombre, email: u.email, password: '', rol: u.rol, vicepresidencia: u.vicepresidencia ?? '', dependencia: u.dependencia ?? '' })
     setError('')
     setModalOpen(true)
   }
@@ -115,6 +120,7 @@ export default function UsuariosPage() {
         nombre: form.nombre,
         email: form.email,
         rol: form.rol,
+        vicepresidencia: form.vicepresidencia || null,
         dependencia: form.dependencia || null,
         ...(form.password && { password: form.password }),
       }
@@ -197,7 +203,7 @@ export default function UsuariosPage() {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-primary hover:bg-primary">
-                    {['Nombre', 'Email', 'Rol', 'Dependencia', 'Estado', 'Acciones'].map((h) => (
+                    {['Nombre', 'Email', 'Rol', 'Vicepresidencia', 'Dependencia', 'Estado', 'Acciones'].map((h) => (
                       <TableHead key={h} className="text-primary-foreground font-semibold text-xs whitespace-nowrap py-3">
                         {h}
                       </TableHead>
@@ -226,6 +232,7 @@ export default function UsuariosPage() {
                           {ROL_LABELS[u.rol] ?? u.rol}
                         </Badge>
                       </TableCell>
+                      <TableCell className="text-muted-foreground text-xs">{u.vicepresidencia ?? '—'}</TableCell>
                       <TableCell className="text-muted-foreground text-xs">{u.dependencia ?? '—'}</TableCell>
                       <TableCell>
                         <Badge variant={u.activo ? 'success' : 'ghost'}>
@@ -302,12 +309,21 @@ export default function UsuariosPage() {
               onChange={(e) => setForm({ ...form, password: e.target.value })}
               placeholder="••••••••"
             />
+            <Select
+              label="Rol"
+              options={ROL_OPTIONS}
+              value={form.rol}
+              onChange={(e) => setForm({ ...form, rol: e.target.value })}
+            />
             <div className="grid grid-cols-2 gap-4">
               <Select
-                label="Rol"
-                options={ROL_OPTIONS}
-                value={form.rol}
-                onChange={(e) => setForm({ ...form, rol: e.target.value })}
+                label="Vicepresidencia"
+                options={[
+                  { value: '', label: '— Sin vicepresidencia —' },
+                  ...vicepresidencias.map((v) => ({ value: v, label: v })),
+                ]}
+                value={form.vicepresidencia}
+                onChange={(e) => setForm({ ...form, vicepresidencia: e.target.value })}
               />
               <Select
                 label="Dependencia / Dirección"

@@ -150,6 +150,7 @@ export const gestorApi = {
   bitacora: () => request('/api/dashboard/gestor/bitacora'),
   tiempoPromedio: () => request('/api/dashboard/gestor/tiempo-promedio'),
   enviarRecordatorios: () => request('/api/dashboard/gestor/enviar-recordatorios', { method: 'POST' }),
+  topRetrasados: () => request('/api/dashboard/gestor/top-retrasados'),
 }
 
 // ── Notificaciones ────────────────────────────────────────────────────────────

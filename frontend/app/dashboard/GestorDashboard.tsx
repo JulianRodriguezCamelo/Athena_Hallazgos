@@ -395,54 +395,56 @@ function WorkflowStepper({ currentEstado }: { currentEstado: WorkflowEstado }) {
   )
 }
 
-// ─── Tiempo Promedio ──────────────────────────────────────────────────────────
-function TiempoPromedioCard({ data }: { data: { name: string; value: number }[] }) {
-  const COLORS = ['#3b82f6', '#22c55e', '#f59e0b']
-  const hasData = data.some(d => d.value > 0)
-  const maxVal = Math.max(...data.map(d => d.value), 1)
+// ─── Top Retrasados ────────────────────────────────────────────────────────────
+interface RetrasadoRow { codigo: string; descripcion: string; dias_retraso: number; actividades_pendientes: number }
+
+function TopRetrasadosCard({ data }: { data: RetrasadoRow[] }) {
+  const maxDias = Math.max(...data.map(d => d.dias_retraso), 1)
   return (
-    <Card>
+    <Card className="col-span-full">
       <CardHeader className="pb-2">
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="text-sm font-medium">Tiempo Promedio por Etapa</CardTitle>
-            <CardDescription className="text-xs">Días promedio en cada fase del workflow</CardDescription>
+            <CardTitle className="text-sm font-medium">Top Hallazgos Retrasados</CardTitle>
+            <CardDescription className="text-xs">Días de retraso · actividades pendientes para cerrar</CardDescription>
           </div>
-          <Timer className="h-4 w-4 text-muted-foreground" />
+          <AlertTriangle className="h-4 w-4 text-destructive" />
         </div>
       </CardHeader>
       <CardContent>
-        {!hasData ? (
-          <div className="flex flex-col items-center justify-center h-[140px] gap-2 text-muted-foreground">
-            <Timer className="h-8 w-8 opacity-20" />
-            <p className="text-xs text-center">Aún no hay datos de tiempo.<br />Se calculará cuando los hallazgos avancen de etapa.</p>
+        {data.length === 0 ? (
+          <div className="flex flex-col items-center justify-center h-[120px] gap-2 text-muted-foreground">
+            <CheckCircle2 className="h-8 w-8 opacity-20" />
+            <p className="text-xs">Sin hallazgos retrasados. ¡Buen trabajo!</p>
           </div>
         ) : (
-          <div className="space-y-4 py-2">
-            {data.map((item, i) => (
-              <div key={item.name} className="space-y-1.5">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: COLORS[i % COLORS.length] }} />
-                    <span className="text-sm font-medium">{item.name}</span>
+          <div className="space-y-3 py-1">
+            {data.map((row, i) => {
+              const pct = Math.max(Math.round((row.dias_retraso / maxDias) * 100), 4)
+              const color = row.dias_retraso > 365 ? '#ef4444' : row.dias_retraso > 90 ? '#f97316' : '#f59e0b'
+              return (
+                <div key={row.codigo} className="space-y-1">
+                  <div className="flex items-center justify-between gap-3 text-xs">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="font-mono font-semibold text-primary shrink-0">{row.codigo}</span>
+                      <span className="truncate text-muted-foreground">{row.descripcion}</span>
+                    </div>
+                    <div className="flex items-center gap-3 shrink-0">
+                      <span className="font-bold tabular-nums" style={{ color }}>{row.dias_retraso}d</span>
+                      <span className="text-muted-foreground tabular-nums whitespace-nowrap">
+                        {row.actividades_pendientes} act. pend.
+                      </span>
+                    </div>
                   </div>
-                  <span className="text-sm font-bold tabular-nums">
-                    {item.value > 0
-                      ? <span style={{ color: COLORS[i % COLORS.length] }}>{item.value} días</span>
-                      : <span className="text-muted-foreground text-xs">Sin datos</span>}
-                  </span>
+                  <div className="h-2 rounded-full bg-muted overflow-hidden">
+                    <div
+                      className="h-full rounded-full transition-all duration-500"
+                      style={{ width: `${pct}%`, backgroundColor: color }}
+                    />
+                  </div>
                 </div>
-                <div className="h-2.5 rounded-full bg-muted overflow-hidden">
-                  <div
-                    className="h-full rounded-full transition-all duration-500"
-                    style={{
-                      width: item.value > 0 ? `${Math.max(Math.round((item.value / maxVal) * 100), 3)}%` : '0%',
-                      backgroundColor: COLORS[i % COLORS.length],
-                    }}
-                  />
-                </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         )}
       </CardContent>
@@ -729,43 +731,7 @@ function AlertCard({
 
 // ─── Bitácora ─────────────────────────────────────────────────────────────────
 function BitacoraCard({ entries }: { entries: BitacoraEntry[] }) {
-  return (
-    <Card>
-      <CardHeader className="pb-2">
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="text-sm font-medium">Bitácora de Actividad</CardTitle>
-            <CardDescription className="text-xs">Últimas acciones realizadas</CardDescription>
-          </div>
-          <History className="h-4 w-4 text-muted-foreground" />
-        </div>
-      </CardHeader>
-      <CardContent>
-        <ScrollArea className="h-[260px] pr-3">
-          <div className="space-y-3">
-            {entries.length === 0 && (
-              <p className="text-xs text-muted-foreground text-center py-8">Sin registros</p>
-            )}
-            {entries.map((entry) => (
-              <div key={entry.id} className="flex gap-3 pb-3 border-b border-border last:border-0">
-                <div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
-                  <Activity className="h-3.5 w-3.5 text-primary" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between gap-2">
-                    <p className="text-xs font-medium">{entry.accion}</p>
-                    <span className="text-[10px] text-muted-foreground whitespace-nowrap">{entry.fecha}</span>
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-0.5">{entry.detalle}</p>
-                  <p className="text-[10px] text-muted-foreground mt-0.5">por {entry.usuario}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </ScrollArea>
-      </CardContent>
-    </Card>
-  )
+
 }
 
 // ─── Responsables Críticos ────────────────────────────────────────────────────
@@ -1143,6 +1109,7 @@ export default function GestorDashboard() {
   const [porEstadoPlan, setPorEstadoPlan] = useState<ChartItem[]>([])
   const [porSemaforo, setPorSemaforo] = useState<ChartItem[]>([])
   const [tiempoPromedio, setTiempoPromedio] = useState<{ name: string; value: number }[]>([])
+  const [topRetrasados, setTopRetrasados] = useState<RetrasadoRow[]>([])
   const [hallazgos, setHallazgos] = useState<HallazgoRow[]>([])
   const [actividades, setActividades] = useState<ActividadRow[]>([])
   const [bitacora, setBitacora] = useState<BitacoraEntry[]>([])
@@ -1170,7 +1137,7 @@ export default function GestorDashboard() {
   const loadData = useCallback(async (refresh = false) => {
     if (refresh) setRefreshing(true)
     try {
-      const [metR, estR, planR, semR, hR, aR, respR, bitR, tpR] = await Promise.all([
+      const [metR, estR, planR, semR, hR, aR, respR, bitR, tpR, trR] = await Promise.all([
         gestorApi.misMetricas(),
         gestorApi.porEstado(),
         gestorApi.porEstadoPlan(),
@@ -1180,6 +1147,7 @@ export default function GestorDashboard() {
         gestorApi.responsablesCriticos(),
         gestorApi.bitacora(),
         gestorApi.tiempoPromedio(),
+        gestorApi.topRetrasados(),
       ])
 
       setMetricas(metR.data as MetricasGestor)
@@ -1201,6 +1169,7 @@ export default function GestorDashboard() {
 
       const tp = (tpR.data as { data: { name: string; value: number }[] }).data
       setTiempoPromedio(tp)
+      setTopRetrasados((trR.data as { data: RetrasadoRow[] }).data)
     } catch {
       // silent
     } finally {
@@ -1362,7 +1331,7 @@ export default function GestorDashboard() {
             <KpiTile title="Índice cierre" value={`${cumplimiento}%`} icon={Target} variant={cumplimiento >= 70 ? 'success' : 'danger'} subtitle={`${cerradas}/${total} cerrados`} />
           </div>
           <div className="grid gap-3 grid-cols-2 md:grid-cols-4">
-            <KpiTile title="Evidencias pend." value={metricas?.evidencias_pendientes ?? 0} icon={Upload} />
+            <KpiTile title="Act. pendientes" value={metricas?.evidencias_pendientes ?? 0} icon={Upload} subtitle="Sin completar" />
             <KpiTile title="En validación" value={metricas?.pendientes_validacion ?? 0} icon={Shield} variant="info" />
             <KpiTile title="Con prórroga" value={metricas?.con_prorroga ?? 0} icon={Calendar} />
             <KpiTile title="Mis actividades" value={metricas?.mis_actividades ?? 0} icon={Activity} />
@@ -1409,7 +1378,7 @@ export default function GestorDashboard() {
           </div>
 
           <div className="grid gap-4 lg:grid-cols-2">
-            <TiempoPromedioCard data={tiempoPromedio} />
+            <TopRetrasadosCard data={topRetrasados} />
             <ResponsablesCriticosCard responsables={responsablesCriticos} />
           </div>
 

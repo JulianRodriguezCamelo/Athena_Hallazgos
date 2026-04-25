@@ -202,34 +202,45 @@ def gestor_mis_metricas(user):
     proximos_limite = now + timedelta(days=7)
     hallazgo_ids = q.with_entities(Hallazgo.id)
 
+    no_cerrado = db.and_(
+        ~Hallazgo.estado.ilike("%cerrado%"),
+        ~Hallazgo.estado.ilike("%cerrada%"),
+    )
+
     total = q.count()
     cerradas = q.filter(
         db.or_(Hallazgo.estado.ilike("%cerrado%"), Hallazgo.estado.ilike("%cerrada%"))
     ).count()
     abiertas = total - cerradas
-    vencidos = q.filter(
-        Hallazgo.fecha_cierre_proyectada < now,
-        ~Hallazgo.estado.ilike("%cerrado%"),
-        ~Hallazgo.estado.ilike("%cerrada%"),
-    ).count()
+    vencidos = q.filter(no_cerrado, Hallazgo.fecha_cierre_proyectada < now).count()
     proximos_vencer = q.filter(
+        no_cerrado,
         Hallazgo.fecha_cierre_proyectada >= now,
         Hallazgo.fecha_cierre_proyectada <= proximos_limite,
-        ~Hallazgo.estado.ilike("%cerrado%"),
-        ~Hallazgo.estado.ilike("%cerrada%"),
     ).count()
     con_prorroga = q.filter(Hallazgo.prorroga.isnot(None), Hallazgo.prorroga != "").count()
     en_proceso = q.filter(
-        db.or_(Hallazgo.estado.ilike("%proceso%"), Hallazgo.estado.ilike("%ejecuci%"))
+        no_cerrado,
+        db.or_(
+            Hallazgo.estado.ilike("%proceso%"),
+            Hallazgo.estado.ilike("%ejecuci%"),
+            Hallazgo.estado.ilike("%revisión%"),
+            Hallazgo.estado.ilike("%revision%"),
+        )
     ).count()
     pendientes_validacion = q.filter(Hallazgo.estado.ilike("%validaci%")).count()
     mis_actividades = Actividad.query.filter(Actividad.hallazgo_id.in_(hallazgo_ids)).count()
-    evidencias_pendientes = Actividad.query.filter(
-        Actividad.hallazgo_id.in_(hallazgo_ids),
-        db.or_(Actividad.observaciones.is_(None), Actividad.observaciones == ""),
+
+    # Actividades pendientes = sin estado completado/cerrado
+    _completadas_filter = db.and_(
         ~Actividad.estado_accion.ilike("%completado%"),
         ~Actividad.estado_accion.ilike("%cerrado%"),
         ~Actividad.estado_accion.ilike("%cumplido%"),
+        ~Actividad.estado_accion.ilike("%resuelto%"),
+    )
+    actividades_pendientes = Actividad.query.filter(
+        Actividad.hallazgo_id.in_(hallazgo_ids),
+        _completadas_filter,
     ).count()
 
     return {
@@ -238,7 +249,7 @@ def gestor_mis_metricas(user):
         "con_prorroga": con_prorroga, "en_proceso": en_proceso,
         "pendientes_validacion": pendientes_validacion,
         "mis_actividades": mis_actividades,
-        "evidencias_pendientes": evidencias_pendientes,
+        "evidencias_pendientes": actividades_pendientes,
     }
 
 
@@ -455,6 +466,39 @@ def gestor_bitacora(user):
             "detalle": f"{h.codigo_del_hallazgo}: {h.estado or 'Sin estado'}",
         })
     return entries
+
+
+def gestor_top_retrasados(user):
+    q = service.gestor_query(user)
+    now = datetime.now(timezone.utc)
+    hallazgos = q.filter(
+        Hallazgo.fecha_cierre_proyectada < now,
+        ~Hallazgo.estado.ilike("%cerrado%"),
+        ~Hallazgo.estado.ilike("%cerrada%"),
+    ).order_by(Hallazgo.fecha_cierre_proyectada.asc()).limit(10).all()
+
+    result = []
+    for h in hallazgos:
+        fcp = h.fecha_cierre_proyectada
+        if fcp and fcp.tzinfo is None:
+            fcp = fcp.replace(tzinfo=timezone.utc)
+        dias_retraso = (now - fcp).days if fcp else 0
+
+        act_pendientes = Actividad.query.filter(
+            Actividad.hallazgo_id == h.id,
+            ~Actividad.estado_accion.ilike("%completado%"),
+            ~Actividad.estado_accion.ilike("%cerrado%"),
+            ~Actividad.estado_accion.ilike("%cumplido%"),
+            ~Actividad.estado_accion.ilike("%resuelto%"),
+        ).count()
+
+        result.append({
+            "codigo": h.codigo_del_hallazgo or f"#{h.id}",
+            "descripcion": (h.descripcion or "Sin descripción")[:55],
+            "dias_retraso": dias_retraso,
+            "actividades_pendientes": act_pendientes,
+        })
+    return result
 
 
 def gestor_tiempo_promedio(user):

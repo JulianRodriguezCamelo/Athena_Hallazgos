@@ -182,3 +182,9 @@ def gestor_bitacora():
 @jwt_required()
 def gestor_tiempo_promedio():
     return jsonify({"data": controller.gestor_tiempo_promedio(get_current_user())}), 200
+
+
+@dashboard_bp.route("/gestor/top-retrasados", methods=["GET"])
+@jwt_required()
+def gestor_top_retrasados():
+    return jsonify({"data": controller.gestor_top_retrasados(get_current_user())}), 200
