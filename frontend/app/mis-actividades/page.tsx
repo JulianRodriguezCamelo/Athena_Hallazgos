@@ -2,315 +2,24 @@
 
 import { useEffect, useState, useCallback, useRef } from 'react'
 import { usePathname } from 'next/navigation'
-import {
-  RefreshCw,
-  ChevronDown,
-  CheckCircle2,
-  Circle,
-  AlertTriangle,
-  Calendar,
-  Clock,
-  ClipboardList,
-  ChevronLeft,
-  ChevronRight,
-  Target,
-} from 'lucide-react'
+import { RefreshCw, ClipboardList, Target } from 'lucide-react'
 import { actividadesApi } from '@/lib/api'
 import { useAuth } from '@/lib/auth'
-import { cn, formatDateTime } from '@/lib/utils'
+import { cn } from '@/lib/utils'
 import DashboardShell from '@/components/layout/DashboardShell'
 import { Badge } from '@/components/ui/Badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Progress } from '@/components/ui/progress'
-import { Separator } from '@/components/ui/separator'
+import { Card, CardContent } from '@/components/ui/card'
+import { KpiTile } from '@/components/shared/KpiTile'
+import { Pagination } from '@/components/shared/Pagination'
+import { HallazgoCard } from '@/components/mis-actividades/HallazgoCard'
+import { isCompletada, type ChecklistResponse, type HallazgoChecklist } from '@/components/mis-actividades/types'
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-interface ActividadItem {
-  id: number
-  descripcion: string | null
-  estado_accion: string | null
-  responsable_accion: string | null
-  fecha_compromiso: string | null
-  orden: number
-}
-
-interface HallazgoChecklist {
-  id: number
-  codigo_del_hallazgo: string
-  descripcion: string
-  estado: string
-  dependencia_reporta_ero: string | null
-  vicepresidencia: string | null
-  fecha_cierre_proyectada: string | null
-  dias_restantes: number | null
-  total_actividades: number
-  actividades_completadas: number
-  progreso: number
-  actividades: ActividadItem[]
-}
-
-interface ChecklistResponse {
-  hallazgos: HallazgoChecklist[]
-  total: number
-  pages: number
-  page: number
-}
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-function isCompletada(estado: string | null): boolean {
-  if (!estado) return false
-  const lower = estado.toLowerCase()
-  return lower.includes('cerrado') || lower.includes('completado') || lower.includes('cumplido')
-}
-
-function diasLabel(dias: number | null) {
-  if (dias === null) return { text: 'Sin fecha', color: 'text-muted-foreground', bg: 'bg-muted/40' }
-  if (dias < 0) return { text: `Vencido hace ${Math.abs(dias)} días`, color: 'text-destructive', bg: 'bg-destructive/10' }
-  if (dias === 0) return { text: 'Vence hoy', color: 'text-amber-600', bg: 'bg-amber-500/10' }
-  if (dias <= 7) return { text: `${dias} días restantes`, color: 'text-amber-600', bg: 'bg-amber-500/10' }
-  if (dias <= 30) return { text: `${dias} días restantes`, color: 'text-blue-600', bg: 'bg-blue-500/10' }
-  return { text: `${dias} días restantes`, color: 'text-green-600', bg: 'bg-green-500/10' }
-}
-
-function progresoColor(pct: number) {
-  if (pct >= 80) return 'text-green-600'
-  if (pct >= 40) return 'text-amber-600'
-  return 'text-destructive'
-}
-
-// ─── KPI Tile ─────────────────────────────────────────────────────────────────
-function KpiTile({ label, value, sub, variant = 'default' }: {
-  label: string; value: string | number; sub?: string
-  variant?: 'default' | 'danger' | 'warning' | 'success'
-}) {
-  const colors = {
-    default: 'text-foreground',
-    danger: 'text-destructive',
-    warning: 'text-amber-600',
-    success: 'text-green-600',
-  }
-  return (
-    <Card>
-      <CardContent className="p-4">
-        <p className="text-xs text-muted-foreground font-medium">{label}</p>
-        <p className={cn('text-2xl font-bold mt-0.5', colors[variant])}>{value}</p>
-        {sub && <p className="text-[11px] text-muted-foreground mt-0.5">{sub}</p>}
-      </CardContent>
-    </Card>
-  )
-}
-
-// ─── Actividad Row ────────────────────────────────────────────────────────────
-function ActividadRow({
-  actividad,
-  onToggle,
-  updating,
-}: {
-  actividad: ActividadItem
-  onToggle: (id: number, completed: boolean) => void
-  updating: boolean
-}) {
-  const done = isCompletada(actividad.estado_accion)
-
-  const fechaLabel = actividad.fecha_compromiso
-    ? (() => {
-        const days = Math.round(
-          (new Date(actividad.fecha_compromiso).getTime() - Date.now()) / 86_400_000
-        )
-        if (days < 0) return { text: `Vencida hace ${Math.abs(days)}d`, color: 'text-destructive' }
-        if (days === 0) return { text: 'Vence hoy', color: 'text-amber-600' }
-        if (days <= 7) return { text: `${days}d restantes`, color: 'text-amber-600' }
-        return { text: `${days}d restantes`, color: 'text-muted-foreground' }
-      })()
-    : null
-
-  return (
-    <div className={cn(
-      'flex items-start gap-3 p-3 rounded-lg border transition-all',
-      done && 'bg-green-500/5 border-green-500/20',
-      !done && 'bg-muted/20 border-border hover:bg-muted/40',
-    )}>
-      <button
-        type="button"
-        onClick={() => onToggle(actividad.id, !done)}
-        disabled={updating}
-        className={cn(
-          'mt-0.5 shrink-0 transition-opacity',
-          updating && 'opacity-50 cursor-not-allowed',
-        )}
-        aria-label={done ? 'Marcar pendiente' : 'Marcar completada'}
-      >
-        {updating ? (
-          <RefreshCw className="h-5 w-5 animate-spin text-muted-foreground" />
-        ) : done ? (
-          <CheckCircle2 className="h-5 w-5 text-green-500" />
-        ) : (
-          <Circle className="h-5 w-5 text-muted-foreground" />
-        )}
-      </button>
-
-      <div className="flex-1 min-w-0">
-        <p className={cn('text-sm font-medium leading-snug', done && 'line-through text-muted-foreground')}>
-          {actividad.descripcion ?? 'Sin descripción'}
-        </p>
-        <div className="flex flex-wrap items-center gap-2 mt-1">
-          {actividad.estado_accion && (
-            <Badge
-              variant="outline"
-              className={cn('text-[10px]', done && 'border-green-500/30 text-green-600')}
-            >
-              {actividad.estado_accion}
-            </Badge>
-          )}
-          {actividad.responsable_accion && (
-            <span className="text-[10px] text-muted-foreground">{actividad.responsable_accion}</span>
-          )}
-          {fechaLabel && (
-            <span className={cn('text-[10px] flex items-center gap-1', fechaLabel.color)}>
-              <Calendar className="h-3 w-3" />
-              {formatDateTime(actividad.fecha_compromiso!)}
-              <span className="ml-1">({fechaLabel.text})</span>
-            </span>
-          )}
-        </div>
-      </div>
-    </div>
-  )
-}
-
-// ─── Hallazgo Card ────────────────────────────────────────────────────────────
-function HallazgoCard({
-  hallazgo,
-  onToggleActividad,
-  updatingIds,
-}: {
-  hallazgo: HallazgoChecklist
-  onToggleActividad: (actId: number, completed: boolean) => void
-  updatingIds: Set<number>
-}) {
-  const [open, setOpen] = useState(false)
-  const dl = diasLabel(hallazgo.dias_restantes)
-
-  return (
-    <Card className="overflow-hidden">
-      {/* Header / summary row */}
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        className="w-full text-left px-4 py-3 hover:bg-muted/30 transition-colors"
-      >
-        <div className="flex items-center justify-between gap-3">
-          {/* Left: code + description */}
-          <div className="flex items-center gap-3 min-w-0 flex-1">
-            {/* Progress circle label */}
-            <div className={cn(
-              'h-12 w-12 rounded-full flex flex-col items-center justify-center text-xs font-bold shrink-0 border-2',
-              hallazgo.progreso === 100
-                ? 'border-green-500 bg-green-500/10 text-green-600'
-                : hallazgo.progreso >= 50
-                  ? 'border-amber-500 bg-amber-500/10 text-amber-600'
-                  : 'border-destructive/60 bg-destructive/5 text-destructive',
-            )}>
-              {hallazgo.progreso}%
-            </div>
-
-            <div className="min-w-0">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="font-mono text-xs font-semibold text-primary">
-                  {hallazgo.codigo_del_hallazgo}
-                </span>
-                <Badge variant="outline" className="text-[10px]">{hallazgo.estado}</Badge>
-                {(hallazgo.dependencia_reporta_ero || hallazgo.vicepresidencia) && (
-                  <span className="text-[10px] text-muted-foreground">
-                    {hallazgo.dependencia_reporta_ero ?? hallazgo.vicepresidencia}
-                  </span>
-                )}
-              </div>
-              <p
-                className="text-sm text-muted-foreground truncate mt-0.5 max-w-lg"
-                title={hallazgo.descripcion}
-              >
-                {hallazgo.descripcion}
-              </p>
-            </div>
-          </div>
-
-          {/* Right: days + activities count */}
-          <div className="flex items-center gap-4 shrink-0">
-            <div className={cn('hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium', dl.bg, dl.color)}>
-              <Clock className="h-3 w-3" />
-              {dl.text}
-            </div>
-            <div className="text-right hidden md:block">
-              <p className="text-xs text-muted-foreground">Actividades</p>
-              <p className="text-sm font-bold">
-                {hallazgo.actividades_completadas}/{hallazgo.total_actividades}
-              </p>
-            </div>
-            <ChevronDown className={cn('h-4 w-4 text-muted-foreground transition-transform shrink-0', open && 'rotate-180')} />
-          </div>
-        </div>
-
-        {/* Progress bar */}
-        <Progress value={hallazgo.progreso} className="mt-3 h-1.5" />
-
-        {/* Mobile: days label */}
-        <div className={cn('sm:hidden mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium', dl.bg, dl.color)}>
-          <Clock className="h-3 w-3" />
-          {dl.text}
-        </div>
-      </button>
-
-      {/* Actividades checklist */}
-      {open && (
-        <>
-          <Separator />
-          <CardContent className="p-4">
-            {hallazgo.actividades.length === 0 ? (
-              <p className="text-xs text-muted-foreground text-center py-4">Sin actividades registradas</p>
-            ) : (
-              <div className="space-y-2">
-                {hallazgo.actividades.map((act) => (
-                  <ActividadRow
-                    key={act.id}
-                    actividad={act}
-                    onToggle={onToggleActividad}
-                    updating={updatingIds.has(act.id)}
-                  />
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </>
-      )}
-    </Card>
-  )
-}
-
-// ─── Pagination ───────────────────────────────────────────────────────────────
-function Pagination({ page, pages, onChange }: { page: number; pages: number; onChange: (p: number) => void }) {
-  if (pages <= 1) return null
-  return (
-    <div className="flex items-center justify-center gap-2 mt-4">
-      <Button variant="outline" size="icon" className="h-8 w-8" disabled={page <= 1} onClick={() => onChange(page - 1)}>
-        <ChevronLeft className="h-4 w-4" />
-      </Button>
-      <span className="text-sm text-muted-foreground">Página {page} de {pages}</span>
-      <Button variant="outline" size="icon" className="h-8 w-8" disabled={page >= pages} onClick={() => onChange(page + 1)}>
-        <ChevronRight className="h-4 w-4" />
-      </Button>
-    </div>
-  )
-}
-
-// ─── Main Page ────────────────────────────────────────────────────────────────
 export default function MisActividadesPage() {
   const pathname = usePathname()
   const { user, isDirectivo, isProfesional, isGestor } = useAuth()
 
   const [data, setData] = useState<ChecklistResponse | null>(null)
-  // Local copy of hallazgos so we can update progreso optimistically
   const [hallazgos, setHallazgos] = useState<HallazgoChecklist[]>([])
   const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(true)
@@ -345,66 +54,45 @@ export default function MisActividadesPage() {
   const handleToggleActividad = useCallback(async (actId: number, completed: boolean) => {
     const newEstado = completed ? 'Cumplido' : 'Pendiente'
 
-    // Find the current estado for rollback
     let currentEstado: string | null = null
-    setHallazgos((prev) =>
-      prev.map((h) => {
-        const idx = h.actividades.findIndex((a) => a.id === actId)
+    setHallazgos(prev =>
+      prev.map(h => {
+        const idx = h.actividades.findIndex(a => a.id === actId)
         if (idx === -1) return h
         currentEstado = h.actividades[idx].estado_accion
-        const newActs = h.actividades.map((a) =>
-          a.id === actId ? { ...a, estado_accion: newEstado } : a
-        )
-        const completadas = newActs.filter((a) => isCompletada(a.estado_accion)).length
+        const newActs = h.actividades.map(a => a.id === actId ? { ...a, estado_accion: newEstado } : a)
+        const completadas = newActs.filter(a => isCompletada(a.estado_accion)).length
         const total = newActs.length
-        return {
-          ...h,
-          actividades: newActs,
-          actividades_completadas: completadas,
-          progreso: total > 0 ? Math.round((completadas / total) * 100) : 0,
-        }
+        return { ...h, actividades: newActs, actividades_completadas: completadas, progreso: total > 0 ? Math.round((completadas / total) * 100) : 0 }
       })
     )
 
     prevState.current.set(actId, currentEstado)
-    setUpdatingIds((s) => new Set(s).add(actId))
+    setUpdatingIds(s => new Set(s).add(actId))
 
     try {
       await actividadesApi.updateEstado(actId, newEstado)
     } catch {
-      // Revert
       const original = prevState.current.get(actId) ?? null
-      setHallazgos((prev) =>
-        prev.map((h) => {
-          const idx = h.actividades.findIndex((a) => a.id === actId)
+      setHallazgos(prev =>
+        prev.map(h => {
+          const idx = h.actividades.findIndex(a => a.id === actId)
           if (idx === -1) return h
-          const newActs = h.actividades.map((a) =>
-            a.id === actId ? { ...a, estado_accion: original } : a
-          )
-          const completadas = newActs.filter((a) => isCompletada(a.estado_accion)).length
+          const newActs = h.actividades.map(a => a.id === actId ? { ...a, estado_accion: original } : a)
+          const completadas = newActs.filter(a => isCompletada(a.estado_accion)).length
           const total = newActs.length
-          return {
-            ...h,
-            actividades: newActs,
-            actividades_completadas: completadas,
-            progreso: total > 0 ? Math.round((completadas / total) * 100) : 0,
-          }
+          return { ...h, actividades: newActs, actividades_completadas: completadas, progreso: total > 0 ? Math.round((completadas / total) * 100) : 0 }
         })
       )
     } finally {
-      setUpdatingIds((s) => {
-        const next = new Set(s)
-        next.delete(actId)
-        return next
-      })
+      setUpdatingIds(s => { const next = new Set(s); next.delete(actId); return next })
       prevState.current.delete(actId)
     }
   }, [])
 
-  // ── Derived KPIs ─────────────────────────────────────────────────────────────
   const kpiTotal = data?.total ?? 0
-  const kpiVencidos = hallazgos.filter((h) => h.dias_restantes !== null && h.dias_restantes < 0).length
-  const kpiProximos = hallazgos.filter((h) => h.dias_restantes !== null && h.dias_restantes >= 0 && h.dias_restantes <= 7).length
+  const kpiVencidos = hallazgos.filter(h => h.dias_restantes !== null && h.dias_restantes < 0).length
+  const kpiProximos = hallazgos.filter(h => h.dias_restantes !== null && h.dias_restantes >= 0 && h.dias_restantes <= 7).length
   const kpiProgreso = hallazgos.length > 0
     ? Math.round(hallazgos.reduce((acc, h) => acc + h.progreso, 0) / hallazgos.length)
     : 0
@@ -422,8 +110,6 @@ export default function MisActividadesPage() {
   return (
     <DashboardShell pathname={pathname}>
       <div className="space-y-6">
-
-        {/* ── Header ───────────────────────────────────────────────────────── */}
         <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
             <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -448,7 +134,6 @@ export default function MisActividadesPage() {
           </Button>
         </div>
 
-        {/* ── KPIs ─────────────────────────────────────────────────────────── */}
         <div className="grid gap-3 grid-cols-2 md:grid-cols-4">
           <KpiTile label="Total hallazgos" value={kpiTotal} sub="en esta página y otras" />
           <KpiTile label="Vencidos" value={kpiVencidos} variant="danger" sub="fecha superada" />
@@ -461,7 +146,6 @@ export default function MisActividadesPage() {
           />
         </div>
 
-        {/* ── List ─────────────────────────────────────────────────────────── */}
         {loading ? (
           <div className="flex items-center justify-center h-48 text-muted-foreground">
             <RefreshCw className="animate-spin w-5 h-5 mr-2" />
@@ -486,7 +170,7 @@ export default function MisActividadesPage() {
             </div>
 
             <div className="space-y-3">
-              {hallazgos.map((h) => (
+              {hallazgos.map(h => (
                 <HallazgoCard
                   key={h.id}
                   hallazgo={h}

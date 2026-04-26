@@ -1,0 +1,43 @@
+import { CheckCircle2, Circle, AlertTriangle, Calendar } from 'lucide-react'
+import { cn, formatDateTime } from '@/lib/utils'
+import { EstadoBadge } from '@/components/shared/EstadoBadge'
+import type { ActividadRow } from './types'
+
+export function ChecklistItem({ actividad }: { actividad: ActividadRow }) {
+  const lower = actividad.estado_accion?.toLowerCase() ?? ''
+  const isCompleted = lower.includes('cerrado') || lower.includes('completado') || lower.includes('cumplido')
+  const isOverdue = lower.includes('vencido') || lower.includes('atraso')
+
+  return (
+    <div className={cn(
+      'flex items-start gap-3 p-3 rounded-lg border transition-all',
+      isCompleted && 'bg-green-500/5 border-green-500/20',
+      isOverdue && 'bg-destructive/5 border-destructive/20',
+      !isCompleted && !isOverdue && 'bg-muted/30 border-border hover:bg-muted/50',
+    )}>
+      <div className="pt-0.5">
+        {isCompleted
+          ? <CheckCircle2 className="h-4 w-4 text-green-500" />
+          : isOverdue
+            ? <AlertTriangle className="h-4 w-4 text-destructive" />
+            : <Circle className="h-4 w-4 text-muted-foreground" />}
+      </div>
+      <div className="flex-1 min-w-0">
+        <p className={cn('text-sm font-medium leading-tight', isCompleted && 'line-through text-muted-foreground')}>
+          {actividad.descripcion ?? 'Actividad sin descripción'}
+        </p>
+        <div className="flex flex-wrap items-center gap-2 mt-1.5">
+          <EstadoBadge estado={actividad.estado_accion} />
+          {actividad.responsable_accion && (
+            <span className="text-[10px] text-muted-foreground">{actividad.responsable_accion}</span>
+          )}
+          {actividad.fecha_compromiso && (
+            <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+              <Calendar className="h-3 w-3" />{formatDateTime(actividad.fecha_compromiso)}
+            </span>
+          )}
+        </div>
+      </div>
+    </div>
+  )
+}
