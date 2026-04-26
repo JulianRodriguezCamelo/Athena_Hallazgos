@@ -1,0 +1,6 @@
+export { ModalVerDetalle } from './ModalVerDetalle'
+export { ModalEditarPlan } from './ModalEditarPlan'
+export { ModalSubirEvidencia } from './ModalSubirEvidencia'
+export { ModalCambiarEstado } from './ModalCambiarEstado'
+export { ModalSolicitarProrroga } from './ModalSolicitarProrroga'
+export { ActividadDetailModal } from './ActividadDetailModal'

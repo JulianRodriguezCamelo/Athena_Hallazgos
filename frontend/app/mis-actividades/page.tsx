@@ -11,15 +11,14 @@ import {
   Calendar,
   Clock,
   ClipboardList,
-  ChevronLeft,
-  ChevronRight,
   Target,
 } from 'lucide-react'
 import { actividadesApi } from '@/lib/api'
 import { useAuth } from '@/lib/auth'
 import { cn, formatDateTime } from '@/lib/utils'
 import DashboardShell from '@/components/layout/DashboardShell'
-import { Badge } from '@/components/ui/Badge'
+import { Badge } from '@/components/ui/badge'
+import { Pagination } from '@/components/molecules/Pagination'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
@@ -285,22 +284,6 @@ function HallazgoCard({
         </>
       )}
     </Card>
-  )
-}
-
-// ─── Pagination ───────────────────────────────────────────────────────────────
-function Pagination({ page, pages, onChange }: { page: number; pages: number; onChange: (p: number) => void }) {
-  if (pages <= 1) return null
-  return (
-    <div className="flex items-center justify-center gap-2 mt-4">
-      <Button variant="outline" size="icon" className="h-8 w-8" disabled={page <= 1} onClick={() => onChange(page - 1)}>
-        <ChevronLeft className="h-4 w-4" />
-      </Button>
-      <span className="text-sm text-muted-foreground">Página {page} de {pages}</span>
-      <Button variant="outline" size="icon" className="h-8 w-8" disabled={page >= pages} onClick={() => onChange(page + 1)}>
-        <ChevronRight className="h-4 w-4" />
-      </Button>
-    </div>
   )
 }
 
