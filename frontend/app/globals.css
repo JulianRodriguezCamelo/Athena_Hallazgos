@@ -163,3 +163,22 @@
 ::-webkit-scrollbar-track { background: oklch(0.94 0.008 17); }
 ::-webkit-scrollbar-thumb { background: oklch(0.75 0.05 17); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: oklch(0.60 0.08 17); }
+
+/* react-grid-layout — override library defaults (library CSS loads after globals so needs !important) */
+.react-grid-item.react-grid-placeholder {
+  background: rgb(249 115 22 / 0.15) !important;
+  border-radius: 0.75rem !important;
+  border: 2px dashed rgb(249 115 22 / 0.5) !important;
+  opacity: 1 !important;
+}
+.react-grid-item.react-draggable-dragging {
+  opacity: 0.85 !important;
+  box-shadow: 0 8px 32px rgb(249 115 22 / 0.25) !important;
+  outline: 2px solid rgb(249 115 22 / 0.6) !important;
+  outline-offset: 2px !important;
+  border-radius: 0.75rem !important;
+}
+.react-resizable-handle { opacity: 0.4; }
+
+/* cmdk */
+[cmdk-input] { outline: none; }

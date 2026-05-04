@@ -42,6 +42,30 @@ export interface HallazgoRow {
   workflow_estado: WorkflowEstado
 }
 
+export interface ChecklistItem {
+  id: number
+  actividad_id: number
+  descripcion: string
+  completado: boolean
+  fecha_completado: string | null
+  link_evidencia: string | null
+  completado_por: string | null
+  created_at: string
+}
+
+export interface ProgresoChecklist {
+  completados: number
+  total: number
+}
+
+export interface NotaSeguimiento {
+  id: number
+  actividad_id: number
+  nota: string
+  autor: string
+  created_at: string
+}
+
 export interface Actividad {
   id: number
   hallazgo_id: number | null
@@ -56,6 +80,9 @@ export interface Actividad {
   prorroga: string | null
   fecha_prorroga: string | null
   observaciones: string | null
+  ultima_nota_at: string | null
+  sin_nota_mensual: boolean
+  progreso_checklist: ProgresoChecklist
 }
 
 export interface ActividadRow {

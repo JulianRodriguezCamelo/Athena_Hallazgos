@@ -22,7 +22,10 @@ class Config:
     MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB
     ALLOWED_EXTENSIONS = {"xlsx", "xls"}
 
-    CORS_ORIGINS = os.environ.get("CORS_ORIGINS", "http://localhost:3000").split(",")
+    CORS_ORIGINS = os.environ.get(
+        "CORS_ORIGINS",
+        "http://localhost:3000,http://127.0.0.1:3000"
+    ).split(",")
 
     MAIL_SERVER = os.environ.get("MAIL_SERVER", "smtp.gmail.com")
     MAIL_PORT = int(os.environ.get("MAIL_PORT", 587))
@@ -39,6 +42,22 @@ class DevelopmentConfig(Config):
 
 class ProductionConfig(Config):
     DEBUG = False
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+
+    @classmethod
+    def validate(cls):
+        weak_defaults = {
+            "hallazgos-secret-key-2025-fiduprevisora",
+            "jwt-hallazgos-secret-2025",
+        }
+        if cls.SECRET_KEY in weak_defaults or len(cls.SECRET_KEY) < 32:
+            raise ValueError("SECRET_KEY insegura o no configurada para producción")
+        if cls.JWT_SECRET_KEY in weak_defaults or len(cls.JWT_SECRET_KEY) < 32:
+            raise ValueError("JWT_SECRET_KEY insegura o no configurada para producción")
+        if cls.DB_PASSWORD in ("postgres", "", "password"):
+            raise ValueError("DB_PASSWORD insegura para producción")
 
 
 config = {

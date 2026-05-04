@@ -116,6 +116,20 @@ export const actividadesApi = {
     request(`/api/hallazgos/actividades/${id}/estado`, { method: 'PATCH', body: { estado_accion } }),
   checklist: (page = 1, perPage = 15) =>
     request('/api/hallazgos/checklist', { params: { page, per_page: perPage } }),
+  listNotas: (actividadId: number) =>
+    request(`/api/hallazgos/actividades/${actividadId}/notas`),
+  addNota: (actividadId: number, nota: string) =>
+    request(`/api/hallazgos/actividades/${actividadId}/notas`, { method: 'POST', body: { nota } }),
+  listChecklist: (actividadId: number) =>
+    request(`/api/hallazgos/actividades/${actividadId}/checklist`),
+  createChecklistItem: (actividadId: number, descripcion: string) =>
+    request(`/api/hallazgos/actividades/${actividadId}/checklist`, { method: 'POST', body: { descripcion } }),
+  completeChecklistItem: (itemId: number, link_evidencia?: string) =>
+    request(`/api/hallazgos/checklist/${itemId}/complete`, { method: 'PATCH', body: { link_evidencia } }),
+  reopenChecklistItem: (itemId: number) =>
+    request(`/api/hallazgos/checklist/${itemId}/reopen`, { method: 'PATCH' }),
+  deleteChecklistItem: (itemId: number) =>
+    request(`/api/hallazgos/checklist/${itemId}`, { method: 'DELETE' }),
 }
 
 // ── Uploads ───────────────────────────────────────────────────────────────────
@@ -158,6 +172,33 @@ export const notificacionesApi = {
   list: () => request('/api/notificaciones/'),
   markRead: (id: number) => request(`/api/notificaciones/${id}/read`, { method: 'PATCH' }),
   markAllRead: () => request('/api/notificaciones/read-all', { method: 'PATCH' }),
+  enviarPersonalizada: (data: {
+    nombre: string
+    correo: string
+    direccion?: string
+    hallazgo?: string
+    estado_notas?: string
+  }) => request('/api/notificaciones/enviar-personalizada', { method: 'POST', body: data }),
+  usuariosParaMasivo: (dependencia?: string) =>
+    request<{ usuarios: { id: number; nombre: string; email: string; rol: string; dependencia: string | null }[] }>(
+      '/api/notificaciones/usuarios-para-masivo',
+      { params: dependencia ? { dependencia } : undefined },
+    ),
+  enviarMasiva: (data: { user_ids: number[]; asunto: string; mensaje: string }) =>
+    request<{ enviados: number; fallidos: number; total: number }>(
+      '/api/notificaciones/enviar-masiva',
+      { method: 'POST', body: data },
+    ),
+}
+
+// ── User Preferences ─────────────────────────────────────────────────────────
+export const preferencesApi = {
+  getMyPreferences: () =>
+    request<{ preferences: { dashboard_layout: import('@/types').DashboardBlock[] | null } | null }>(
+      '/api/users/me/preferences'
+    ),
+  saveMyPreferences: (dashboard_layout: import('@/types').DashboardBlock[]) =>
+    request('/api/users/me/preferences', { method: 'PUT', body: { dashboard_layout } }),
 }
 
 // ── Users ─────────────────────────────────────────────────────────────────────
@@ -170,4 +211,17 @@ export const usersApi = {
     request(`/api/users/${id}`, { method: 'PUT', body: data }),
   delete: (id: number) => request(`/api/users/${id}`, { method: 'DELETE' }),
   dependencias: () => request('/api/users/dependencias'),
+  reset: () => request('/api/users/reset', { method: 'DELETE' }),
+  bulkUpload: (file: File) => {
+    const form = new FormData()
+    form.append('file', file)
+    return request<{
+      creados: number
+      omitidos: number
+      total_leidos: number
+      errores_parseo: string[]
+      omitidos_detalle: { email: string; razon: string }[]
+      usuarios_creados: unknown[]
+    }>('/api/users/bulk-upload', { method: 'POST', body: form, isFormData: true })
+  },
 }

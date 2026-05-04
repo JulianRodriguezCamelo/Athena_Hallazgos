@@ -1,25 +1,16 @@
 from app.extensions import db
 from app.models.hallazgo import Hallazgo
 from app.models.actividad import Actividad
+from app.modules.dashboard.service import profesional_query, gestor_query
 
 
 def apply_role_filter(query, user):
-    if user.rol == "vicepresidente":
+    if user.rol in ("vicepresidente", "administrador"):
         return query
     if user.rol in ("directivo", "profesional"):
-        if user.vicepresidencia:
-            return query.filter(Hallazgo.vicepresidencia.ilike(user.vicepresidencia))
-        if user.dependencia:
-            return query.filter(Hallazgo.dependencia_reporta_ero.ilike(user.dependencia))
-        return query
+        return profesional_query(user)
     if user.rol == "gestor":
-        nombre = user.nombre
-        conditions = []
-        if user.dependencia:
-            conditions.append(Hallazgo.dependencia_reporta_ero.ilike(user.dependencia))
-        conditions.append(Hallazgo.responsable_plan_accion.ilike(f"%{nombre}%"))
-        conditions.append(Hallazgo.responsable_accion.ilike(f"%{nombre}%"))
-        return query.filter(db.or_(*conditions))
+        return gestor_query(user)
     return query.filter(db.false())
 
 

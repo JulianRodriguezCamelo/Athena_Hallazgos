@@ -1,9 +1,12 @@
+import logging
 from sqlalchemy import nullslast, case
 from datetime import datetime, timezone
 from app.extensions import db
 from app.models.hallazgo import Hallazgo
 from app.models.actividad import Actividad
 from app.modules.hallazgos import service
+
+logger = logging.getLogger(__name__)
 
 CAMPOS_EDITABLES = [
     "estado", "observaciones", "estado_plan_accion",
@@ -154,8 +157,8 @@ def update_hallazgo(user, hallazgo_id: int, data: dict):
         nueva_prorroga = data.get("prorroga")
         if nueva_prorroga and nueva_prorroga != prev_prorroga:
             NotificationService.notificar_prorroga(updated, nueva_prorroga, user)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.error("Error enviando notificación en update_hallazgo (id=%s): %s", hallazgo_id, e)
 
     return updated
 
@@ -243,8 +246,8 @@ def update_actividad_estado(user, actividad_id: int, estado: str):
         if estado != prev_estado and actividad.hallazgo:
             NotificationService.notificar_actualizacion_estado(
                 actividad.hallazgo, prev_estado or "—", estado, user)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.error("Error enviando notificación en update_actividad_estado (id=%s): %s", actividad_id, e)
 
     return actividad
 
@@ -303,6 +306,166 @@ def get_checklist(user, page: int, per_page: int):
         "pages": paginated.pages,
         "page": paginated.page,
     }
+
+
+def list_notas_actividad(user, actividad_id: int):
+    actividad = Actividad.query.get(actividad_id)
+    if not actividad:
+        return None
+    if not service.get_by_id(user, actividad.hallazgo_id):
+        return None
+    from app.models.nota_seguimiento import NotaSeguimiento
+    notas = (
+        NotaSeguimiento.query
+        .filter_by(actividad_id=actividad_id)
+        .order_by(NotaSeguimiento.created_at.desc())
+        .all()
+    )
+    return notas
+
+
+def add_nota_actividad(user, actividad_id: int, texto: str):
+    from datetime import datetime, timezone
+    actividad = Actividad.query.get(actividad_id)
+    if not actividad:
+        return None, "Actividad no encontrada"
+    if not service.get_by_id(user, actividad.hallazgo_id):
+        return None, "Sin permisos"
+    if not texto or not texto.strip():
+        return None, "La nota no puede estar vacía"
+
+    from app.models.nota_seguimiento import NotaSeguimiento
+    ahora = datetime.now(timezone.utc)
+    nota = NotaSeguimiento(
+        actividad_id=actividad_id,
+        user_id=user.id,
+        nota=texto.strip(),
+        created_at=ahora,
+    )
+    actividad.ultima_nota_at = ahora
+    db.session.add(nota)
+    db.session.commit()
+
+    try:
+        from app.modules.notifcations.service import NotificationService
+        hallazgo = actividad.hallazgo
+        if hallazgo:
+            title = f"Nueva nota — {hallazgo.codigo_del_hallazgo or f'#{hallazgo.id}'}"
+            message = (
+                f"{user.nombre} agregó una nota en '{actividad.descripcion[:80]}': "
+                f"{texto.strip()[:120]}"
+            )
+            for u in NotificationService._usuarios_a_notificar_hallazgo(hallazgo):
+                if u.id != user.id:
+                    NotificationService._guardar(u.id, hallazgo.id, title, message, "nota", email_sent=False)
+    except Exception as e:
+        logger.error("Error enviando notificación en add_nota_actividad (actividad_id=%s): %s", actividad_id, e)
+
+    return nota, None
+
+
+def list_checklist_items(user, actividad_id: int):
+    actividad = Actividad.query.get(actividad_id)
+    if not actividad:
+        return None, "Actividad no encontrada"
+    if not service.get_by_id(user, actividad.hallazgo_id):
+        return None, "Sin permisos"
+    from app.models.checklist_item import ChecklistItem
+    items = (
+        ChecklistItem.query
+        .filter_by(actividad_id=actividad_id)
+        .order_by(ChecklistItem.created_at.asc())
+        .all()
+    )
+    return items, None
+
+
+def create_checklist_item(user, actividad_id: int, descripcion: str):
+    actividad = Actividad.query.get(actividad_id)
+    if not actividad:
+        return None, "Actividad no encontrada"
+    if not service.get_by_id(user, actividad.hallazgo_id):
+        return None, "Sin permisos"
+    if user.rol == "vicepresidente":
+        return None, "Sin permisos para crear ítems"
+    if not descripcion or not descripcion.strip():
+        return None, "La descripción no puede estar vacía"
+    from app.models.checklist_item import ChecklistItem
+    item = ChecklistItem(
+        actividad_id=actividad_id,
+        descripcion=descripcion.strip(),
+    )
+    db.session.add(item)
+    db.session.commit()
+    return item, None
+
+
+def complete_checklist_item(user, item_id: int, link_evidencia: str | None):
+    from app.models.checklist_item import ChecklistItem
+    item = ChecklistItem.query.get(item_id)
+    if not item:
+        return None, "Ítem no encontrado"
+    actividad = Actividad.query.get(item.actividad_id)
+    if not actividad or not service.get_by_id(user, actividad.hallazgo_id):
+        return None, "Sin permisos"
+    if user.rol == "vicepresidente":
+        return None, "Sin permisos para completar ítems"
+    item.completado = True
+    item.fecha_completado = datetime.now(timezone.utc)
+    item.completado_por_id = user.id
+    if link_evidencia is not None:
+        item.link_evidencia = link_evidencia.strip() or None
+    db.session.commit()
+
+    try:
+        from app.modules.notifcations.service import NotificationService
+        hallazgo = actividad.hallazgo
+        if hallazgo:
+            title = f"Evidencia registrada — {hallazgo.codigo_del_hallazgo or f'#{hallazgo.id}'}"
+            message = (
+                f"{user.nombre} completó el ítem '{item.descripcion[:80]}' "
+                f"en la actividad '{actividad.descripcion[:60]}'."
+                + (f" Evidencia: {item.link_evidencia}" if item.link_evidencia else "")
+            )
+            for u in NotificationService._usuarios_a_notificar_hallazgo(hallazgo):
+                if u.id != user.id:
+                    NotificationService._guardar(u.id, hallazgo.id, title, message, "evidencia", email_sent=False)
+    except Exception as e:
+        logger.error("Error enviando notificación en complete_checklist_item (item_id=%s): %s", item_id, e)
+
+    return item, None
+
+
+def reopen_checklist_item(user, item_id: int):
+    from app.models.checklist_item import ChecklistItem
+    item = ChecklistItem.query.get(item_id)
+    if not item:
+        return None, "Ítem no encontrado"
+    actividad = Actividad.query.get(item.actividad_id)
+    if not actividad or not service.get_by_id(user, actividad.hallazgo_id):
+        return None, "Sin permisos"
+    if user.rol == "vicepresidente":
+        return None, "Sin permisos para reabrir ítems"
+    item.completado = False
+    item.fecha_completado = None
+    item.completado_por_id = None
+    db.session.commit()
+    return item, None
+
+
+def delete_checklist_item(user, item_id: int):
+    from app.models.checklist_item import ChecklistItem
+    item = ChecklistItem.query.get(item_id)
+    if not item:
+        return False, "Ítem no encontrado"
+    actividad = Actividad.query.get(item.actividad_id)
+    if not actividad or not service.get_by_id(user, actividad.hallazgo_id):
+        return False, "Sin permisos"
+    if user.rol == "vicepresidente":
+        return False, "Sin permisos para eliminar ítems"
+    db.session.delete(item)
+    db.session.commit()
+    return True, None
 
 
 def get_estados(user):

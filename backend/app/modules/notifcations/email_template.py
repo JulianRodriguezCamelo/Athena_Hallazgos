@@ -157,7 +157,7 @@ def build_resumen_semanal_html(
 
     def hallazgo_rows(items):
         if not items:
-            return '<tr><td colspan="4" style="color:#475569;font-size:13px;padding:20px 0;text-align:center;">Sin hallazgos próximos a vencer</td></tr>'
+            return '<tr><td colspan="4" style="color:#475569;font-size:13px;padding:20px 0;text-align:center;">Sin hallazgos activos asignados</td></tr>'
         rows = ""
         for h in items:
             rows += f"""
@@ -173,7 +173,7 @@ def build_resumen_semanal_html(
 
     def actividad_rows(items):
         if not items:
-            return '<tr><td colspan="3" style="color:#475569;font-size:13px;padding:20px 0;text-align:center;">Sin actividades próximas a vencer</td></tr>'
+            return '<tr><td colspan="3" style="color:#475569;font-size:13px;padding:20px 0;text-align:center;">Sin actividades activas asignadas</td></tr>'
         rows = ""
         for a in items:
             rows += f"""
@@ -210,7 +210,7 @@ def build_resumen_semanal_html(
   </td></tr>
 
   <tr><td style="padding-bottom:24px;">
-    <div style="color:#f1f5f9;font-size:14px;font-weight:700;margin-bottom:12px;letter-spacing:0.3px;">Hallazgos próximos a vencer <span style="color:#64748b;font-weight:400;font-size:12px;">(próximos 15 días)</span></div>
+    <div style="color:#f1f5f9;font-size:14px;font-weight:700;margin-bottom:12px;letter-spacing:0.3px;">Hallazgos activos</div>
     <table width="100%" cellpadding="0" cellspacing="0" style="background:#161b22;border:1px solid #21262d;border-radius:12px;overflow:hidden;">
       <tr style="background:#1e2530;">
         <th style="color:#64748b;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:12px 8px;text-align:left;font-weight:600;">Código</th>
@@ -223,7 +223,7 @@ def build_resumen_semanal_html(
   </td></tr>
 
   <tr><td style="padding-bottom:28px;">
-    <div style="color:#f1f5f9;font-size:14px;font-weight:700;margin-bottom:12px;letter-spacing:0.3px;">Actividades próximas a vencer <span style="color:#64748b;font-weight:400;font-size:12px;">(próximos 15 días)</span></div>
+    <div style="color:#f1f5f9;font-size:14px;font-weight:700;margin-bottom:12px;letter-spacing:0.3px;">Actividades activas</div>
     <table width="100%" cellpadding="0" cellspacing="0" style="background:#161b22;border:1px solid #21262d;border-radius:12px;overflow:hidden;">
       <tr style="background:#1e2530;">
         <th style="color:#64748b;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;padding:12px 8px;text-align:left;font-weight:600;">Actividad</th>
@@ -324,6 +324,79 @@ def build_recordatorio_html(
   </td></tr>
 
   {_cta(filtro_url, label="Ver mis hallazgos pendientes")}
+  {_footer()}
+</table>
+</td></tr>
+</table>
+</body>
+</html>"""
+
+
+def build_notificacion_personalizada_html(
+    nombre: str,
+    direccion: str,
+    hallazgo: str,
+    estado_notas: str,
+    gestor_nombre: str,
+    dashboard_url: str = "https://athena.fiduprevisora.com/dashboard",
+) -> str:
+    fecha = date.today().strftime("%d %b %Y")
+
+    return f"""<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="UTF-8"/><title>Notificación — Athena</title></head>
+<body style="margin:0;padding:0;background-color:#0d1117;font-family:'Segoe UI',Helvetica,Arial,sans-serif;">
+<table width="100%" cellpadding="0" cellspacing="0" style="background:#0d1117;padding:40px 16px;">
+<tr><td align="center">
+<table width="520" cellpadding="0" cellspacing="0" style="max-width:520px;width:100%;">
+  {_header()}
+  <tr><td style="padding:0 0 28px;">
+    <div style="color:#f8fafc;font-size:24px;font-weight:700;line-height:1.3;">Hola, <span style="color:#f97316;">{nombre}</span></div>
+    <div style="color:#64748b;font-size:14px;margin-top:8px;line-height:1.5;">
+      <strong style="color:#94a3b8;">{gestor_nombre}</strong> te envía una notificación desde la plataforma de gestión de riesgos Athena.
+    </div>
+  </td></tr>
+  <tr><td style="padding-bottom:28px;">
+    <table width="100%" cellpadding="0" cellspacing="0" style="background:#161b22;border:1px solid #21262d;border-radius:12px;overflow:hidden;">
+      <tr><td style="padding:4px 0 0;background:linear-gradient(90deg,#f97316,#ea580c);border-radius:12px 12px 0 0;height:3px;font-size:0;">&nbsp;</td></tr>
+      <tr><td style="padding:28px 32px;">
+        <div style="margin-bottom:18px;">
+          <span style="background:#f9731615;border:1px solid #f9731640;color:#f97316;font-size:10px;font-weight:700;letter-spacing:1.5px;padding:5px 14px;border-radius:20px;text-transform:uppercase;">Recordatorio</span>
+        </div>
+        <table cellpadding="0" cellspacing="0" width="100%" style="margin-bottom:20px;">
+          <tr>
+            <td style="padding-bottom:16px;border-bottom:1px solid #21262d;">
+              <div style="color:#64748b;font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;">Dirección / Área</div>
+              <div style="color:#e2e8f0;font-size:13px;font-weight:500;">{direccion or "—"}</div>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:16px 0;border-bottom:1px solid #21262d;">
+              <div style="color:#64748b;font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:6px;">Hallazgo</div>
+              <div style="color:#f1f5f9;font-size:13px;font-weight:600;">{hallazgo or "—"}</div>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding-top:16px;">
+              <div style="color:#64748b;font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;">Estado / Notas</div>
+              <div style="color:#94a3b8;font-size:13px;line-height:1.7;white-space:pre-wrap;">{estado_notas or "—"}</div>
+            </td>
+          </tr>
+        </table>
+        <table cellpadding="0" cellspacing="0" style="margin-top:4px;"><tr>
+          <td style="padding-right:40px;">
+            <div style="color:#94a3b8;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px;">Fecha</div>
+            <div style="color:#e2e8f0;font-size:13px;font-weight:500;">{fecha}</div>
+          </td>
+          <td>
+            <div style="color:#94a3b8;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px;">Remitente</div>
+            <div style="color:#e2e8f0;font-size:13px;font-weight:500;">{gestor_nombre}</div>
+          </td>
+        </tr></table>
+      </td></tr>
+    </table>
+  </td></tr>
+  {_cta(dashboard_url)}
   {_footer()}
 </table>
 </td></tr>

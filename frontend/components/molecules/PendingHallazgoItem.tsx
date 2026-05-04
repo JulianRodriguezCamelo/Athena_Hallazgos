@@ -1,3 +1,6 @@
+'use client'
+
+import Link from 'next/link'
 import { FileWarning, Calendar, ArrowUpRight } from 'lucide-react'
 import { cn, formatDateTime } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
@@ -13,7 +16,7 @@ export function PendingHallazgoItem({ hallazgo }: Props) {
   const hasProrroga = hallazgo.prorroga === 'Si'
 
   return (
-    <div className={cn(
+    <Link href={`/hallazgos/${hallazgo.id}`} className={cn(
       'group flex items-center gap-3 p-3 rounded-xl border transition-all hover:shadow-sm cursor-pointer',
       isOverdue
         ? 'bg-destructive/5 border-destructive/20 hover:bg-destructive/10'
@@ -44,6 +47,6 @@ export function PendingHallazgoItem({ hallazgo }: Props) {
         </div>
       </div>
       <ArrowUpRight className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-    </div>
+    </Link>
   )
 }

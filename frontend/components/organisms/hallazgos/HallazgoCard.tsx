@@ -10,6 +10,7 @@ import { PrioridadBadge } from '@/components/atoms/PrioridadBadge'
 import { SemaforoBadge } from '@/components/atoms/SemaforoBadge'
 import { StatusBadge } from '@/components/atoms/StatusBadge'
 import { WorkflowStepper } from '@/components/molecules/WorkflowStepper'
+import { NotasMensualesInline } from '@/components/organisms/hallazgos/NotasMensualesInline'
 import type { HallazgoWithActividades } from '@/types'
 
 function fmtDate(d: string | null) {
@@ -110,6 +111,7 @@ export function HallazgoCard({ hallazgo }: Props) {
                             </span>
                           )}
                         </div>
+                        <NotasMensualesInline actividadId={act.id} />
                       </div>
                     </div>
                   )

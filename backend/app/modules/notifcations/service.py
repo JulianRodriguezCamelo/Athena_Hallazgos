@@ -2,10 +2,12 @@ from datetime import date, timedelta
 from flask_mail import Message
 from app.extensions import mail, db
 from app.models.notificacitions import Notificacition
+from app.utils import strip_accents
 from app.modules.notifcations.email_template import (
     build_email_html,
     build_bienvenida_html,
     build_resumen_semanal_html,
+    build_notificacion_personalizada_html,
 )
 
 
@@ -159,25 +161,21 @@ class NotificationService:
         from app.models.hallazgo import Hallazgo
         from app.models.actividad import Actividad
 
-        hoy = date.today()
-        limite = hoy + timedelta(days=15)
+        _estados_cerrado = ("cerrado", "closed", "resuelto")
 
         hallazgos = cls._hallazgos_por_rol(user)
         ids_hallazgos = [h.id for h in hallazgos]
 
-        proximos_h = [
+        activos_h = [
             h for h in hallazgos
-            if h.fecha_cierre_proyectada and hoy <= h.fecha_cierre_proyectada.date() <= limite
-            and (h.estado or "").lower() not in ("cerrado", "closed", "resuelto")
+            if (h.estado or "").lower() not in _estados_cerrado
         ]
 
-        proximos_a = (
+        activas_a = (
             Actividad.query
             .filter(
                 Actividad.hallazgo_id.in_(ids_hallazgos),
-                Actividad.fecha_compromiso.isnot(None),
-                Actividad.fecha_compromiso >= hoy,
-                Actividad.fecha_compromiso <= limite,
+                ~Actividad.estado_accion.ilike("%cerrad%"),
             )
             .all()
             if ids_hallazgos else []
@@ -187,7 +185,7 @@ class NotificationService:
             "total": len(hallazgos),
             "pendientes": sum(1 for h in hallazgos if (h.estado or "").lower() in ("pendiente", "abierto", "open")),
             "en_proceso": sum(1 for h in hallazgos if (h.estado or "").lower() in ("en proceso", "en_proceso", "in progress")),
-            "cerrados": sum(1 for h in hallazgos if (h.estado or "").lower() in ("cerrado", "closed", "resuelto")),
+            "cerrados": sum(1 for h in hallazgos if (h.estado or "").lower() in _estados_cerrado),
         }
 
         hallazgos_data = [
@@ -199,7 +197,7 @@ class NotificationService:
                 "estado": h.estado or "—",
                 "vicepresidencia": h.vicepresidencia or "—",
             }
-            for h in proximos_h[:10]
+            for h in activos_h[:50]
         ]
         actividades_data = [
             {
@@ -209,7 +207,7 @@ class NotificationService:
                 "fecha_compromiso": a.fecha_compromiso.strftime("%d %b %Y") if a.fecha_compromiso else "—",
                 "estado_accion": a.estado_accion or "—",
             }
-            for a in proximos_a[:10]
+            for a in activas_a[:50]
         ]
 
         html = build_resumen_semanal_html(
@@ -223,7 +221,7 @@ class NotificationService:
             to=user.email,
             subject=f"[RESUMEN SEMANAL] {date.today().strftime('%d %b %Y')} — Athena",
             html=html,
-            fallback=f"Resumen semanal: {stats['total']} hallazgos, {len(proximos_h)} próximos a vencer.",
+            fallback=f"Resumen semanal: {stats['total']} hallazgos, {len(activos_h)} activos.",
         )
 
     # ── Consultas ────────────────────────────────────────────────────────────
@@ -250,20 +248,23 @@ class NotificationService:
                 return []
             return Hallazgo.query.filter(or_(*filtros)).all()
         if rol == "gestor":
-            return (
-                Hallazgo.query
-                .filter(or_(
-                    Hallazgo.dependencia_reporta_ero == user.dependencia,
-                    Hallazgo.responsable_plan_accion.ilike(f"%{user.nombre}%"),
-                    Hallazgo.responsable_accion.ilike(f"%{user.nombre}%"),
-                ))
-                .all()
-            )
+            nombre_norm = strip_accents(user.nombre)
+            filtros = []
+            if user.vicepresidencia:
+                filtros.append(Hallazgo.vicepresidencia.ilike(f"%{user.vicepresidencia}%"))
+            if user.dependencia:
+                filtros.append(Hallazgo.dependencia_reporta_ero.ilike(f"%{user.dependencia}%"))
+            filtros += [
+                Hallazgo.responsable_plan_accion.ilike(f"%{nombre_norm}%"),
+                Hallazgo.responsable_accion.ilike(f"%{nombre_norm}%"),
+            ]
+            return Hallazgo.query.filter(or_(*filtros)).all()
         # profesional
+        nombre_norm = strip_accents(user.nombre)
         return (
             Hallazgo.query
             .filter(or_(
-                Hallazgo.responsable_accion.ilike(f"%{user.nombre}%"),
+                Hallazgo.responsable_accion.ilike(f"%{nombre_norm}%"),
                 Hallazgo.dependencia_reporta_ero == user.dependencia,
             ))
             .all()
@@ -298,16 +299,42 @@ class NotificationService:
     def _usuarios_a_notificar_hallazgo(hallazgo):
         from app.models.user import User
         from sqlalchemy import or_
-        return (
+
+        vp_directivos = (
             User.query
             .filter_by(activo=True)
-            .filter(or_(
-                User.rol.in_(["vicepresidente", "directivo"]),
-                User.nombre.ilike(f"%{hallazgo.responsable_plan_accion or ''}%"),
-                User.nombre.ilike(f"%{hallazgo.responsable_accion or ''}%"),
-            ))
+            .filter(User.rol.in_(["vicepresidente", "directivo"]))
             .all()
         )
+
+        # Gestores de la misma vicepresidencia del hallazgo
+        gestores = []
+        if hallazgo.vicepresidencia:
+            gestores = (
+                User.query
+                .filter_by(activo=True, rol="gestor")
+                .filter(User.vicepresidencia.ilike(f"%{hallazgo.vicepresidencia}%"))
+                .all()
+            )
+
+        # Usuarios nombrados como responsables
+        responsables = []
+        for nombre in filter(None, [hallazgo.responsable_plan_accion, hallazgo.responsable_accion]):
+            nombre_norm = strip_accents(nombre)
+            responsables += (
+                User.query
+                .filter_by(activo=True)
+                .filter(User.nombre.ilike(f"%{nombre_norm}%"))
+                .all()
+            )
+
+        vistos: set[int] = set()
+        resultado = []
+        for u in vp_directivos + gestores + responsables:
+            if u.id not in vistos:
+                vistos.add(u.id)
+                resultado.append(u)
+        return resultado
 
     @classmethod
     def notificar_asignacion(cls, hallazgo, campo: str, nuevo_responsable: str, actor):
@@ -315,7 +342,7 @@ class NotificationService:
             from app.models.user import User
             from app.modules.notifcations.email_template import build_email_html
             from datetime import datetime, timezone
-            usuario = User.query.filter(User.nombre.ilike(f"%{nuevo_responsable}%")).first()
+            usuario = User.query.filter(User.nombre.ilike(f"%{strip_accents(nuevo_responsable)}%")).first()
             title = f"Nueva asignación — {hallazgo.codigo_del_hallazgo or f'#{hallazgo.id}'}"
             msg = f"Has sido asignado como responsable ({campo.replace('_', ' ')})."
             if usuario:
@@ -341,6 +368,58 @@ class NotificationService:
                 cls._guardar(u.id, hallazgo.id, title, msg, "actualizacion", email_sent=False)
         except Exception:
             pass
+
+    @classmethod
+    def enviar_notificacion_personalizada(cls, gestor, nombre: str, correo: str,
+                                          direccion: str, hallazgo: str, estado_notas: str):
+        html = build_notificacion_personalizada_html(
+            nombre=nombre,
+            direccion=direccion,
+            hallazgo=hallazgo,
+            estado_notas=estado_notas,
+            gestor_nombre=gestor.nombre,
+        )
+        cls._send(
+            to=correo,
+            subject=f"[RECORDATORIO] {hallazgo or 'Notificación de gestión'} — Athena",
+            html=html,
+            fallback=f"Hola {nombre}, {gestor.nombre} te envía un recordatorio sobre: {hallazgo}. Notas: {estado_notas}",
+        )
+
+    # ── Correo masivo ────────────────────────────────────────────────────────
+
+    @classmethod
+    def enviar_correo_masivo(cls, gestor, user_ids: list, asunto: str, mensaje: str) -> dict:
+        from app.models.user import User
+        usuarios = User.query.filter(User.id.in_(user_ids), User.activo == True).all()
+        enviados, fallidos = 0, 0
+        for user in usuarios:
+            try:
+                html = build_notificacion_personalizada_html(
+                    nombre=user.nombre,
+                    direccion=user.dependencia or "",
+                    hallazgo=asunto,
+                    estado_notas=mensaje,
+                    gestor_nombre=gestor.nombre,
+                )
+                cls._send(to=user.email, subject=f"[ATHENA] {asunto}", html=html, fallback=mensaje)
+                enviados += 1
+            except Exception:
+                fallidos += 1
+        return {"enviados": enviados, "fallidos": fallidos, "total": len(usuarios)}
+
+    @classmethod
+    def usuarios_para_masivo(cls, current_user, dependencia: str = None) -> list:
+        from app.models.user import User
+        q = User.query.filter_by(activo=True).filter(User.id != current_user.id)
+        if current_user.rol == "gestor":
+            q = q.filter(User.vicepresidencia == current_user.vicepresidencia)
+        elif current_user.rol == "directivo":
+            q = q.filter(User.vicepresidencia == current_user.vicepresidencia)
+        # vicepresidente ve todos
+        if dependencia:
+            q = q.filter(User.dependencia.ilike(f"%{dependencia}%"))
+        return q.order_by(User.nombre).all()
 
     @classmethod
     def notificar_prorroga(cls, hallazgo, nueva_prorroga: str, actor):

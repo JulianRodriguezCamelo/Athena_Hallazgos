@@ -1,5 +1,8 @@
+import logging
 from flask_socketio import join_room, disconnect
 from flask_jwt_extended import decode_token
+
+logger = logging.getLogger(__name__)
 
 
 def register_handlers(socketio):
@@ -13,7 +16,8 @@ def register_handlers(socketio):
             decoded = decode_token(auth["token"])
             user_id = decoded["sub"]
             join_room(f"user_{user_id}")
-        except Exception:
+        except Exception as e:
+            logger.warning("Conexión SocketIO rechazada — token inválido: %s", e)
             disconnect()
 
     @socketio.on("disconnect")

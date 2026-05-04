@@ -55,3 +55,87 @@ def delete_user(user_id: int, current_user_id: int):
 
 def distinct_dependencias_user(current_user):
     return [d[0] for d in service.distinct_dependencias()]
+
+
+def reset_non_admin_users() -> dict:
+    """Hard-delete all non-admin users handling all FK constraints."""
+    from app.models.user import User
+    from app.models.upload_history import UploadHistory
+    from app.models.notificacitions import Notificacition
+    from app.extensions import db
+
+    # IDs de usuarios que serán eliminados
+    non_admin_ids = [
+        u.id for u in User.query.filter(User.rol != "administrador").with_entities(User.id).all()
+    ]
+    if not non_admin_ids:
+        return {"eliminados": 0}
+
+    # 1. Eliminar notificaciones de esos usuarios (sin ON DELETE definido)
+    Notificacition.query.filter(
+        Notificacition.user_id.in_(non_admin_ids)
+    ).delete(synchronize_session=False)
+
+    # 2. Reasignar uploads al admin (uploaded_by_id NOT NULL)
+    admin = service.get_by_email("admin@fiduprevisora.com")
+    if admin:
+        UploadHistory.query.filter(
+            UploadHistory.uploaded_by_id.in_(non_admin_ids)
+        ).update({"uploaded_by_id": admin.id}, synchronize_session=False)
+
+    # 3. Nullear responsable_user_id en hallazgos (por si la migración ya corrió)
+    try:
+        from app.models.hallazgo import Hallazgo
+        Hallazgo.query.filter(
+            Hallazgo.responsable_user_id.in_(non_admin_ids)
+        ).update({"responsable_user_id": None}, synchronize_session=False)
+    except Exception:
+        pass
+
+    # 4. Borrar usuarios (checklist SET NULL, nota_seguimiento SET NULL, user_preferences CASCADE)
+    deleted = User.query.filter(User.id.in_(non_admin_ids)).delete(synchronize_session=False)
+    db.session.commit()
+    return {"eliminados": deleted}
+
+
+def bulk_upload_users(file) -> dict:
+    import os, tempfile
+    filename = file.filename or ""
+    if not filename.lower().endswith((".xlsx", ".xls")):
+        return {"error": "Solo se permiten archivos .xlsx o .xls"}
+
+    with tempfile.NamedTemporaryFile(delete=False, suffix=os.path.splitext(filename)[1]) as tmp:
+        file.save(tmp.name)
+        tmp_path = tmp.name
+
+    try:
+        parsed, parse_errors = service.parse_users_excel(tmp_path)
+    finally:
+        try:
+            os.unlink(tmp_path)
+        except Exception:
+            pass
+
+    if not parsed and parse_errors:
+        return {"error": parse_errors[0], "errores": parse_errors}
+
+    created_users, skipped = service.bulk_create(parsed)
+
+    # Send welcome notification to newly created users
+    for u in created_users:
+        try:
+            from app.modules.notifcations.service import NotificationService
+            pw = next((p["password"] for p in parsed if p["email"] == u.email), None)
+            if pw:
+                NotificationService.notificar_usuario_registrado(u, password_temporal=pw)
+        except Exception:
+            pass
+
+    return {
+        "creados": len(created_users),
+        "omitidos": len(skipped),
+        "total_leidos": len(parsed),
+        "errores_parseo": parse_errors,
+        "omitidos_detalle": skipped,
+        "usuarios_creados": [u.to_dict() for u in created_users],
+    }

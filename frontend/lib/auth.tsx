@@ -10,7 +10,7 @@ import {
 } from 'react'
 import { authApi } from './api'
 
-export type Rol = 'vicepresidente' | 'directivo' | 'profesional' | 'gestor'
+export type Rol = 'vicepresidente' | 'directivo' | 'profesional' | 'gestor' | 'administrador'
 
 export interface User {
   id: number
@@ -31,6 +31,7 @@ interface AuthCtx {
   isDirectivo: boolean
   isProfesional: boolean
   isGestor: boolean
+  isAdmin: boolean
 }
 
 const AuthContext = createContext<AuthCtx | null>(null)
@@ -79,6 +80,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isDirectivo: user?.rol === 'directivo',
         isProfesional: user?.rol === 'profesional',
         isGestor: user?.rol === 'gestor',
+        isAdmin: user?.rol === 'administrador',
       }}
     >
       {children}

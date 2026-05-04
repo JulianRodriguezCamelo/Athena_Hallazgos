@@ -1,4 +1,4 @@
-import { ListChecks, Eye } from 'lucide-react'
+import { ListChecks, Eye, AlertTriangle } from 'lucide-react'
 import { formatDate } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
@@ -67,13 +67,20 @@ export function ActividadesTable({ actividades, loading, meta, page, setPage, on
                   {formatDate(a.fecha_compromiso)}
                 </TableCell>
                 <TableCell>
-                  <Button
-                    variant="ghost" size="icon"
-                    onClick={() => onSelect(a)}
-                    className="opacity-0 group-hover:opacity-100 transition-opacity w-8 h-8 text-primary hover:bg-primary/10"
-                  >
-                    <Eye className="w-4 h-4" />
-                  </Button>
+                  <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    {a.sin_nota_mensual && (
+                      <span title="Pendiente nota mensual">
+                        <AlertTriangle className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                      </span>
+                    )}
+                    <Button
+                      variant="ghost" size="icon"
+                      onClick={() => onSelect(a)}
+                      className="w-8 h-8 text-primary hover:bg-primary/10"
+                    >
+                      <Eye className="w-4 h-4" />
+                    </Button>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}

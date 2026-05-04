@@ -1,3 +1,4 @@
+import logging
 import os
 import uuid
 from datetime import datetime
@@ -8,8 +9,40 @@ from app.models.hallazgo import Hallazgo
 from app.models.actividad import Actividad
 from app.models.upload_history import UploadHistory
 from app.models.notificacitions import Notificacition
+from app.models.user import User
 from app.modules.uploads.service import parse_excel
 from config import Config
+
+logger = logging.getLogger(__name__)
+
+
+def _build_user_token_index():
+    """Índice de (apellidos_key, nombre_canónico) para normalizar responsables del Excel.
+    Usa solo los 2 apellidos (últimos tokens únicos) para tolerar typos en el nombre de pila."""
+    users = User.query.filter_by(activo=True).all()
+    index = []
+    for u in users:
+        seen: set[str] = set()
+        unique: list[str] = []
+        for t in u.nombre.strip().split():
+            tl = t.lower()
+            if len(tl) > 2 and tl not in seen:
+                seen.add(tl)
+                unique.append(tl)
+        key = unique[-2:] if len(unique) >= 2 else unique
+        if key:
+            index.append((key, u.nombre))
+    return index
+
+
+def _normalize_responsable(name: str, index: list) -> str:
+    if not name or not name.strip():
+        return name
+    name_tokens = set(t.lower() for t in name.strip().split() if len(t) > 2)
+    for key_tokens, canonical in index:
+        if all(kt in name_tokens for kt in key_tokens):
+            return canonical
+    return name
 
 _UPLOAD_LOCK_KEY = 7_654_321
 ALLOWED = {"xlsx", "xls"}
@@ -40,6 +73,19 @@ def process_upload(user, file):
             pass
         return None, "Hay una carga en proceso, intente de nuevo en un momento"
 
+    # Borrar en orden correcto respetando FKs:
+    # notificaciones → actividades → hallazgos → upload_history
+    counts = {
+        "notificaciones": Notificacition.query.count(),
+        "actividades": Actividad.query.count(),
+        "hallazgos": Hallazgo.query.count(),
+        "uploads": UploadHistory.query.count(),
+    }
+    logger.warning(
+        "ELIMINACIÓN MASIVA iniciada por usuario id=%s — registros a eliminar: %s",
+        user.id, counts,
+    )
+    Notificacition.query.delete(synchronize_session=False)
     Actividad.query.delete(synchronize_session=False)
     Hallazgo.query.delete(synchronize_session=False)
     UploadHistory.query.delete(synchronize_session=False)
@@ -55,6 +101,18 @@ def process_upload(user, file):
     db.session.flush()
 
     hallazgo_records, actividades_data, errors = parse_excel(save_path)
+
+    # Normalizar nombres de responsables al formato canónico de la BD
+    user_index = _build_user_token_index()
+    responsable_fields = ("responsable_plan_accion", "responsable_accion", "reportado_por")
+    for record in hallazgo_records:
+        for field in responsable_fields:
+            if record.get(field):
+                record[field] = _normalize_responsable(record[field], user_index)
+    for _, act in actividades_data:
+        for field in ("responsable_accion", "responsable"):
+            if act.get(field):
+                act[field] = _normalize_responsable(act[field], user_index)
 
     exitosos = 0
     hallazgo_id_by_index: list[int | None] = []

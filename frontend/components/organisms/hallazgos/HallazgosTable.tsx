@@ -1,5 +1,5 @@
 import { Search, Eye } from 'lucide-react'
-import { formatDate } from '@/lib/utils'
+import { formatDate, cleanText } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
 import {
@@ -56,7 +56,9 @@ export function HallazgosTable({ hallazgos, loading, meta, page, setPage, onSele
                   {h.codigo_del_hallazgo ?? '—'}
                 </TableCell>
                 <TableCell className="max-w-xs">
-                  <p className="truncate text-foreground text-sm" title={h.descripcion ?? ''}>{h.descripcion ?? '—'}</p>
+                  <p className="truncate text-foreground text-sm" title={cleanText(h.descripcion) || '—'}>
+                    {cleanText(h.descripcion) || '—'}
+                  </p>
                 </TableCell>
                 <TableCell className="whitespace-nowrap text-muted-foreground text-xs max-w-[140px]">
                   <p className="truncate" title={h.dependencia_reporta_ero ?? h.direccion ?? ''}>

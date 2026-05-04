@@ -38,6 +38,16 @@ interface Props {
 export function UsuarioFormModal({
   open, editing, form, setForm, onSave, onClose, saving, error, vicepresidencias, dependencias,
 }: Props) {
+  const isVice = form.rol === 'vicepresidente'
+
+  function handleRolChange(rol: string) {
+    setForm({
+      ...form,
+      rol,
+      dependencia: rol === 'vicepresidente' ? '' : form.dependencia,
+    })
+  }
+
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="p-0 overflow-hidden max-w-lg">
@@ -76,9 +86,9 @@ export function UsuarioFormModal({
             label="Rol"
             options={ROL_OPTIONS}
             value={form.rol}
-            onChange={(e) => setForm({ ...form, rol: e.target.value })}
+            onChange={(e) => handleRolChange(e.target.value)}
           />
-          <div className="grid grid-cols-2 gap-4">
+          <div className={isVice ? 'grid grid-cols-1 gap-4' : 'grid grid-cols-2 gap-4'}>
             <Select
               label="Vicepresidencia"
               options={[
@@ -88,15 +98,17 @@ export function UsuarioFormModal({
               value={form.vicepresidencia}
               onChange={(e) => setForm({ ...form, vicepresidencia: e.target.value })}
             />
-            <Select
-              label="Dependencia / Dirección"
-              options={[
-                { value: '', label: '— Sin dependencia —' },
-                ...dependencias.map((d) => ({ value: d, label: d })),
-              ]}
-              value={form.dependencia}
-              onChange={(e) => setForm({ ...form, dependencia: e.target.value })}
-            />
+            {!isVice && (
+              <Select
+                label="Dependencia / Dirección"
+                options={[
+                  { value: '', label: '— Sin dependencia —' },
+                  ...dependencias.map((d) => ({ value: d, label: d })),
+                ]}
+                value={form.dependencia}
+                onChange={(e) => setForm({ ...form, dependencia: e.target.value })}
+              />
+            )}
           </div>
           <div className="flex justify-end gap-2 pt-2">
             <Button variant="ghost" onClick={onClose}>Cancelar</Button>

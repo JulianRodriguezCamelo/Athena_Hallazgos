@@ -90,6 +90,28 @@ def patch_actividad_estado(actividad_id):
     return jsonify({"actividad": actividad.to_dict()}), 200
 
 
+@hallazgos_bp.route("/actividades/<int:actividad_id>/notas", methods=["GET"])
+@jwt_required()
+def list_notas_actividad(actividad_id):
+    user = get_current_user()
+    notas = controller.list_notas_actividad(user, actividad_id)
+    if notas is None:
+        return jsonify({"error": "Actividad no encontrada o sin permisos"}), 404
+    return jsonify({"notas": [n.to_dict() for n in notas]}), 200
+
+
+@hallazgos_bp.route("/actividades/<int:actividad_id>/notas", methods=["POST"])
+@jwt_required()
+def add_nota_actividad(actividad_id):
+    user = get_current_user()
+    data = request.get_json() or {}
+    nota, error = controller.add_nota_actividad(user, actividad_id, data.get("nota", ""))
+    if error:
+        status = 404 if "encontrada" in error or "permisos" in error else 400
+        return jsonify({"error": error}), status
+    return jsonify({"nota": nota.to_dict()}), 201
+
+
 @hallazgos_bp.route("/checklist", methods=["GET"])
 @jwt_required()
 def get_checklist():
@@ -97,6 +119,63 @@ def get_checklist():
     page = int(request.args.get("page", 1))
     per_page = int(request.args.get("per_page", 15))
     return jsonify(controller.get_checklist(user, page, per_page)), 200
+
+
+@hallazgos_bp.route("/actividades/<int:actividad_id>/checklist", methods=["GET"])
+@jwt_required()
+def list_checklist(actividad_id):
+    user = get_current_user()
+    items, error = controller.list_checklist_items(user, actividad_id)
+    if error:
+        status = 404 if "encontrada" in error or "permisos" in error else 400
+        return jsonify({"error": error}), status
+    return jsonify({"items": [i.to_dict() for i in items]}), 200
+
+
+@hallazgos_bp.route("/actividades/<int:actividad_id>/checklist", methods=["POST"])
+@jwt_required()
+def create_checklist(actividad_id):
+    user = get_current_user()
+    data = request.get_json() or {}
+    item, error = controller.create_checklist_item(user, actividad_id, data.get("descripcion", ""))
+    if error:
+        status = 403 if "permisos" in error else 404 if "encontrada" in error else 400
+        return jsonify({"error": error}), status
+    return jsonify({"item": item.to_dict()}), 201
+
+
+@hallazgos_bp.route("/checklist/<int:item_id>/complete", methods=["PATCH"])
+@jwt_required()
+def complete_checklist(item_id):
+    user = get_current_user()
+    data = request.get_json() or {}
+    item, error = controller.complete_checklist_item(user, item_id, data.get("link_evidencia"))
+    if error:
+        status = 403 if "permisos" in error else 404 if "encontrado" in error else 400
+        return jsonify({"error": error}), status
+    return jsonify({"item": item.to_dict()}), 200
+
+
+@hallazgos_bp.route("/checklist/<int:item_id>/reopen", methods=["PATCH"])
+@jwt_required()
+def reopen_checklist(item_id):
+    user = get_current_user()
+    item, error = controller.reopen_checklist_item(user, item_id)
+    if error:
+        status = 403 if "permisos" in error else 404 if "encontrado" in error else 400
+        return jsonify({"error": error}), status
+    return jsonify({"item": item.to_dict()}), 200
+
+
+@hallazgos_bp.route("/checklist/<int:item_id>", methods=["DELETE"])
+@jwt_required()
+def delete_checklist(item_id):
+    user = get_current_user()
+    ok, error = controller.delete_checklist_item(user, item_id)
+    if error:
+        status = 403 if "permisos" in error else 404 if "encontrado" in error else 400
+        return jsonify({"error": error}), status
+    return jsonify({"message": "Ítem eliminado"}), 200
 
 
 @hallazgos_bp.route("/estados", methods=["GET"])

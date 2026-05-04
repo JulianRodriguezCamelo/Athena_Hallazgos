@@ -1,4 +1,9 @@
+'use client'
+
+import Link from 'next/link'
+import { Eye } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
 import { StatusBadge } from '@/components/atoms/StatusBadge'
@@ -34,7 +39,7 @@ export function DirectivoHallazgosTable({ hallazgos, page, onPageChange }: Props
               <table className="w-full text-xs">
                 <thead>
                   <tr className="border-b border-border bg-muted/40">
-                    {['Código', 'Descripción', 'Estado', 'Plan', 'Responsable', 'Cierre proyectado'].map((h) => (
+                    {['Código', 'Descripción', 'Estado', 'Plan', 'Responsable', 'Cierre proyectado', ''].map((h) => (
                       <th key={h} className="px-4 py-3 text-left font-semibold text-muted-foreground">{h}</th>
                     ))}
                   </tr>
@@ -49,6 +54,11 @@ export function DirectivoHallazgosTable({ hallazgos, page, onPageChange }: Props
                       <td className="px-4 py-3 text-muted-foreground">{h.responsable_plan_accion ?? '—'}</td>
                       <td className="px-4 py-3 text-muted-foreground whitespace-nowrap">
                         {h.fecha_cierre_proyectada ? formatDateTime(h.fecha_cierre_proyectada) : '—'}
+                      </td>
+                      <td className="px-4 py-3">
+                        <Link href={`/hallazgos/${h.id}`} className="inline-flex items-center justify-center h-7 w-7 rounded-lg hover:bg-muted transition-colors">
+                          <Eye className="h-4 w-4 text-muted-foreground" />
+                        </Link>
                       </td>
                     </tr>
                   ))}

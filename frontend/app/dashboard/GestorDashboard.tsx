@@ -4,8 +4,11 @@ import { useState } from 'react'
 import {
   Clock, Calendar, RefreshCw, FileWarning, Target, Activity,
   BarChart3, Layers, AlertTriangle, CheckCircle2, Play, Upload,
-  FileText, Bell, Search, Filter, MoreVertical, Eye, Edit3, Shield,
+  FileText, Bell, Search, Filter, MoreVertical, Eye, Edit3, Shield, Send, TrendingUp,
 } from 'lucide-react'
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+} from 'recharts'
 import { cn } from '@/lib/utils'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -23,15 +26,30 @@ import { ClosureGaugeCard } from '@/components/molecules/ClosureGaugeCard'
 import { TopRetrasadosCard } from '@/components/organisms/dashboard/TopRetrasadosCard'
 import { ResponsablesCriticosCard } from '@/components/organisms/dashboard/ResponsablesCriticosCard'
 import { BitacoraCard } from '@/components/organisms/dashboard/BitacoraCard'
+import { AlertasCriticasPanel } from '@/components/organisms/dashboard/AlertasCriticasPanel'
+import { NotificacionChecklistCard } from '@/components/organisms/dashboard/NotificacionChecklistCard'
 import { HallazgoCard } from '@/components/organisms/hallazgos/HallazgoCard'
 import { AlertCard } from '@/components/organisms/hallazgos/AlertCard'
-import { ModalVerDetalle, ModalEditarPlan, ModalSubirEvidencia, ModalCambiarEstado, ModalSolicitarProrroga } from '@/components/organisms/modals'
+import { ModalVerDetalle, ModalEditarPlan, ModalSubirEvidencia, ModalCambiarEstado, ModalSolicitarProrroga, ModalNotificacionPersonalizada, ModalCorreoMasivo } from '@/components/organisms/modals'
 import { StatusBadge } from '@/components/atoms/StatusBadge'
 import { SemaforoBadge } from '@/components/atoms/SemaforoBadge'
 import { useGestorData } from '@/hooks/useGestorData'
 import { useAuth } from '@/lib/auth'
-import { PRIORIDAD_CONFIG } from '@/types'
+import { PRIORIDAD_CONFIG, CHART_COLORS_HEX } from '@/types'
 import type { HallazgoRow, ActividadRow, HallazgoWithActividades } from '@/types'
+
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+
+function withColors(data: { name: string; value: number; fill?: string }[]) {
+  return data.map((d, i) => ({ ...d, fill: d.fill ?? CHART_COLORS_HEX[i % CHART_COLORS_HEX.length] }))
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function ColorBar(props: any) {
+  const { x, y, width, height, fill } = props as { x: number; y: number; width: number; height: number; fill: string }
+  if (!height || height <= 0) return null
+  return <rect x={x} y={y} width={width} height={height} fill={fill} rx={4} ry={4} />
+}
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -76,6 +94,8 @@ function groupActivitiesByHallazgo(actividades: ActividadRow[], hallazgos: Halla
 
 type ModalType = 'detalle' | 'editar' | 'evidencia' | 'estado' | 'prorroga' | null
 
+
+
 export default function GestorDashboard() {
   const { user } = useAuth()
   const { metricas, porEstado, porEstadoPlan, porSemaforo, topRetrasados, hallazgos, actividades, bitacora, responsablesCriticos, loading, refreshing, reload } = useGestorData()
@@ -89,6 +109,8 @@ export default function GestorDashboard() {
   const [pPage, setPPage] = useState(1)
   const [modalOpen, setModalOpen] = useState<ModalType>(null)
   const [modalHallazgo, setModalHallazgo] = useState<HallazgoRow | null>(null)
+  const [notifPersonalizadaOpen, setNotifPersonalizadaOpen] = useState(false)
+  const [correoMasivoOpen, setCorreoMasivoOpen] = useState(false)
 
   function openModal(type: ModalType, h: HallazgoRow) { setModalHallazgo(h); setModalOpen(type) }
   function closeModal() { setModalOpen(null) }
@@ -151,6 +173,12 @@ export default function GestorDashboard() {
           <Button variant="outline" size="sm" className="gap-2" onClick={() => reload(true)} disabled={refreshing}>
             <RefreshCw className={cn('h-3.5 w-3.5', refreshing && 'animate-spin')} />Actualizar
           </Button>
+          <Button variant="outline" size="sm" className="gap-2" onClick={() => setNotifPersonalizadaOpen(true)}>
+            <Send className="h-3.5 w-3.5" />Notificar
+          </Button>
+          <Button variant="outline" size="sm" className="gap-2" onClick={() => setCorreoMasivoOpen(true)}>
+            <Send className="h-3.5 w-3.5" />Correo masivo
+          </Button>
           <Dialog>
             <DialogTrigger render={<Button size="sm" className="gap-2" />}>
               <FileText className="h-3.5 w-3.5" />Nuevo Plan
@@ -172,15 +200,17 @@ export default function GestorDashboard() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-grid">
+        <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-grid">
           <TabsTrigger value="overview" className="gap-2"><BarChart3 className="h-4 w-4" /><span className="hidden sm:inline">Resumen</span></TabsTrigger>
           <TabsTrigger value="hallazgos" className="gap-2"><FileWarning className="h-4 w-4" /><span className="hidden sm:inline">Hallazgos</span></TabsTrigger>
           <TabsTrigger value="actividades" className="gap-2"><Activity className="h-4 w-4" /><span className="hidden sm:inline">Actividades</span></TabsTrigger>
           <TabsTrigger value="seguimiento" className="gap-2"><Bell className="h-4 w-4" /><span className="hidden sm:inline">Seguimiento</span></TabsTrigger>
+          <TabsTrigger value="analitica" className="gap-2"><TrendingUp className="h-4 w-4" /><span className="hidden sm:inline">Analítica</span></TabsTrigger>
         </TabsList>
 
         {/* ── RESUMEN ── */}
         <TabsContent value="overview" className="space-y-6">
+          <AlertasCriticasPanel hallazgos={hallazgos} onAtendido={() => reload(true)} />
           <KpiRow items={[
             { title: 'Total a cargo', value: metricas?.total ?? 0, icon: Layers, subtitle: 'Hallazgos en gestión' },
             { title: 'En Proceso', value: metricas?.en_proceso ?? 0, icon: Play, variant: 'info', subtitle: 'Ejecutándose' },
@@ -352,12 +382,155 @@ export default function GestorDashboard() {
           </div>
 
           <div className="grid gap-4 lg:grid-cols-2">
-            <ResponsablesCriticosCard responsables={responsablesCriticos} />
+            <NotificacionChecklistCard />
             <BitacoraCard entries={bitacora} />
           </div>
         </TabsContent>
+
+        {/* ── ANALÍTICA ── */}
+        <TabsContent value="analitica" className="space-y-6">
+          <div className="flex items-center gap-3">
+            <TrendingUp className="h-5 w-5 text-primary" />
+            <div>
+              <h2 className="text-base font-semibold">Analítica Detallada</h2>
+              <p className="text-xs text-muted-foreground">Distribución y tendencias de hallazgos y actividades</p>
+            </div>
+          </div>
+
+          {/* KPI summary */}
+          <div className="grid gap-3 grid-cols-2 sm:grid-cols-4">
+            {[
+              { label: 'En SLA', value: `${slaPct}%`, color: slaPct >= 70 ? 'text-green-500' : 'text-destructive' },
+              { label: 'En tiempo', value: slaEnTiempo, color: 'text-green-500' },
+              { label: 'En riesgo', value: slaEnRiesgo, color: 'text-amber-500' },
+              { label: 'Fuera SLA', value: slaFuera, color: 'text-destructive' },
+            ].map(kpi => (
+              <Card key={kpi.label}>
+                <CardContent className="pt-4 pb-3 text-center">
+                  <p className={cn('text-2xl font-bold', kpi.color)}>{kpi.value}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{kpi.label}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+
+          {/* Bar charts */}
+          <div className="grid gap-4 lg:grid-cols-2">
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium">Hallazgos por Estado</CardTitle>
+                <CardDescription className="text-xs">Distribución actual de estados</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {porEstado.length === 0 ? (
+                  <p className="text-xs text-muted-foreground text-center py-8">Sin datos</p>
+                ) : (
+                  <ResponsiveContainer width="100%" height={200}>
+                    <BarChart data={withColors(porEstado)} margin={{ top: 4, right: 8, left: -20, bottom: 4 }}>
+                      <CartesianGrid strokeDasharray="3 3" className="stroke-border/40" />
+                      <XAxis dataKey="name" tick={{ fontSize: 10 }} />
+                      <YAxis tick={{ fontSize: 10 }} allowDecimals={false} />
+                      <Tooltip
+                        contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid hsl(var(--border))' }}
+                        cursor={{ fill: 'hsl(var(--muted)/0.3)' }}
+                      />
+                      <Bar dataKey="value" name="Hallazgos" shape={ColorBar} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium">Semáforo de Riesgo</CardTitle>
+                <CardDescription className="text-xs">Cumplimiento por fecha límite</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {porSemaforo.length === 0 ? (
+                  <p className="text-xs text-muted-foreground text-center py-8">Sin datos</p>
+                ) : (
+                  <ResponsiveContainer width="100%" height={200}>
+                    <BarChart data={withColors(porSemaforo)} margin={{ top: 4, right: 8, left: -20, bottom: 4 }}>
+                      <CartesianGrid strokeDasharray="3 3" className="stroke-border/40" />
+                      <XAxis dataKey="name" tick={{ fontSize: 10 }} />
+                      <YAxis tick={{ fontSize: 10 }} allowDecimals={false} />
+                      <Tooltip
+                        contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid hsl(var(--border))' }}
+                        cursor={{ fill: 'hsl(var(--muted)/0.3)' }}
+                      />
+                      <Bar dataKey="value" name="Hallazgos" shape={ColorBar} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium">Estado del Plan de Acción</CardTitle>
+                <CardDescription className="text-xs">Progreso de actividades asignadas</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {porEstadoPlan.length === 0 ? (
+                  <p className="text-xs text-muted-foreground text-center py-8">Sin datos</p>
+                ) : (
+                  <ResponsiveContainer width="100%" height={200}>
+                    <BarChart data={withColors(porEstadoPlan)} margin={{ top: 4, right: 8, left: -20, bottom: 4 }}>
+                      <CartesianGrid strokeDasharray="3 3" className="stroke-border/40" />
+                      <XAxis dataKey="name" tick={{ fontSize: 10 }} />
+                      <YAxis tick={{ fontSize: 10 }} allowDecimals={false} />
+                      <Tooltip
+                        contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid hsl(var(--border))' }}
+                        cursor={{ fill: 'hsl(var(--muted)/0.3)' }}
+                      />
+                      <Bar dataKey="value" name="Actividades" shape={ColorBar} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                )}
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm font-medium">Responsables — Cumplimiento</CardTitle>
+                <CardDescription className="text-xs">Porcentaje de cierre por responsable crítico</CardDescription>
+              </CardHeader>
+              <CardContent>
+                {responsablesCriticos.length === 0 ? (
+                  <p className="text-xs text-muted-foreground text-center py-8">Sin datos</p>
+                ) : (
+                  <div className="space-y-3 py-1">
+                    {responsablesCriticos.map((resp, i) => {
+                      const pct = resp.cumplimiento
+                      const color = pct >= 70 ? '#22c55e' : pct >= 40 ? '#f59e0b' : '#ef4444'
+                      return (
+                        <div key={i} className="space-y-1">
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="truncate text-foreground/80 max-w-[60%]">{resp.nombre}</span>
+                            <span className="font-bold tabular-nums" style={{ color }}>{pct}%</span>
+                          </div>
+                          <div className="h-2 rounded-full bg-muted overflow-hidden">
+                            <div
+                              className="h-full rounded-full transition-all duration-500"
+                              style={{ width: `${Math.max(pct, 2)}%`, backgroundColor: color }}
+                            />
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          <TopRetrasadosCard data={topRetrasados} />
+        </TabsContent>
       </Tabs>
 
+      <ModalNotificacionPersonalizada open={notifPersonalizadaOpen} onClose={() => setNotifPersonalizadaOpen(false)} />
+      <ModalCorreoMasivo open={correoMasivoOpen} onClose={() => setCorreoMasivoOpen(false)} />
       <ModalVerDetalle h={modalHallazgo} open={modalOpen === 'detalle'} onClose={closeModal} />
       <ModalEditarPlan h={modalHallazgo} open={modalOpen === 'editar'} onClose={closeModal} onSaved={() => reload(true)} />
       <ModalSubirEvidencia h={modalHallazgo} open={modalOpen === 'evidencia'} onClose={closeModal} />

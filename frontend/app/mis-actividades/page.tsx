@@ -5,15 +5,17 @@ import { usePathname } from 'next/navigation'
 import {
   RefreshCw,
   ChevronDown,
+  ChevronRight,
   CheckCircle2,
   Circle,
-  AlertTriangle,
   Calendar,
   Clock,
   ClipboardList,
   Target,
 } from 'lucide-react'
 import { actividadesApi } from '@/lib/api'
+import { ChecklistSection } from '@/components/organisms/hallazgos/ChecklistSection'
+import { NotasMensualesInline } from '@/components/organisms/hallazgos/NotasMensualesInline'
 import { useAuth } from '@/lib/auth'
 import { cn, formatDateTime } from '@/lib/utils'
 import DashboardShell from '@/components/layout/DashboardShell'
@@ -111,6 +113,7 @@ function ActividadRow({
   updating: boolean
 }) {
   const done = isCompletada(actividad.estado_accion)
+  const [open, setOpen] = useState(false)
 
   const fechaLabel = actividad.fecha_compromiso
     ? (() => {
@@ -126,54 +129,75 @@ function ActividadRow({
 
   return (
     <div className={cn(
-      'flex items-start gap-3 p-3 rounded-lg border transition-all',
+      'rounded-lg border overflow-hidden transition-all',
       done && 'bg-green-500/5 border-green-500/20',
-      !done && 'bg-muted/20 border-border hover:bg-muted/40',
+      !done && 'bg-muted/20 border-border',
     )}>
-      <button
-        type="button"
-        onClick={() => onToggle(actividad.id, !done)}
-        disabled={updating}
-        className={cn(
-          'mt-0.5 shrink-0 transition-opacity',
-          updating && 'opacity-50 cursor-not-allowed',
-        )}
-        aria-label={done ? 'Marcar pendiente' : 'Marcar completada'}
-      >
-        {updating ? (
-          <RefreshCw className="h-5 w-5 animate-spin text-muted-foreground" />
-        ) : done ? (
-          <CheckCircle2 className="h-5 w-5 text-green-500" />
-        ) : (
-          <Circle className="h-5 w-5 text-muted-foreground" />
-        )}
-      </button>
+      {/* Summary row */}
+      <div className="flex items-start gap-3 p-3">
+        {/* Toggle completion */}
+        <button
+          type="button"
+          onClick={() => onToggle(actividad.id, !done)}
+          disabled={updating}
+          className={cn('mt-0.5 shrink-0 transition-opacity', updating && 'opacity-50 cursor-not-allowed')}
+          aria-label={done ? 'Marcar pendiente' : 'Marcar completada'}
+        >
+          {updating ? (
+            <RefreshCw className="h-5 w-5 animate-spin text-muted-foreground" />
+          ) : done ? (
+            <CheckCircle2 className="h-5 w-5 text-green-500" />
+          ) : (
+            <Circle className="h-5 w-5 text-muted-foreground" />
+          )}
+        </button>
 
-      <div className="flex-1 min-w-0">
-        <p className={cn('text-sm font-medium leading-snug', done && 'line-through text-muted-foreground')}>
-          {actividad.descripcion ?? 'Sin descripción'}
-        </p>
-        <div className="flex flex-wrap items-center gap-2 mt-1">
-          {actividad.estado_accion && (
-            <Badge
-              variant="outline"
-              className={cn('text-[10px]', done && 'border-green-500/30 text-green-600')}
-            >
-              {actividad.estado_accion}
-            </Badge>
-          )}
-          {actividad.responsable_accion && (
-            <span className="text-[10px] text-muted-foreground">{actividad.responsable_accion}</span>
-          )}
-          {fechaLabel && (
-            <span className={cn('text-[10px] flex items-center gap-1', fechaLabel.color)}>
-              <Calendar className="h-3 w-3" />
-              {formatDateTime(actividad.fecha_compromiso!)}
-              <span className="ml-1">({fechaLabel.text})</span>
-            </span>
-          )}
+        <div className="flex-1 min-w-0">
+          <p className={cn('text-sm font-medium leading-snug', done && 'line-through text-muted-foreground')}>
+            {actividad.descripcion ?? 'Sin descripción'}
+          </p>
+          <div className="flex flex-wrap items-center gap-2 mt-1">
+            {actividad.estado_accion && (
+              <Badge
+                variant="outline"
+                className={cn('text-[10px]', done && 'border-green-500/30 text-green-600')}
+              >
+                {actividad.estado_accion}
+              </Badge>
+            )}
+            {actividad.responsable_accion && (
+              <span className="text-[10px] text-muted-foreground">{actividad.responsable_accion}</span>
+            )}
+            {fechaLabel && (
+              <span className={cn('text-[10px] flex items-center gap-1', fechaLabel.color)}>
+                <Calendar className="h-3 w-3" />
+                {formatDateTime(actividad.fecha_compromiso!)}
+                <span className="ml-1">({fechaLabel.text})</span>
+              </span>
+            )}
+          </div>
         </div>
+
+        {/* Expand toggle */}
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          className="mt-0.5 shrink-0 text-muted-foreground hover:text-foreground transition-colors"
+          aria-label="Ver evidencias y notas"
+        >
+          {open
+            ? <ChevronDown className="h-4 w-4" />
+            : <ChevronRight className="h-4 w-4" />}
+        </button>
       </div>
+
+      {/* Expandable: checklist + notes */}
+      {open && (
+        <div className="border-t border-border/50 px-4 py-4 space-y-5 bg-background/60">
+          <ChecklistSection actividadId={actividad.id} />
+          <NotasMensualesInline actividadId={actividad.id} />
+        </div>
+      )}
     </div>
   )
 }

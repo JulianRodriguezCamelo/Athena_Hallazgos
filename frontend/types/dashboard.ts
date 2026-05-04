@@ -53,3 +53,37 @@ export interface UploadItem {
 }
 
 export const CHART_COLORS_HEX = ['#3b82f6', '#22c55e', '#f59e0b', '#ef4444', '#8b5cf6']
+
+// ─── Customizable Dashboard ───────────────────────────────────────────────────
+
+export type WidgetType =
+  | 'kpi-row-primary'
+  | 'kpi-row-secondary'
+  | 'chart-estado'
+  | 'chart-estado-plan'
+  | 'chart-cierre'
+  | 'chart-evolucion'
+  | 'chart-por-responsable'
+  | 'top-responsables'
+  | 'cargas-recientes'
+  | 'alertas-criticas'
+  | 'estado-acciones'
+  | 'directivo-hallazgos-table'
+  | 'tendencia-directivo'
+  | 'donut-estado-directivo'
+  | 'donut-plan-directivo'
+  | 'bar-estado-vertical'
+  | 'bar-plan-vertical'
+  | 'bar-dependencia'
+  | 'line-evolucion'
+  | 'kpi-vencidos'
+  | 'bar-accion-directivo'
+
+export interface DashboardBlock {
+  id: string
+  widgetType: WidgetType
+  x: number
+  y: number
+  w: number
+  h: number
+}

@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard,
@@ -8,7 +9,6 @@ import {
   Upload,
   Users,
   LogOut,
-  ShieldAlert,
   ClipboardList,
 } from 'lucide-react'
 import { useAuth } from '@/lib/auth'
@@ -35,13 +35,13 @@ const navItems = [
     href: '/dashboard',
     label: 'Dashboard',
     icon: LayoutDashboard,
-    roles: ['vicepresidente', 'directivo', 'profesional', 'gestor'],
+    roles: ['administrador', 'vicepresidente', 'directivo', 'profesional', 'gestor'],
   },
   {
     href: '/hallazgos',
     label: 'Hallazgos',
     icon: FileSearch,
-    roles: ['vicepresidente', 'directivo', 'profesional', 'gestor'],
+    roles: ['administrador', 'vicepresidente', 'directivo', 'profesional', 'gestor'],
   },
   {
     href: '/mis-actividades',
@@ -53,15 +53,16 @@ const navItems = [
     href: '/uploads',
     label: 'Carga de datos',
     icon: Upload,
-    roles: ['vicepresidente', 'gestor'],
+    roles: ['administrador'],
   },
   {
     href: '/usuarios',
     label: 'Usuarios',
     icon: Users,
-    roles: ['vicepresidente'],
+    roles: ['administrador'],
   },
 ]
+
 
 export default function AppSidebar() {
   const pathname = usePathname()
@@ -75,10 +76,17 @@ export default function AppSidebar() {
   return (
     <ShadSidebar collapsible="icon">
       {/* Logo */}
-      <SidebarHeader className="border-b border-sidebar-border px-4 py-4">
-        <div className="flex items-center gap-2.5">
-          <div className="bg-sidebar-accent rounded-lg p-1.5 shrink-0">
-            <ShieldAlert className="w-5 h-5 text-sidebar-accent-foreground" />
+      <SidebarHeader className="border-b border-sidebar-border px-2 py-2">
+        <div className="flex items-center gap-2">
+          <div className="shrink-0 w-14 h-14 flex items-center justify-center">
+            <Image
+              src="/logo-athenea.png"
+              alt="Athenea"
+              width={56}
+              height={56}
+              className="w-full h-full object-contain"
+              style={{ mixBlendMode: 'screen' }}
+            />
           </div>
           <div className="group-data-[collapsible=icon]:hidden">
             <p className="text-sm font-bold text-sidebar-foreground leading-tight">

@@ -4,6 +4,7 @@ from flask_jwt_extended import get_jwt_identity, verify_jwt_in_request
 from app.models.user import User
 
 ROLES_HIERARCHY = {
+    "administrador": 4,
     "vicepresidente": 3,
     "directivo": 2,
     "profesional": 1,

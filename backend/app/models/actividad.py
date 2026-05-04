@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from app.extensions import db
 
 
@@ -24,7 +24,46 @@ class Actividad(db.Model):
     fecha_prorroga = db.Column(db.DateTime, nullable=True)
     observaciones = db.Column(db.Text, nullable=True)
 
+    # Seguimiento de notas
+    ultima_nota_at = db.Column(db.DateTime, nullable=True)
+
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
+
+    notas = db.relationship(
+        "NotaSeguimiento",
+        backref="actividad",
+        lazy="dynamic",
+        cascade="all, delete-orphan",
+        order_by="NotaSeguimiento.created_at.desc()",
+    )
+
+    checklist_items = db.relationship(
+        "ChecklistItem",
+        backref="actividad",
+        lazy="dynamic",
+        cascade="all, delete-orphan",
+        order_by="ChecklistItem.created_at.asc()",
+    )
+
+    @property
+    def progreso_checklist(self) -> dict:
+        items = self.checklist_items.all()
+        total = len(items)
+        completados = sum(1 for i in items if i.completado)
+        return {"completados": completados, "total": total}
+
+    @property
+    def sin_nota_mensual(self) -> bool:
+        estado = (self.estado_accion or "").lower()
+        if any(k in estado for k in ("cerrado", "completado", "cumplido")):
+            return False
+        if not self.ultima_nota_at:
+            return True
+        limite = datetime.now(timezone.utc) - timedelta(days=30)
+        ts = self.ultima_nota_at
+        if ts.tzinfo is None:
+            ts = ts.replace(tzinfo=timezone.utc)
+        return ts < limite
 
     def to_dict(self):
         return {
@@ -45,6 +84,11 @@ class Actividad(db.Model):
                 self.fecha_prorroga.isoformat() if self.fecha_prorroga else None
             ),
             "observaciones": self.observaciones,
+            "ultima_nota_at": (
+                self.ultima_nota_at.isoformat() if self.ultima_nota_at else None
+            ),
+            "sin_nota_mensual": self.sin_nota_mensual,
+            "progreso_checklist": self.progreso_checklist,
         }
 
     def __repr__(self):

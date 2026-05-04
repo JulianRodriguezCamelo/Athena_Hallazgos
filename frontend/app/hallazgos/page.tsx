@@ -16,6 +16,7 @@ import { ActividadesTable } from '@/components/organisms/hallazgos/ActividadesTa
 import { ExcelAnalyzer } from '@/components/organisms/hallazgos/ExcelAnalyzer'
 import { ActividadDetailModal } from '@/components/organisms/modals/ActividadDetailModal'
 import { DetailField } from '@/components/atoms/DetailField'
+import { FormattedText } from '@/components/atoms/FormattedText'
 import { PageHeader } from '@/components/templates/PageHeader'
 import { useHallazgosFilters } from '@/hooks/useHallazgosFilters'
 import { useHallazgosData } from '@/hooks/useHallazgosData'
@@ -23,6 +24,7 @@ import { useActividadesData } from '@/hooks/useActividadesData'
 import { useFilterOptions } from '@/hooks/useFilterOptions'
 import { usePagination } from '@/hooks/usePagination'
 import { hallazgosApi } from '@/lib/api'
+import { NotasMensualesInline } from '@/components/organisms/hallazgos/NotasMensualesInline'
 import type { Hallazgo, Actividad } from '@/types'
 
 function ActividadesModalTab({ hallazgoId }: { hallazgoId: number }) {
@@ -73,9 +75,17 @@ function ActividadesModalTab({ hallazgoId }: { hallazgoId: number }) {
           {act.observaciones && (
             <div className="px-4 pb-3">
               <p className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">Observaciones</p>
-              <p className="text-sm text-foreground bg-muted/40 rounded-lg p-3 leading-relaxed">{act.observaciones}</p>
+              <div className="bg-muted/40 rounded-lg p-3"><FormattedText value={act.observaciones} /></div>
             </div>
           )}
+          <div className="px-4 pb-3">
+            <NotasMensualesInline
+              actividadId={act.id}
+              sinNotaMensual={act.sin_nota_mensual}
+              ultimaNotaAt={act.ultima_nota_at}
+              defaultExpanded={act.sin_nota_mensual}
+            />
+          </div>
         </div>
       ))}
     </div>
@@ -213,7 +223,7 @@ export default function HallazgosPage() {
               <div className="space-y-5 max-h-[65vh] overflow-y-auto pr-1">
                 <div>
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Descripción</p>
-                  <p className="text-sm text-foreground bg-muted/50 rounded-lg p-4">{selectedHallazgo.descripcion ?? '—'}</p>
+                  <div className="bg-muted/50 rounded-lg p-4"><FormattedText value={selectedHallazgo.descripcion} /></div>
                 </div>
                 <div className="grid grid-cols-2 gap-x-6 gap-y-4">
                   <DetailField label="Código del hallazgo" value={selectedHallazgo.codigo_del_hallazgo} />
@@ -233,7 +243,7 @@ export default function HallazgosPage() {
                 {selectedHallazgo.observaciones && (
                   <div>
                     <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Observaciones</p>
-                    <p className="text-sm text-foreground bg-muted/50 rounded-lg p-4">{selectedHallazgo.observaciones}</p>
+                    <div className="bg-muted/50 rounded-lg p-4"><FormattedText value={selectedHallazgo.observaciones} /></div>
                   </div>
                 )}
               </div>
@@ -248,7 +258,7 @@ export default function HallazgosPage() {
         )}
       </Modal>
 
-      <ActividadDetailModal actividad={selectedActividad} onClose={() => setSelectedActividad(null)} />
+      <ActividadDetailModal actividad={selectedActividad} onClose={() => setSelectedActividad(null)} readOnly />
     </DashboardShell>
   )
 }

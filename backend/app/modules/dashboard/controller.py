@@ -4,6 +4,7 @@ from app.models.hallazgo import Hallazgo
 from app.models.actividad import Actividad
 from app.models.upload_history import UploadHistory
 from app.modules.dashboard import service
+from app.utils import strip_accents
 
 
 def get_metrics(user):
@@ -137,17 +138,8 @@ def directivo_mis_actividades(user, page, per_page):
 
 
 def directivo_menciones(user, page, per_page):
-    nombre = user.nombre
-    q = Hallazgo.query.filter(
-        db.or_(
-            Hallazgo.responsable_plan_accion.ilike(f"%{nombre}%"),
-            Hallazgo.responsable_accion.ilike(f"%{nombre}%"),
-        )
-    )
-    if user.vicepresidencia:
-        q = q.filter(Hallazgo.vicepresidencia != user.vicepresidencia)
-    elif user.dependencia:
-        q = q.filter(Hallazgo.dependencia_reporta_ero != user.dependencia)
+    conditions = service._responsable_conditions(user.nombre)
+    q = Hallazgo.query.filter(db.or_(*conditions))
     q = q.order_by(Hallazgo.fecha_cierre_proyectada.asc())
     return q.paginate(page=page, per_page=per_page, error_out=False)
 
@@ -358,17 +350,18 @@ def gestor_enviar_recordatorios(gestor):
 
     for resp in responsables:
         nombre = resp["nombre"]
+        nombre_norm = strip_accents(nombre)
 
         # Buscar usuario registrado por nombre
         usuario = User.query.filter(
-            User.nombre.ilike(f"%{nombre}%"), User.activo == True
+            User.nombre.ilike(f"%{nombre_norm}%"), User.activo == True
         ).first()
 
         # Hallazgos vencidos de este responsable
         hallazgos_vencidos = q.filter(
             db.or_(
-                Hallazgo.responsable_plan_accion.ilike(f"%{nombre}%"),
-                Hallazgo.responsable_accion.ilike(f"%{nombre}%"),
+                Hallazgo.responsable_plan_accion.ilike(f"%{nombre_norm}%"),
+                Hallazgo.responsable_accion.ilike(f"%{nombre_norm}%"),
             ),
             Hallazgo.fecha_cierre_proyectada < now,
             ~Hallazgo.estado.ilike("%cerrad%"),
@@ -379,8 +372,8 @@ def gestor_enviar_recordatorios(gestor):
         actividades_pendientes = Actividad.query.filter(
             Actividad.hallazgo_id.in_(hallazgo_ids),
             db.or_(
-                Actividad.responsable_accion.ilike(f"%{nombre}%"),
-                Actividad.responsable.ilike(f"%{nombre}%"),
+                Actividad.responsable_accion.ilike(f"%{nombre_norm}%"),
+                Actividad.responsable.ilike(f"%{nombre_norm}%"),
             ),
             ~Actividad.estado_accion.ilike("%cerrad%"),
             ~Actividad.estado_accion.ilike("%completad%"),
