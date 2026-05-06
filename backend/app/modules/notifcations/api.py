@@ -1,7 +1,7 @@
 from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required
 from app.modules.notifcations import controller
-from app.utils.decorators import get_current_user, role_required
+from app.utils.decorators import get_current_user
 
 notifications_bp = Blueprint("notificaciones", __name__, url_prefix="/api/notificaciones")
 
@@ -25,7 +25,6 @@ def create_notificacion():
 
 @notifications_bp.route("/alertar-vencimiento", methods=["POST"])
 @jwt_required()
-@role_required("gestor", "directivo", "vicepresidente")
 def alertar_vencimiento():
     """
     Body: { "tipo": "hallazgo" | "actividad", "entity_id": int }
@@ -59,7 +58,6 @@ def mark_all_read():
 
 @notifications_bp.route("/enviar-personalizada", methods=["POST"])
 @jwt_required()
-@role_required("gestor", "directivo", "vicepresidente")
 def enviar_personalizada():
     """
     Body: { "nombre": str, "correo": str, "direccion": str, "hallazgo": str, "estado_notas": str }
@@ -75,14 +73,12 @@ def enviar_personalizada():
 
 @notifications_bp.route("/resumen-semanal", methods=["POST"])
 @jwt_required()
-@role_required("vicepresidente")
 def trigger_resumen_semanal():
     resultado = controller.trigger_resumen_semanal()
     return jsonify(resultado), 200
 
 @notifications_bp.route("/usuarios-para-masivo", methods=["GET"])
 @jwt_required()
-@role_required("gestor", "directivo", "vicepresidente")
 def get_usuarios_para_masivo():
     current_user = get_current_user()
     dependencia = request.args.get("dependencia", "").strip() or None
@@ -92,7 +88,6 @@ def get_usuarios_para_masivo():
 
 @notifications_bp.route("/enviar-masiva", methods=["POST"])
 @jwt_required()
-@role_required("gestor", "directivo", "vicepresidente")
 def enviar_masiva():
     """
     Body: { "user_ids": [int], "asunto": str, "mensaje": str }
