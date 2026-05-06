@@ -6,7 +6,8 @@ scheduler = BackgroundScheduler(timezone="America/Bogota")
 
 
 def init_scheduler(app):
-    if os.environ.get("SCHEDULER_ENABLED", "false").lower() != "true":
+    enabled = app.config.get("SCHEDULER_ENABLED", os.environ.get("SCHEDULER_ENABLED", "false"))
+    if str(enabled).lower() != "true":
         return
 
     def _job_alertas_vencimiento():
@@ -42,6 +43,23 @@ def init_scheduler(app):
             except Exception as e:
                 app.logger.error(f"[scheduler] resumen_semanal: {e}")
 
+    def _job_alertas_nota_mensual():
+        with app.app_context():
+            try:
+                from app.models.actividad import Actividad
+                from app.modules.notifcations.service import NotificationService
+
+                actividades = Actividad.query.filter(
+                    ~Actividad.estado_accion.ilike("%cerrad%"),
+                    ~Actividad.estado_accion.ilike("%completad%"),
+                    ~Actividad.estado_accion.ilike("%cumplid%"),
+                ).all()
+                for a in actividades:
+                    if a.sin_nota_mensual:
+                        NotificationService.alerta_nota_mensual(a)
+            except Exception as e:
+                app.logger.error(f"[scheduler] alertas_nota_mensual: {e}")
+
     scheduler.add_job(
         _job_alertas_vencimiento,
         CronTrigger(hour=8, minute=0),
@@ -52,6 +70,12 @@ def init_scheduler(app):
         _job_resumen_semanal,
         CronTrigger(day_of_week="mon", hour=8, minute=0),
         id="resumen_semanal",
+        replace_existing=True,
+    )
+    scheduler.add_job(
+        _job_alertas_nota_mensual,
+        CronTrigger(day_of_week="mon", hour=8, minute=30),
+        id="alertas_nota_mensual",
         replace_existing=True,
     )
 

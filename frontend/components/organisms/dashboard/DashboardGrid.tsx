@@ -42,26 +42,24 @@ export function DashboardGrid({ layout, ctx, isEditing, onLayoutChange, onRemove
   const bpRef = useRef(currentBp)
   bpRef.current = currentBp
 
-  // Pre-render each block; skip null-returning widgets to avoid empty grid gaps.
-  const rendered = useMemo(() => layout.map((block) => {
-    const entry = WIDGET_REGISTRY[block.widgetType]
-    if (!entry) return null
-    const content = entry.render(ctx, block)
-    if (content == null) return null
-    return { block, content }
-  }).filter((r): r is { block: DashboardBlock; content: NonNullable<ReturnType<typeof WIDGET_REGISTRY[keyof typeof WIDGET_REGISTRY]['render']>> } => r !== null),
-  // ctx is a new object reference each render but its contents are stable during a session
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  [layout])
+  // Determine which blocks have valid widgets based on layout + stable role.
+  // Rendering happens inline (not here) so ctx updates (pagination, data) propagate live.
+  const visibleBlocks = useMemo(() =>
+    layout.filter((block) => {
+      const entry = WIDGET_REGISTRY[block.widgetType]
+      if (!entry) return false
+      return entry.render(ctx, block) != null
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [layout]
+  )
 
-  const renderedBlocks = rendered.map(({ block }) => block)
-
-  const lgItems: LayoutItem[] = renderedBlocks.map((block) => ({
+  const lgItems: LayoutItem[] = visibleBlocks.map((block) => ({
     i: block.id, x: block.x, y: block.y, w: block.w, h: block.h, minW: 2, minH: 1,
   }))
 
-  const smItems = useMemo(() => buildStackedLayout(renderedBlocks, COLS.sm), [renderedBlocks])
-  const xsItems = useMemo(() => buildStackedLayout(renderedBlocks, COLS.xs), [renderedBlocks])
+  const smItems = useMemo(() => buildStackedLayout(visibleBlocks, COLS.sm), [visibleBlocks])
+  const xsItems = useMemo(() => buildStackedLayout(visibleBlocks, COLS.xs), [visibleBlocks])
 
   // Minimum viable pixel width — avoids layout thrash during fast resize transitions
   const safeWidth = Math.max(width ?? 1200, 200)
@@ -93,28 +91,31 @@ export function DashboardGrid({ layout, ctx, isEditing, onLayoutChange, onRemove
         onLayoutChange={handleLayoutChange}
         margin={[12, 12]}
       >
-        {rendered.map(({ block, content }) => (
-          <div key={block.id} className="relative group">
-            {isEditing && (
-              <>
-                <div className="absolute inset-0 ring-2 ring-primary/30 ring-dashed rounded-xl pointer-events-none z-10" />
-                <button
-                  type="button"
-                  onClick={() => onRemove(block.id)}
-                  className="absolute top-1.5 right-1.5 z-20 opacity-0 group-hover:opacity-100
-                             bg-destructive text-destructive-foreground rounded-full p-0.5
-                             transition-opacity shadow-sm"
-                  title="Quitar widget"
-                >
-                  <X className="h-3 w-3" />
-                </button>
-              </>
-            )}
-            <div className="h-full overflow-hidden">
-              {content}
+        {visibleBlocks.map((block) => {
+          const content = WIDGET_REGISTRY[block.widgetType].render(ctx, block)
+          return (
+            <div key={block.id} className="relative group">
+              {isEditing && (
+                <>
+                  <div className="absolute inset-0 ring-2 ring-primary/30 ring-dashed rounded-xl pointer-events-none z-10" />
+                  <button
+                    type="button"
+                    onClick={() => onRemove(block.id)}
+                    className="absolute top-1.5 right-1.5 z-20 opacity-0 group-hover:opacity-100
+                               bg-destructive text-destructive-foreground rounded-full p-0.5
+                               transition-opacity shadow-sm"
+                    title="Quitar widget"
+                  >
+                    <X className="h-3 w-3" />
+                  </button>
+                </>
+              )}
+              <div className="h-full overflow-hidden">
+                {content}
+              </div>
             </div>
-          </div>
-        ))}
+          )
+        })}
       </ResponsiveGridLayout>
     </div>
   )

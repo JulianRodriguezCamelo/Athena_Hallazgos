@@ -1,5 +1,6 @@
 import os
 import logging
+import logging.handlers
 from flask import Flask, request
 from config import config
 from app.extensions import db, jwt, cors, mail, limiter, migrate
@@ -8,12 +9,33 @@ from app.modules.scheduler.scheduler import init_scheduler
 logger = logging.getLogger(__name__)
 
 
+def _configure_logging(app: Flask) -> None:
+    """Configura logging centralizado con formato estructurado hacia stdout."""
+    log_level = logging.DEBUG if app.config.get("DEBUG") else logging.INFO
+    fmt = logging.Formatter(
+        "%(asctime)s [%(levelname)-8s] %(name)s: %(message)s",
+        datefmt="%Y-%m-%dT%H:%M:%S",
+    )
+    handler = logging.StreamHandler()
+    handler.setFormatter(fmt)
+
+    root = logging.getLogger()
+    root.setLevel(log_level)
+    if not root.handlers:
+        root.addHandler(handler)
+
+    logging.getLogger("werkzeug").setLevel(logging.WARNING)
+    logging.getLogger("sqlalchemy.engine").setLevel(logging.WARNING)
+    logging.getLogger("apscheduler").setLevel(logging.WARNING)
+
+
 def create_app(config_name: str = "default") -> Flask:
     app = Flask(__name__)
     cfg = config[config_name]
     if config_name == "production" and hasattr(cfg, "validate"):
         cfg.validate()
     app.config.from_object(cfg)
+    _configure_logging(app)
 
     # JWT blocklist habilitado
     app.config["JWT_BLACKLIST_ENABLED"] = True
@@ -31,6 +53,7 @@ def create_app(config_name: str = "default") -> Flask:
         app,
         cors_allowed_origins=app.config["CORS_ORIGINS"],
         async_mode="eventlet",
+        message_queue=app.config.get("REDIS_URL"),
         logger=False,
         engineio_logger=False,
     )
@@ -47,7 +70,21 @@ def create_app(config_name: str = "default") -> Flask:
     )
 
     @app.after_request
-    def _add_cors_headers(response):
+    def _add_security_headers(response):
+        response.headers["X-Frame-Options"] = "DENY"
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+        response.headers["Strict-Transport-Security"] = (
+            "max-age=31536000; includeSubDomains"
+        )
+        response.headers["Content-Security-Policy"] = (
+            "default-src 'self'; "
+            "script-src 'self'; "
+            "style-src 'self' 'unsafe-inline'; "
+            "img-src 'self' data:; "
+            "connect-src 'self' ws: wss:; "
+            "frame-ancestors 'none'"
+        )
         origin = request.headers.get("Origin")
         if origin and origin in app.config["CORS_ORIGINS"]:
             response.headers["Access-Control-Allow-Origin"] = origin

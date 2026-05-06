@@ -12,7 +12,10 @@ jwt = JWTManager()
 cors = CORS()
 mail = Mail()
 socketio = SocketIO()
-limiter = Limiter(key_func=get_remote_address, default_limits=[])
+limiter = Limiter(
+    key_func=get_remote_address,
+    default_limits=["300 per minute", "3000 per hour"],
+)
 migrate = Migrate()
 
 

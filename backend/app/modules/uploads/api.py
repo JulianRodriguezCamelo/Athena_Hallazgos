@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required
 from app.modules.uploads import controller
 from app.utils.decorators import get_current_user, min_role, role_required
+from app.extensions import limiter
 
 uploads_bp = Blueprint("uploads", __name__, url_prefix="/api/uploads")
 
@@ -9,6 +10,7 @@ uploads_bp = Blueprint("uploads", __name__, url_prefix="/api/uploads")
 @uploads_bp.route("/", methods=["POST"])
 @jwt_required()
 @min_role("directivo")
+@limiter.limit("10 per minute; 60 per hour")
 def upload_excel():
     """Carga un Excel. Permitido a directivo, vicepresidente, gestor y administrador."""
     user = get_current_user()
@@ -72,6 +74,7 @@ def delete_upload(upload_id):
 @uploads_bp.route("/analyze", methods=["POST"])
 @jwt_required()
 @min_role("directivo")
+@limiter.limit("20 per minute")
 def analyze_excel():
     if "file" not in request.files:
         return jsonify({"error": "No se envió ningún archivo"}), 400

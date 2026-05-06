@@ -37,6 +37,8 @@ class Config:
 
     SCHEDULER_ENABLED = os.environ.get("SCHEDULER_ENABLED", "false")
 
+    REDIS_URL = os.environ.get("REDIS_URL", "redis://redis:6379/0")
+
 
 class DevelopmentConfig(Config):
     DEBUG = True

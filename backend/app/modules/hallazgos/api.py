@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required
 from app.modules.hallazgos import controller
 from app.utils.decorators import get_current_user, min_role
+from app.extensions import limiter
 
 hallazgos_bp = Blueprint("hallazgos", __name__, url_prefix="/api/hallazgos")
 
@@ -216,6 +217,7 @@ def get_estados_plan():
 
 @hallazgos_bp.route("/export", methods=["GET"])
 @jwt_required()
+@limiter.limit("5 per minute; 30 per hour")
 def export_hallazgos():
     """Exporta los hallazgos filtrados como CSV o Excel.
     Parámetros: format=csv|xlsx (default csv), más los mismos filtros de list_hallazgos.
