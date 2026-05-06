@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { usePathname } from 'next/navigation'
-import { FileSpreadsheet, ClipboardList, ListChecks } from 'lucide-react'
+import { FileSpreadsheet, ClipboardList, ListChecks, Download } from 'lucide-react'
 import { formatDate, cn } from '@/lib/utils'
 import DashboardShell from '@/components/layout/DashboardShell'
 import { Button } from '@/components/ui/button'
@@ -99,6 +99,33 @@ export default function HallazgosPage() {
   const [selectedHallazgo, setSelectedHallazgo] = useState<Hallazgo | null>(null)
   const [selectedActividad, setSelectedActividad] = useState<Actividad | null>(null)
   const [activeDetailTab, setActiveDetailTab] = useState<'info' | 'actividades'>('info')
+  const [exporting, setExporting] = useState(false)
+
+  async function handleExport(fmt: 'csv' | 'xlsx') {
+    setExporting(true)
+    try {
+      const params: Record<string, unknown> = {
+        estado: filters.estado,
+        dependencia: filters.dependencia,
+        vicepresidencia: filters.vicepresidencia,
+        direccion: filters.direccion,
+        responsable: filters.responsable,
+        estado_plan_accion: filters.estadoPlan,
+        search: debouncedSearch,
+        vencido: filters.vencido ? 'true' : undefined,
+        con_prorroga: filters.conProrroga ? 'true' : undefined,
+        fecha_cierre_desde: filters.fechaCierreDesde,
+        fecha_cierre_hasta: filters.fechaCierreHasta,
+        fecha_inicial_desde: filters.fechaInicialDesde,
+        fecha_inicial_hasta: filters.fechaInicialHasta,
+      }
+      await hallazgosApi.export(params, fmt)
+    } catch {
+      // silencioso — el fetch ya muestra errores en consola
+    } finally {
+      setExporting(false)
+    }
+  }
 
   const filterState = useHallazgosFilters()
   const { filters, setFilter, clearAll, hasFilters, activeFiltersCount, debouncedSearch } = filterState
@@ -131,10 +158,32 @@ export default function HallazgosPage() {
           title="Gestión de Hallazgos"
           description="Administra y da seguimiento a los hallazgos y actividades del sistema"
           action={
-            <Button variant={showAnalyzer ? 'secondary' : 'outline'} onClick={() => setShowAnalyzer(!showAnalyzer)} className="gap-2">
-              <FileSpreadsheet className="w-4 h-4" />
-              Analizar Excel
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2"
+                onClick={() => handleExport('csv')}
+                disabled={exporting}
+              >
+                <Download className="w-4 h-4" />
+                {exporting ? 'Exportando…' : 'CSV'}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                className="gap-2"
+                onClick={() => handleExport('xlsx')}
+                disabled={exporting}
+              >
+                <Download className="w-4 h-4" />
+                Excel
+              </Button>
+              <Button variant={showAnalyzer ? 'secondary' : 'outline'} size="sm" onClick={() => setShowAnalyzer(!showAnalyzer)} className="gap-2">
+                <FileSpreadsheet className="w-4 h-4" />
+                Analizar Excel
+              </Button>
+            </div>
           }
         />
 

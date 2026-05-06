@@ -212,3 +212,30 @@ def get_responsables():
 @jwt_required()
 def get_estados_plan():
     return jsonify({"estados_plan_accion": controller.get_estados_plan(get_current_user())}), 200
+
+
+@hallazgos_bp.route("/export", methods=["GET"])
+@jwt_required()
+def export_hallazgos():
+    """Exporta los hallazgos filtrados como CSV o Excel.
+    Parámetros: format=csv|xlsx (default csv), más los mismos filtros de list_hallazgos.
+    """
+    user = get_current_user()
+    fmt = request.args.get("format", "csv").lower()
+    filters = {
+        "estado": request.args.get("estado"),
+        "dependencia": request.args.get("dependencia"),
+        "vicepresidencia": request.args.get("vicepresidencia"),
+        "direccion": request.args.get("direccion"),
+        "responsable": request.args.get("responsable"),
+        "estado_plan_accion": request.args.get("estado_plan_accion"),
+        "search": request.args.get("search"),
+        "vencido": request.args.get("vencido"),
+        "con_prorroga": request.args.get("con_prorroga"),
+        "fecha_cierre_desde": request.args.get("fecha_cierre_desde"),
+        "fecha_cierre_hasta": request.args.get("fecha_cierre_hasta"),
+        "fecha_inicial_desde": request.args.get("fecha_inicial_desde"),
+        "fecha_inicial_hasta": request.args.get("fecha_inicial_hasta"),
+        "solo_activos": request.args.get("solo_activos"),
+    }
+    return controller.export_hallazgos(user, filters, fmt)

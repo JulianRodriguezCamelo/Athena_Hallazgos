@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import {
   Clock, Calendar, RefreshCw, FileWarning, Target, Activity,
   BarChart3, Layers, AlertTriangle, CheckCircle2, Play, Upload,
-  FileText, Bell, Search, Filter, MoreVertical, Eye, Edit3, Shield, Send, TrendingUp,
+  FileText, Bell, Search, MoreVertical, Eye, Shield, Send, TrendingUp,
+  X, SlidersHorizontal,
 } from 'lucide-react'
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -35,7 +36,9 @@ import { StatusBadge } from '@/components/atoms/StatusBadge'
 import { SemaforoBadge } from '@/components/atoms/SemaforoBadge'
 import { useGestorData } from '@/hooks/useGestorData'
 import { useAuth } from '@/lib/auth'
-import { PRIORIDAD_CONFIG, CHART_COLORS_HEX } from '@/types'
+import { hallazgosApi } from '@/lib/api'
+import { Select } from '@/components/ui/Select'
+import { CHART_COLORS_HEX } from '@/types'
 import type { HallazgoRow, ActividadRow, HallazgoWithActividades } from '@/types'
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -54,7 +57,6 @@ function ColorBar(props: any) {
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 const CARDS_PER_PAGE = 9
-const H_PAGE_SIZE = 10
 const SEG_PER_PAGE = 9
 
 function fmtDate(d: string | null) {
@@ -101,9 +103,7 @@ export default function GestorDashboard() {
   const { metricas, porEstado, porEstadoPlan, porSemaforo, topRetrasados, hallazgos, actividades, bitacora, responsablesCriticos, loading, refreshing, reload } = useGestorData()
 
   const [activeTab, setActiveTab] = useState('overview')
-  const [searchH, setSearchH] = useState('')
   const [searchA, setSearchA] = useState('')
-  const [hPage, setHPage] = useState(1)
   const [aPage, setAPage] = useState(1)
   const [vPage, setVPage] = useState(1)
   const [pPage, setPPage] = useState(1)
@@ -112,25 +112,63 @@ export default function GestorDashboard() {
   const [notifPersonalizadaOpen, setNotifPersonalizadaOpen] = useState(false)
   const [correoMasivoOpen, setCorreoMasivoOpen] = useState(false)
 
-  function openModal(type: ModalType, h: HallazgoRow) { setModalHallazgo(h); setModalOpen(type) }
-  function closeModal() { setModalOpen(null) }
+  // ── Hallazgos tab: server-side fetch con filtros ──
+  const [hSearch, setHSearch] = useState('')
+  const [hEstado, setHEstado] = useState('')
+  const [hSoloActivos, setHSoloActivos] = useState(true)
+  const [hVencido, setHVencido] = useState(false)
+  const [hPage, setHPage] = useState(1)
+  const [hRows, setHRows] = useState<HallazgoRow[]>([])
+  const [hTotal, setHTotal] = useState(0)
+  const [hPages, setHPages] = useState(1)
+  const [hLoading, setHLoading] = useState(false)
+  const [estadosOpciones, setEstadosOpciones] = useState<string[]>([])
+
+  const fetchHallazgos = useCallback(async (page: number) => {
+    setHLoading(true)
+    try {
+      const params: Record<string, unknown> = { page, per_page: 50 }
+      if (hSearch)       params.search       = hSearch
+      if (hEstado)       params.estado       = hEstado
+      if (hSoloActivos)  params.solo_activos = 'true'
+      if (hVencido)      params.vencido      = 'true'
+      const res = await hallazgosApi.list(params)
+      const data = res.data as { hallazgos: HallazgoRow[]; total: number; pages: number }
+      setHRows(data.hallazgos)
+      setHTotal(data.total)
+      setHPages(data.pages)
+    } catch { /* silent */ } finally {
+      setHLoading(false)
+    }
+  }, [hSearch, hEstado, hSoloActivos, hVencido])
+
+  useEffect(() => {
+    if (activeTab === 'hallazgos') fetchHallazgos(hPage)
+  }, [activeTab, hPage, fetchHallazgos])
+
+  useEffect(() => {
+    if (activeTab === 'hallazgos') { setHPage(1); fetchHallazgos(1) }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hSearch, hEstado, hSoloActivos, hVencido])
+
+  useEffect(() => {
+    hallazgosApi.estados().then(r => {
+      setEstadosOpciones((r.data as string[]).filter(Boolean))
+    }).catch(() => {})
+  }, [])
 
   const total = metricas?.total ?? 0
   const cerradas = metricas?.cerradas ?? 0
   const cumplimiento = total > 0 ? Math.round((cerradas / total) * 100) : 0
-  const hallazgosConActividades = groupActivitiesByHallazgo(actividades, hallazgos)
 
-  function onSearchH(val: string) { setSearchH(val); setHPage(1) }
+  const hasFilters = !!(hSearch || hEstado || hVencido || !hSoloActivos)
+  function clearFilters() { setHSearch(''); setHEstado(''); setHVencido(false); setHSoloActivos(true); setHPage(1) }
+
+  function openModal(type: ModalType, h: HallazgoRow) { setModalHallazgo(h); setModalOpen(type) }
+  function closeModal() { setModalOpen(null) }
   function onSearchA(val: string) { setSearchA(val); setAPage(1) }
 
-  const filtH = hallazgos.filter(h => {
-    const t = searchH.toLowerCase()
-    return (h.codigo_del_hallazgo ?? '').toLowerCase().includes(t) ||
-      (h.descripcion ?? '').toLowerCase().includes(t) ||
-      (h.responsable_plan_accion ?? '').toLowerCase().includes(t)
-  })
-  const pagedH = filtH.slice((hPage - 1) * H_PAGE_SIZE, hPage * H_PAGE_SIZE)
-
+  const hallazgosConActividades = groupActivitiesByHallazgo(actividades, hallazgos)
   const filtA = hallazgosConActividades.filter(h => {
     const t = searchA.toLowerCase()
     return h.codigo.toLowerCase().includes(t) || h.descripcion.toLowerCase().includes(t)
@@ -180,9 +218,6 @@ export default function GestorDashboard() {
             <Send className="h-3.5 w-3.5" />Correo masivo
           </Button>
           <Dialog>
-            <DialogTrigger render={<Button size="sm" className="gap-2" />}>
-              <FileText className="h-3.5 w-3.5" />Nuevo Plan
-            </DialogTrigger>
             <DialogContent>
               <DialogHeader><DialogTitle>Crear Plan de Acción</DialogTitle></DialogHeader>
               <div className="space-y-4 py-4">
@@ -219,11 +254,10 @@ export default function GestorDashboard() {
             { title: 'Índice cierre', value: `${cumplimiento}%`, icon: Target, variant: cumplimiento >= 70 ? 'success' : 'danger', subtitle: `${cerradas}/${total} cerrados` },
           ]} columns={5} />
           <KpiRow items={[
-            { title: 'Act. pendientes', value: metricas?.evidencias_pendientes ?? 0, icon: Upload, subtitle: 'Sin completar' },
             { title: 'En validación', value: metricas?.pendientes_validacion ?? 0, icon: Shield, variant: 'info' },
             { title: 'Con prórroga', value: metricas?.con_prorroga ?? 0, icon: Calendar },
             { title: 'Mis actividades', value: metricas?.mis_actividades ?? 0, icon: Activity },
-          ]} columns={4} />
+          ]} columns={3} />
           <div className="grid gap-4 lg:grid-cols-3">
             <DonutChartCard title="Semáforo de Riesgo" description="Cumplimiento por fecha" data={porSemaforo} centerLabel={String(total)} centerSubLabel="Total" />
             <DonutChartCard title="Estado de Hallazgos" description="Distribución por estado" data={porEstado} centerLabel={String(total)} centerSubLabel="Hallazgos" />
@@ -238,26 +272,70 @@ export default function GestorDashboard() {
 
         {/* ── HALLAZGOS ── */}
         <TabsContent value="hallazgos" className="space-y-4">
-          <div className="flex flex-col sm:flex-row gap-3">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input placeholder="Buscar código, descripción o responsable..." className="pl-9" value={searchH} onChange={e => onSearchH(e.target.value)} />
+          {/* Barra de filtros */}
+          <div className="flex flex-col gap-2">
+            <div className="flex flex-col sm:flex-row gap-2">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  placeholder="Buscar código, descripción o responsable..."
+                  className="pl-9"
+                  value={hSearch}
+                  onChange={e => setHSearch(e.target.value)}
+                />
+              </div>
+              <Select
+                placeholder="Estado"
+                options={estadosOpciones.map(e => ({ value: e, label: e }))}
+                value={hEstado}
+                onChange={e => setHEstado(e.target.value)}
+                className="sm:w-44"
+              />
+              <Button
+                variant={hSoloActivos ? 'default' : 'outline'}
+                size="sm"
+                className="gap-2 whitespace-nowrap"
+                onClick={() => setHSoloActivos(v => !v)}
+              >
+                <CheckCircle2 className="h-3.5 w-3.5" />
+                {hSoloActivos ? 'Solo activos' : 'Todos'}
+              </Button>
+              <Button
+                variant={hVencido ? 'destructive' : 'outline'}
+                size="sm"
+                className="gap-2 whitespace-nowrap"
+                onClick={() => setHVencido(v => !v)}
+              >
+                <AlertTriangle className="h-3.5 w-3.5" />
+                Vencidos
+              </Button>
+              {hasFilters && (
+                <Button variant="ghost" size="sm" className="gap-1.5 text-muted-foreground" onClick={clearFilters}>
+                  <X className="h-3.5 w-3.5" />Limpiar
+                </Button>
+              )}
             </div>
-            <Button variant="outline" size="icon"><Filter className="h-4 w-4" /></Button>
           </div>
+
           <Card className="overflow-hidden">
             <CardHeader className="px-5 py-3.5">
               <div className="flex items-center justify-between">
                 <div>
                   <CardTitle className="text-sm font-medium">Hallazgos en Gestión</CardTitle>
-                  <CardDescription className="text-xs">Asignados a mi dependencia</CardDescription>
+                  <CardDescription className="text-xs">
+                    {hSoloActivos ? 'Solo activos' : 'Todos'}{hVencido ? ' · Vencidos' : ''}{hEstado ? ` · ${hEstado}` : ''}
+                  </CardDescription>
                 </div>
-                <Badge variant="secondary">{filtH.length} registros</Badge>
+                <Badge variant="secondary">{hTotal} registros</Badge>
               </div>
             </CardHeader>
             <Separator />
             <CardContent className="p-0">
-              {filtH.length === 0 ? (
+              {hLoading ? (
+                <div className="flex items-center justify-center py-12 text-muted-foreground text-sm gap-2">
+                  <RefreshCw className="h-4 w-4 animate-spin" />Cargando…
+                </div>
+              ) : hRows.length === 0 ? (
                 <p className="text-xs text-muted-foreground text-center py-8">Sin registros</p>
               ) : (
                 <>
@@ -265,17 +343,19 @@ export default function GestorDashboard() {
                     <table className="w-full text-xs">
                       <thead>
                         <tr className="border-b border-border bg-muted/40">
-                          {['Código', 'Descripción', 'Prioridad', 'Semáforo', 'Estado', 'Responsable', 'Cierre', ''].map(h => (
-                            <th key={h} className="px-4 py-2.5 text-left font-semibold text-muted-foreground">{h}</th>
+                          {['Código', 'Descripción', 'Semáforo', 'Estado', 'Responsable', 'Cierre', ''].map(col => (
+                            <th key={col} className="px-4 py-2.5 text-left font-semibold text-muted-foreground">{col}</th>
                           ))}
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-border">
-                        {pagedH.map(h => (
-                          <tr key={h.id} className="hover:bg-muted/20 transition-colors">
+                        {hRows.map(h => (
+                          <tr key={h.id} className={cn(
+                            'hover:bg-muted/20 transition-colors',
+                            h.dias_restantes < 0 && 'bg-destructive/5',
+                          )}>
                             <td className="px-4 py-2.5 font-mono text-[11px] text-primary whitespace-nowrap">{h.codigo_del_hallazgo ?? '—'}</td>
                             <td className="px-4 py-2.5 max-w-xs truncate text-foreground/80">{h.descripcion ?? '—'}</td>
-                            <td className="px-4 py-2.5"><Badge className={PRIORIDAD_CONFIG[h.prioridad].color}>{PRIORIDAD_CONFIG[h.prioridad].label}</Badge></td>
                             <td className="px-4 py-2.5"><SemaforoBadge dias={h.dias_restantes} /></td>
                             <td className="px-4 py-2.5"><StatusBadge value={h.estado} /></td>
                             <td className="px-4 py-2.5 text-muted-foreground">{h.responsable_plan_accion ?? '—'}</td>
@@ -285,11 +365,8 @@ export default function GestorDashboard() {
                                 <DropdownMenuTrigger render={<Button variant="ghost" size="icon" className="h-7 w-7"><MoreVertical className="h-3.5 w-3.5" /></Button>} />
                                 <DropdownMenuContent align="end">
                                   <DropdownMenuItem onClick={() => openModal('detalle', h)}><Eye className="h-3.5 w-3.5 mr-2" />Ver detalle</DropdownMenuItem>
-                                  <DropdownMenuItem onClick={() => openModal('editar', h)}><Edit3 className="h-3.5 w-3.5 mr-2" />Editar plan</DropdownMenuItem>
-                                  <DropdownMenuItem onClick={() => openModal('evidencia', h)}><Upload className="h-3.5 w-3.5 mr-2" />Subir evidencia</DropdownMenuItem>
                                   <DropdownMenuSeparator />
                                   <DropdownMenuItem onClick={() => openModal('estado', h)}><Play className="h-3.5 w-3.5 mr-2" />Cambiar estado</DropdownMenuItem>
-                                  <DropdownMenuItem onClick={() => openModal('prorroga', h)}><Calendar className="h-3.5 w-3.5 mr-2" />Solicitar prórroga</DropdownMenuItem>
                                 </DropdownMenuContent>
                               </DropdownMenu>
                             </td>
@@ -299,7 +376,7 @@ export default function GestorDashboard() {
                     </table>
                   </div>
                   <div className="px-4 pb-3">
-                    <Pagination page={hPage} pages={Math.ceil(filtH.length / H_PAGE_SIZE)} onChange={setHPage} />
+                    <Pagination page={hPage} pages={hPages} onChange={setHPage} />
                   </div>
                 </>
               )}

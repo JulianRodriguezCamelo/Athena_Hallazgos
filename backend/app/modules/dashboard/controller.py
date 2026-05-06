@@ -72,10 +72,13 @@ def get_timeline(user):
     hace_12_meses = datetime.now(timezone.utc) - timedelta(days=365)
     ids = service.base_query(user).with_entities(Hallazgo.id)
     results = service.timeline_por_mes(ids, hace_12_meses)
-    return [
-        {"mes": r.mes.strftime("%Y-%m") if r.mes else None, "total": r.total}
-        for r in results if r.mes
-    ]
+    data = []
+    for r in results:
+        if not r.mes:
+            continue
+        mes_str = r.mes[:7] if isinstance(r.mes, str) else r.mes.strftime("%Y-%m")
+        data.append({"mes": mes_str, "total": r.total})
+    return data
 
 
 def get_prorrogas(user):
@@ -189,7 +192,7 @@ def _enrich_hallazgo(h, now):
 
 
 def gestor_mis_metricas(user):
-    q = service.gestor_query(user)
+    q = service.base_query(user)
     now = datetime.now(timezone.utc)
     proximos_limite = now + timedelta(days=7)
     hallazgo_ids = q.with_entities(Hallazgo.id)
@@ -246,19 +249,19 @@ def gestor_mis_metricas(user):
 
 
 def gestor_por_estado(user):
-    ids = service.gestor_query(user).with_entities(Hallazgo.id)
+    ids = service.base_query(user).with_entities(Hallazgo.id)
     results = service.count_por_estado(ids)
     return [{"name": r.estado, "value": r.total} for r in results]
 
 
 def gestor_por_estado_plan(user):
-    ids = service.gestor_query(user).with_entities(Hallazgo.id)
+    ids = service.base_query(user).with_entities(Hallazgo.id)
     results = service.count_por_estado_plan(ids)
     return [{"name": r.estado_plan_accion, "value": r.total} for r in results]
 
 
 def gestor_por_semaforo(user):
-    q = service.gestor_query(user)
+    q = service.base_query(user)
     now = datetime.now(timezone.utc)
     proximos_limite = now + timedelta(days=7)
     no_cerrado = db.and_(
@@ -286,14 +289,14 @@ def gestor_por_semaforo(user):
 
 
 def gestor_hallazgos(user, page, per_page):
-    q = service.gestor_query(user).order_by(Hallazgo.fecha_cierre_proyectada.asc())
+    q = service.base_query(user).order_by(Hallazgo.fecha_cierre_proyectada.asc())
     pag = q.paginate(page=page, per_page=per_page, error_out=False)
     now = datetime.now(timezone.utc)
     return pag, now
 
 
 def gestor_actividades(user, page, per_page):
-    hallazgo_ids = service.gestor_query(user).with_entities(Hallazgo.id)
+    hallazgo_ids = service.base_query(user).with_entities(Hallazgo.id)
     q = Actividad.query.filter(Actividad.hallazgo_id.in_(hallazgo_ids)).order_by(
         Actividad.fecha_compromiso.asc()
     )
@@ -302,7 +305,7 @@ def gestor_actividades(user, page, per_page):
 
 def gestor_responsables_criticos(user):
     from collections import defaultdict
-    q = service.gestor_query(user)
+    q = service.base_query(user)
     now = datetime.now(timezone.utc)
     stats = defaultdict(lambda: {"vencidos": 0, "activos": 0, "cerrados": 0})
 
@@ -343,7 +346,7 @@ def gestor_enviar_recordatorios(gestor):
     from app.modules.notifcations.service import NotificationService
     from app.modules.notifcations.email_template import build_recordatorio_html
 
-    q = service.gestor_query(gestor)
+    q = service.base_query(gestor)
     now = datetime.now(timezone.utc)
     responsables = gestor_responsables_criticos(gestor)
     resultados = []
@@ -445,7 +448,7 @@ def gestor_enviar_recordatorios(gestor):
 
 
 def gestor_bitacora(user):
-    q = service.gestor_query(user)
+    q = service.base_query(user)
     recientes = q.order_by(Hallazgo.updated_at.desc()).limit(15).all()
     entries = []
     for h in recientes:
@@ -462,7 +465,7 @@ def gestor_bitacora(user):
 
 
 def gestor_top_retrasados(user):
-    q = service.gestor_query(user)
+    q = service.base_query(user)
     now = datetime.now(timezone.utc)
     hallazgos = q.filter(
         Hallazgo.fecha_cierre_proyectada < now,
@@ -496,7 +499,7 @@ def gestor_top_retrasados(user):
 
 def gestor_tiempo_promedio(user):
     from collections import defaultdict
-    q = service.gestor_query(user)
+    q = service.base_query(user)
     now = datetime.now(timezone.utc)
     hallazgos = q.filter(Hallazgo.fecha_inicial_evento.isnot(None)).all()
     buckets = defaultdict(list)

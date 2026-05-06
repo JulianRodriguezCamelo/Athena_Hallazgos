@@ -1,21 +1,11 @@
 from app.extensions import db
 from app.models.hallazgo import Hallazgo
 from app.models.actividad import Actividad
-from app.modules.dashboard.service import profesional_query, gestor_query
-
-
-def apply_role_filter(query, user):
-    if user.rol in ("vicepresidente", "administrador"):
-        return query
-    if user.rol in ("directivo", "profesional"):
-        return profesional_query(user)
-    if user.rol == "gestor":
-        return gestor_query(user)
-    return query.filter(db.false())
+from app.modules.dashboard.service import base_query as dashboard_base_query
 
 
 def base_query(user):
-    return apply_role_filter(Hallazgo.query, user)
+    return dashboard_base_query(user)
 
 
 def get_by_id(user, hallazgo_id: int):

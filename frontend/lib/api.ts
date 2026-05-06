@@ -106,6 +106,26 @@ export const hallazgosApi = {
   estadosPlan: () => request('/api/hallazgos/estados_plan'),
   vicepresidencias: () => request('/api/hallazgos/vicepresidencias'),
   direcciones: () => request('/api/hallazgos/direcciones'),
+
+  /** Descarga los hallazgos filtrados como archivo CSV o Excel. */
+  export: async (params: Record<string, unknown> = {}, fmt: 'csv' | 'xlsx' = 'csv') => {
+    const token = getToken()
+    const query = Object.entries({ ...params, format: fmt })
+      .filter(([, v]) => v !== undefined && v !== null && v !== '')
+      .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(String(v))}`)
+      .join('&')
+    const url = `${API_URL}/api/hallazgos/export${query ? '?' + query : ''}`
+    const res = await fetch(url, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    })
+    if (!res.ok) throw new Error(`Error al exportar: HTTP ${res.status}`)
+    const blob = await res.blob()
+    const link = document.createElement('a')
+    link.href = URL.createObjectURL(blob)
+    link.download = fmt === 'xlsx' ? 'hallazgos.xlsx' : 'hallazgos.csv'
+    link.click()
+    URL.revokeObjectURL(link.href)
+  },
 }
 
 // ── Actividades ───────────────────────────────────────────────────────────────
@@ -224,4 +244,10 @@ export const usersApi = {
       usuarios_creados: unknown[]
     }>('/api/users/bulk-upload', { method: 'POST', body: form, isFormData: true })
   },
+}
+
+// ── Auditoría ─────────────────────────────────────────────────────────────────
+export const auditApi = {
+  list: (params?: Record<string, unknown>) => request('/api/audit-logs/', { params }),
+  actions: () => request('/api/audit-logs/actions'),
 }

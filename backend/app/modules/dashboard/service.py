@@ -1,8 +1,20 @@
+from datetime import datetime, timezone
 from sqlalchemy import func
 from app.extensions import db
 from app.models.hallazgo import Hallazgo
 from app.models.actividad import Actividad
 from app.utils import strip_accents as _strip_accents
+
+FECHA_CORTE = datetime(2025, 1, 1, tzinfo=timezone.utc)
+
+def _aplicar_corte(query):
+    """Filtra hallazgos desde 2025 en adelante según fecha inicial del evento."""
+    return query.filter(
+        db.or_(
+            Hallazgo.fecha_inicial_evento.is_(None),
+            Hallazgo.fecha_inicial_evento >= FECHA_CORTE,
+        )
+    )
 
 
 def _key_tokens(nombre: str) -> list[str]:
@@ -34,13 +46,11 @@ def _responsable_conditions(nombre: str):
 
 
 def base_query(user):
-    query = Hallazgo.query
-    if user.rol in ("vicepresidente", "administrador"):
+    query = _aplicar_corte(Hallazgo.query)
+    if user.rol in ("vicepresidente", "administrador", "gestor"):
         return query
     if user.rol in ("directivo", "profesional"):
-        return profesional_query(user)
-    if user.rol == "gestor":
-        return gestor_query(user)
+        return _aplicar_corte(profesional_query(user))
     return query.filter(db.false())
 
 
@@ -89,10 +99,10 @@ def count_por_estado(hallazgo_ids):
 
 
 def count_por_dependencia(hallazgo_ids):
-    area = func.coalesce(Hallazgo.dependencia_reporta_ero, Hallazgo.direccion).label("area")
+    area = Hallazgo.direccion.label("area")
     return (
         db.session.query(area, func.count(Hallazgo.id).label("total"))
-        .filter(func.coalesce(Hallazgo.dependencia_reporta_ero, Hallazgo.direccion).isnot(None))
+        .filter(Hallazgo.direccion.isnot(None))
         .filter(Hallazgo.id.in_(hallazgo_ids))
         .group_by(area)
         .order_by(func.count(Hallazgo.id).desc())
@@ -139,14 +149,16 @@ def count_por_estado_accion(hallazgo_ids):
 
 
 def timeline_por_mes(hallazgo_ids, desde):
+    dialect = db.engine.dialect.name
+    if dialect == "sqlite":
+        mes_expr = func.strftime("%Y-%m-01", Hallazgo.fecha_inicial_evento).label("mes")
+    else:
+        mes_expr = func.date_trunc("month", Hallazgo.fecha_inicial_evento).label("mes")
     return (
-        db.session.query(
-            func.date_trunc("month", Hallazgo.fecha_inicial_evento).label("mes"),
-            func.count(Hallazgo.id).label("total"),
-        )
+        db.session.query(mes_expr, func.count(Hallazgo.id).label("total"))
         .filter(Hallazgo.fecha_inicial_evento >= desde)
         .filter(Hallazgo.id.in_(hallazgo_ids))
-        .group_by(func.date_trunc("month", Hallazgo.fecha_inicial_evento))
-        .order_by(func.date_trunc("month", Hallazgo.fecha_inicial_evento))
+        .group_by(mes_expr)
+        .order_by(mes_expr)
         .all()
     )

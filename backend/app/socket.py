@@ -1,20 +1,6 @@
-from flask_socketio import join_room, disconnect
-from flask_jwt_extended import decode_token
+# ARCHIVO DUPLICADO — NO USAR
+# Los handlers de WebSocket están en app/sockets.py (con 's')
+# Este archivo existe por error histórico y se mantiene solo por compatibilidad
+# de importaciones antiguas. No agregar código aquí.
 
-def register_handlers(socketio):
-
-    @socketio.on("connect")
-    def handle_connect(auth):
-        if not auth or "token" not in auth:
-            disconnect()
-            return
-        try:
-            decoded = decode_token(auth["token"])
-            user_id = decoded["sub"]
-            join_room(f"user_{user_id}")
-        except Exception:
-            disconnect()
-
-    @socketio.on("disconnect")
-    def handle_disconnect():
-        pass
+from app.sockets import register_handlers  # noqa: F401 — re-export para compat

@@ -277,19 +277,97 @@ class NotificationService:
         try:
             if tipo == "hallazgo":
                 hallazgo = entidad
+                fecha = hallazgo.fecha_cierre_proyectada
+                fecha_str = fecha.strftime("%d %b %Y") if fecha else "Sin fecha"
                 usuarios = cls._usuarios_a_notificar_hallazgo(hallazgo)
                 title = f"Vencimiento próximo — {hallazgo.codigo_del_hallazgo or f'#{hallazgo.id}'}"
-                msg = f"El hallazgo vence el {hallazgo.fecha_cierre_proyectada}."
+                msg = (
+                    f"El hallazgo '{(hallazgo.descripcion or '')[:80]}' vence el {fecha_str}. "
+                    f"Por favor revisa el estado del plan de acción."
+                )
                 hallazgo_id = hallazgo.id
             else:
                 from app.models.hallazgo import Hallazgo
                 hallazgo = Hallazgo.query.get(entidad.hallazgo_id)
                 usuarios = cls._usuarios_a_notificar_hallazgo(hallazgo) if hallazgo else []
+                fecha = entidad.fecha_prorroga or entidad.fecha_compromiso
+                fecha_str = fecha.strftime("%d %b %Y") if fecha else "Sin fecha"
                 title = f"Actividad por vencer — {entidad.codigo_del_hallazgo or f'#{entidad.id}'}"
-                msg = f"La actividad vence el {entidad.fecha_compromiso}."
+                msg = (
+                    f"La actividad '{(entidad.descripcion or '')[:80]}' vence el {fecha_str}. "
+                    f"Registra una nota o actualiza el estado."
+                )
                 hallazgo_id = entidad.hallazgo_id
+
             for u in usuarios:
-                cls._guardar(u.id, hallazgo_id, title, msg, "vencimiento", email_sent=False)
+                cls._guardar(u.id, hallazgo_id, title, msg, "vencimiento", email_sent=True)
+                html = build_email_html(
+                    user_name=u.nombre,
+                    type="Alerta de Vencimiento",
+                    title=title,
+                    message=msg,
+                    hallazgo_id=hallazgo_id,
+                    fecha=fecha_str,
+                    prioridad="Alta",
+                    area=hallazgo.vicepresidencia if hallazgo else None,
+                )
+                try:
+                    cls._send(to=u.email, subject=f"[ALERTA] {title}", html=html, fallback=msg)
+                except Exception:
+                    pass
+        except Exception:
+            pass
+
+    @classmethod
+    def alerta_nota_mensual(cls, actividad):
+        try:
+            from app.models.hallazgo import Hallazgo
+            from app.models.notificacitions import Notificacition
+            from datetime import datetime, timezone, timedelta
+
+            hallazgo = Hallazgo.query.get(actividad.hallazgo_id)
+            if not hallazgo:
+                return
+
+            # Evitar enviar más de una alerta por actividad en los últimos 7 días
+            hace_7_dias = datetime.now(timezone.utc) - timedelta(days=7)
+            ya_enviada = Notificacition.query.filter(
+                Notificacition.hallazgo_id == hallazgo.id,
+                Notificacition.type == "alerta",
+                Notificacition.created_at >= hace_7_dias,
+                Notificacition.title.like("%Nota mensual%"),
+            ).first()
+            if ya_enviada:
+                return
+
+            usuarios = cls._usuarios_a_notificar_hallazgo(hallazgo)
+            codigo = hallazgo.codigo_del_hallazgo or f"#{hallazgo.id}"
+            title = f"Nota mensual pendiente — {codigo}"
+            msg = (
+                f"La actividad '{(actividad.descripcion or '')[:80]}' no tiene nota o evidencia "
+                f"registrada en los últimos 30 días. La regla mensual exige al menos una actualización "
+                f"por mes para mantener el seguimiento activo."
+            )
+            for u in usuarios:
+                cls._guardar(u.id, hallazgo.id, title, msg, "alerta", email_sent=True)
+                html = build_email_html(
+                    user_name=u.nombre,
+                    type="Regla Mensual",
+                    title=title,
+                    message=msg,
+                    hallazgo_id=hallazgo.id,
+                    prioridad="Media",
+                    area=hallazgo.vicepresidencia,
+                )
+                try:
+                    cls._send(
+                        to=u.email,
+                        subject=f"[RECORDATORIO] {title}",
+                        html=html,
+                        fallback=msg,
+                    )
+                except Exception:
+                    pass
         except Exception:
             pass
 
@@ -420,6 +498,66 @@ class NotificationService:
         if dependencia:
             q = q.filter(User.dependencia.ilike(f"%{dependencia}%"))
         return q.order_by(User.nombre).all()
+
+    @classmethod
+    def notificar_cambio_estado_actividad(cls, hallazgo, actividad, estado_anterior: str, estado_nuevo: str, actor):
+        try:
+            from app.modules.notifcations.email_template import build_email_html
+            from datetime import datetime, timezone
+            codigo = hallazgo.codigo_del_hallazgo or f"#{hallazgo.id}"
+            title = f"Actividad actualizada — {codigo}"
+            msg = (
+                f"La actividad '{(actividad.descripcion or '')[:80]}' cambió de "
+                f"'{estado_anterior}' a '{estado_nuevo}'."
+            )
+            usuarios = cls._usuarios_a_notificar_hallazgo(hallazgo)
+            for u in usuarios:
+                if actor and u.id == actor.id:
+                    continue
+                cls._guardar(u.id, hallazgo.id, title, msg, "actualizacion", email_sent=True)
+                html = build_email_html(
+                    user_name=u.nombre,
+                    type="Actividad Actualizada",
+                    title=title,
+                    message=msg,
+                    hallazgo_id=hallazgo.id,
+                    area=hallazgo.vicepresidencia,
+                )
+                try:
+                    cls._send(to=u.email, subject=f"[ACTUALIZACIÓN] {title}", html=html, fallback=msg)
+                except Exception:
+                    pass
+        except Exception:
+            pass
+
+    @classmethod
+    def notificar_todas_actividades_cerradas(cls, hallazgo, actor):
+        try:
+            from app.modules.notifcations.email_template import build_email_html
+            codigo = hallazgo.codigo_del_hallazgo or f"#{hallazgo.id}"
+            title = f"Todas las actividades completadas — {codigo}"
+            msg = (
+                f"Todas las actividades del hallazgo '{(hallazgo.descripcion or '')[:80]}' "
+                f"han sido cerradas o completadas. Puedes proceder con el cierre del hallazgo."
+            )
+            usuarios = cls._usuarios_a_notificar_hallazgo(hallazgo)
+            for u in usuarios:
+                cls._guardar(u.id, hallazgo.id, title, msg, "actualizacion", email_sent=True)
+                html = build_email_html(
+                    user_name=u.nombre,
+                    type="Actividades Completadas",
+                    title=title,
+                    message=msg,
+                    hallazgo_id=hallazgo.id,
+                    prioridad="Alta",
+                    area=hallazgo.vicepresidencia,
+                )
+                try:
+                    cls._send(to=u.email, subject=f"[COMPLETADO] {title}", html=html, fallback=msg)
+                except Exception:
+                    pass
+        except Exception:
+            pass
 
     @classmethod
     def notificar_prorroga(cls, hallazgo, nueva_prorroga: str, actor):

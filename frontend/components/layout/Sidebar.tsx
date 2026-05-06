@@ -10,6 +10,7 @@ import {
   Users,
   LogOut,
   ClipboardList,
+  ShieldCheck,
 } from 'lucide-react'
 import { useAuth } from '@/lib/auth'
 import { cn } from '@/lib/utils'
@@ -59,6 +60,12 @@ const navItems = [
     href: '/usuarios',
     label: 'Usuarios',
     icon: Users,
+    roles: ['administrador'],
+  },
+  {
+    href: '/auditoria',
+    label: 'Auditoría',
+    icon: ShieldCheck,
     roles: ['administrador'],
   },
 ]

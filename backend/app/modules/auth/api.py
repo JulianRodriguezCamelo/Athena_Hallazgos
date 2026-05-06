@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 from app.modules.auth import controller
 from app.extensions import limiter
 
@@ -32,4 +32,7 @@ def me():
 @auth_bp.route("/logout", methods=["POST"])
 @jwt_required()
 def logout():
+    """Invalida el token actual añadiendo su JTI al blocklist."""
+    jti = get_jwt().get("jti")
+    controller.revoke_token(jti)
     return jsonify({"message": "Sesión cerrada exitosamente"}), 200

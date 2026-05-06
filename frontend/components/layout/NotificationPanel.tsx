@@ -46,14 +46,19 @@ export default function NotificationPanel() {
     }
   }, [])
 
-  const token = typeof window !== 'undefined' ? localStorage.getItem('access_token') : null
+  const [token, setToken] = useState<string | null>(null)
+
+  useEffect(() => {
+    setToken(localStorage.getItem('access_token'))
+  }, [])
 
   const handleNewNotification = useCallback((notif: unknown) => {
+    const n = notif as Notificacion
     setNotifs(prev => {
-      const n = notif as Notificacion
       if (prev.some(x => x.id === n.id)) return prev
       return [n, ...prev]
     })
+    toast(n.title, { description: n.message })
   }, [])
 
   useSocket(token, handleNewNotification)

@@ -8,8 +8,9 @@ uploads_bp = Blueprint("uploads", __name__, url_prefix="/api/uploads")
 
 @uploads_bp.route("/", methods=["POST"])
 @jwt_required()
-@role_required("administrador")
+@min_role("directivo")
 def upload_excel():
+    """Carga un Excel. Permitido a directivo, vicepresidente, gestor y administrador."""
     user = get_current_user()
 
     if "file" not in request.files:
@@ -20,7 +21,7 @@ def upload_excel():
 
     history, errors = controller.process_upload(user, file)
     if history is None:
-        status = 409 if "proceso" in errors else 400
+        status = 409 if "proceso" in str(errors) else 400
         return jsonify({"error": errors}), status
 
     return jsonify({
@@ -32,7 +33,7 @@ def upload_excel():
 
 @uploads_bp.route("/history", methods=["GET"])
 @jwt_required()
-@role_required("administrador")
+@min_role("directivo")
 def upload_history():
     user = get_current_user()
     page = int(request.args.get("page", 1))
@@ -48,7 +49,7 @@ def upload_history():
 
 @uploads_bp.route("/history/<int:upload_id>", methods=["GET"])
 @jwt_required()
-@role_required("administrador")
+@min_role("directivo")
 def get_upload_detail(upload_id):
     user = get_current_user()
     upload, error = controller.get_upload_detail(user, upload_id)
@@ -59,7 +60,7 @@ def get_upload_detail(upload_id):
 
 @uploads_bp.route("/history/<int:upload_id>", methods=["DELETE"])
 @jwt_required()
-@role_required("administrador")
+@min_role("directivo")
 def delete_upload(upload_id):
     user = get_current_user()
     success, error = controller.delete_upload(user, upload_id)
@@ -70,6 +71,7 @@ def delete_upload(upload_id):
 
 @uploads_bp.route("/analyze", methods=["POST"])
 @jwt_required()
+@min_role("directivo")
 def analyze_excel():
     if "file" not in request.files:
         return jsonify({"error": "No se envió ningún archivo"}), 400

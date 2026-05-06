@@ -7,6 +7,7 @@ ROLES_HIERARCHY = {
     "administrador": 4,
     "vicepresidente": 3,
     "directivo": 2,
+    "gestor": 2,      # mismo nivel que directivo para permisos de carga
     "profesional": 1,
 }
 
@@ -21,7 +22,7 @@ def role_required(*roles):
             user = User.query.get(int(user_id))
             if not user or not user.activo:
                 return jsonify({"error": "Usuario no encontrado o inactivo"}), 401
-            if user.rol not in roles:
+            if user.rol != "administrador" and user.rol not in roles:
                 return jsonify({"error": "No tiene permisos para esta acción"}), 403
             return fn(*args, **kwargs)
         return wrapper

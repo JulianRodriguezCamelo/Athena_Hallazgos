@@ -26,6 +26,7 @@ def list_hallazgos(user, filters: dict, page: int, per_page: int):
     estado_plan = filters.get("estado_plan_accion")
     search = filters.get("search")
     vencido = filters.get("vencido")
+    solo_activos = filters.get("solo_activos")
     con_prorroga = filters.get("con_prorroga")
     fecha_cierre_desde = filters.get("fecha_cierre_desde")
     fecha_cierre_hasta = filters.get("fecha_cierre_hasta")
@@ -63,6 +64,11 @@ def list_hallazgos(user, filters: dict, page: int, per_page: int):
                 Hallazgo.descripcion.ilike(f"%{search}%"),
                 Hallazgo.nombre_plan_accion.ilike(f"%{search}%"),
             )
+        )
+    if solo_activos == "true":
+        query = query.filter(
+            ~Hallazgo.estado.ilike("%cerrado%"),
+            ~Hallazgo.estado.ilike("%cerrada%"),
         )
     if vencido == "true":
         query = query.filter(
@@ -141,7 +147,30 @@ def update_hallazgo(user, hallazgo_id: int, data: dict):
     prev_estado = hallazgo.estado
     prev_prorroga = hallazgo.prorroga
 
+    # Registrar cambios para auditoría antes de actualizar
+    changes = {
+        campo: [getattr(hallazgo, campo, None), data[campo]]
+        for campo in CAMPOS_EDITABLES
+        if campo in data and getattr(hallazgo, campo, None) != data[campo]
+    }
+
     updated = service.update(hallazgo, data, CAMPOS_EDITABLES)
+
+    if changes:
+        try:
+            from app.models.audit_log import log_action
+            from flask import request as _req
+            log_action(
+                user_id=user.id,
+                action="update_hallazgo",
+                entity_type="hallazgo",
+                entity_id=hallazgo_id,
+                changes=changes,
+                ip_address=_req.remote_addr,
+            )
+            db.session.commit()
+        except Exception as e:
+            logger.error("Error registrando audit_log hallazgo id=%s: %s", hallazgo_id, e)
 
     try:
         from app.modules.notifcations.service import NotificationService
@@ -244,8 +273,12 @@ def update_actividad_estado(user, actividad_id: int, estado: str):
     try:
         from app.modules.notifcations.service import NotificationService
         if estado != prev_estado and actividad.hallazgo:
-            NotificationService.notificar_actualizacion_estado(
-                actividad.hallazgo, prev_estado or "—", estado, user)
+            hallazgo = actividad.hallazgo
+            NotificationService.notificar_cambio_estado_actividad(
+                hallazgo, actividad, prev_estado or "—", estado, user)
+            todas = Actividad.query.filter_by(hallazgo_id=hallazgo.id).all()
+            if todas and all(_is_completada(a.estado_accion) for a in todas):
+                NotificationService.notificar_todas_actividades_cerradas(hallazgo, user)
     except Exception as e:
         logger.error("Error enviando notificación en update_actividad_estado (id=%s): %s", actividad_id, e)
 
@@ -357,7 +390,7 @@ def add_nota_actividad(user, actividad_id: int, texto: str):
             )
             for u in NotificationService._usuarios_a_notificar_hallazgo(hallazgo):
                 if u.id != user.id:
-                    NotificationService._guardar(u.id, hallazgo.id, title, message, "nota", email_sent=False)
+                    NotificationService._guardar(u.id, hallazgo.id, title, message, "actualizacion", email_sent=False)
     except Exception as e:
         logger.error("Error enviando notificación en add_nota_actividad (actividad_id=%s): %s", actividad_id, e)
 
@@ -503,3 +536,49 @@ def get_responsables(user):
 def get_estados_plan(user):
     ids = service.base_query(user).with_entities(Hallazgo.id)
     return [e[0] for e in service.distinct_estados_plan(ids) if e[0]]
+
+
+def export_hallazgos(user, filters: dict, fmt: str = "csv"):
+    """Exporta todos los hallazgos accesibles (sin paginación) como CSV o Excel."""
+    import io
+    import csv
+    from flask import make_response
+    import pandas as pd
+
+    # Reutilizar la misma lógica de filtros pero sin paginación
+    result = list_hallazgos(user, filters, page=1, per_page=10_000)
+    hallazgos = result["hallazgos"]
+
+    COLUMNAS = [
+        "codigo_del_hallazgo", "descripcion", "vicepresidencia",
+        "dependencia_reporta_ero", "direccion", "estado",
+        "fecha_inicial_evento", "fecha_cierre_proyectada",
+        "fecha_cierre_final_prorroga", "responsable_plan_accion",
+        "estado_plan_accion", "responsable_accion", "estado_accion",
+        "prorroga", "reportado_para", "reportado_por", "observaciones",
+    ]
+
+    rows = [{col: h.get(col, "") for col in COLUMNAS} for h in hallazgos]
+
+    if fmt == "xlsx":
+        df = pd.DataFrame(rows, columns=COLUMNAS)
+        output = io.BytesIO()
+        with pd.ExcelWriter(output, engine="openpyxl") as writer:
+            df.to_excel(writer, index=False, sheet_name="Hallazgos")
+        output.seek(0)
+        response = make_response(output.read())
+        response.headers["Content-Type"] = (
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
+        response.headers["Content-Disposition"] = "attachment; filename=hallazgos.xlsx"
+        return response
+
+    # CSV por defecto
+    output = io.StringIO()
+    writer = csv.DictWriter(output, fieldnames=COLUMNAS, extrasaction="ignore")
+    writer.writeheader()
+    writer.writerows(rows)
+    response = make_response(output.getvalue())
+    response.headers["Content-Type"] = "text/csv; charset=utf-8"
+    response.headers["Content-Disposition"] = "attachment; filename=hallazgos.csv"
+    return response

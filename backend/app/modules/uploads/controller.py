@@ -15,10 +15,24 @@ from config import Config
 
 logger = logging.getLogger(__name__)
 
+_UPLOAD_LOCK_KEY = 7_654_321
+ALLOWED = {"xlsx", "xls"}
+
+# Campos del modelo Hallazgo que se actualizan en un re-import (upsert).
+# No incluye campos de metadatos (id, created_at) ni campos que solo editan usuarios.
+_UPSERT_FIELDS = frozenset({
+    "descripcion", "vicepresidencia", "dependencia_reporta_ero", "direccion",
+    "fecha_inicial_evento", "fecha_finalizacion_evento", "estado",
+    "reportado_para", "reportado_por", "aplicativo_afecta_ero",
+    "fecha_cierre_proyectada", "descripcion_plan_accion", "estado_plan_accion",
+    "responsable_plan_accion", "estado_accion", "responsable_accion",
+    "prorroga", "fecha_cierre_final_prorroga", "observaciones",
+    "id_plan_accion", "nombre_plan_accion",
+})
+
 
 def _build_user_token_index():
-    """Índice de (apellidos_key, nombre_canónico) para normalizar responsables del Excel.
-    Usa solo los 2 apellidos (últimos tokens únicos) para tolerar typos en el nombre de pila."""
+    """Índice de (apellidos_key, nombre_canónico) para normalizar responsables."""
     users = User.query.filter_by(activo=True).all()
     index = []
     for u in users:
@@ -44,15 +58,17 @@ def _normalize_responsable(name: str, index: list) -> str:
             return canonical
     return name
 
-_UPLOAD_LOCK_KEY = 7_654_321
-ALLOWED = {"xlsx", "xls"}
-
 
 def _allowed_file(filename: str) -> bool:
     return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED
 
 
 def process_upload(user, file):
+    """
+    Importa un Excel usando upsert (insert o update por codigo_del_hallazgo).
+    NO borra datos existentes. Las actividades del hallazgo se reemplazan
+    con los datos del Excel. Toda la operación corre dentro de una transacción.
+    """
     if not _allowed_file(file.filename):
         return None, "Solo se permiten archivos .xlsx o .xls"
 
@@ -62,6 +78,7 @@ def process_upload(user, file):
     os.makedirs(Config.UPLOAD_FOLDER, exist_ok=True)
     file.save(save_path)
 
+    # Lock de advisory para evitar cargas concurrentes
     locked = db.session.execute(
         text("SELECT pg_try_advisory_xact_lock(:key)"),
         {"key": _UPLOAD_LOCK_KEY},
@@ -73,24 +90,6 @@ def process_upload(user, file):
             pass
         return None, "Hay una carga en proceso, intente de nuevo en un momento"
 
-    # Borrar en orden correcto respetando FKs:
-    # notificaciones → actividades → hallazgos → upload_history
-    counts = {
-        "notificaciones": Notificacition.query.count(),
-        "actividades": Actividad.query.count(),
-        "hallazgos": Hallazgo.query.count(),
-        "uploads": UploadHistory.query.count(),
-    }
-    logger.warning(
-        "ELIMINACIÓN MASIVA iniciada por usuario id=%s — registros a eliminar: %s",
-        user.id, counts,
-    )
-    Notificacition.query.delete(synchronize_session=False)
-    Actividad.query.delete(synchronize_session=False)
-    Hallazgo.query.delete(synchronize_session=False)
-    UploadHistory.query.delete(synchronize_session=False)
-    db.session.flush()
-
     history = UploadHistory(
         filename_original=original_name,
         filename_stored=unique_name,
@@ -100,59 +99,107 @@ def process_upload(user, file):
     db.session.add(history)
     db.session.flush()
 
-    hallazgo_records, actividades_data, errors = parse_excel(save_path)
+    try:
+        hallazgo_records, actividades_data, errors = parse_excel(save_path)
 
-    # Normalizar nombres de responsables al formato canónico de la BD
-    user_index = _build_user_token_index()
-    responsable_fields = ("responsable_plan_accion", "responsable_accion", "reportado_por")
-    for record in hallazgo_records:
-        for field in responsable_fields:
-            if record.get(field):
-                record[field] = _normalize_responsable(record[field], user_index)
-    for _, act in actividades_data:
-        for field in ("responsable_accion", "responsable"):
-            if act.get(field):
-                act[field] = _normalize_responsable(act[field], user_index)
+        # Normalizar nombres de responsables al formato canónico de la BD
+        user_index = _build_user_token_index()
+        for record in hallazgo_records:
+            for field in ("responsable_plan_accion", "responsable_accion", "reportado_por"):
+                if record.get(field):
+                    record[field] = _normalize_responsable(record[field], user_index)
+        for _, act in actividades_data:
+            for field in ("responsable_accion", "responsable"):
+                if act.get(field):
+                    act[field] = _normalize_responsable(act[field], user_index)
 
-    exitosos = 0
-    hallazgo_id_by_index: list[int | None] = []
+        # Agrupar actividades por índice de hallazgo
+        acts_by_hidx: dict[int, list[dict]] = {}
+        for hidx, adict in actividades_data:
+            acts_by_hidx.setdefault(hidx, []).append(adict)
 
-    for record in hallazgo_records:
+        exitosos = 0
+        hallazgo_id_by_index: list[int | None] = []
+
+        for record in hallazgo_records:
+            sp = db.session.begin_nested()  # savepoint por registro
+            try:
+                codigo = record.get("codigo_del_hallazgo")
+                existing = (
+                    Hallazgo.query.filter_by(codigo_del_hallazgo=codigo).first()
+                    if codigo else None
+                )
+
+                if existing:
+                    # UPSERT: actualizar campos del Excel sin borrar datos manuales
+                    for field, value in record.items():
+                        if field in _UPSERT_FIELDS and value is not None:
+                            setattr(existing, field, value)
+                    existing.upload_id = history.id
+                    hallazgo = existing
+                else:
+                    hallazgo = Hallazgo(upload_id=history.id, **record)
+                    db.session.add(hallazgo)
+
+                db.session.flush()
+                hallazgo_id_by_index.append(hallazgo.id)
+                sp.commit()
+                exitosos += 1
+            except Exception as e:
+                sp.rollback()
+                codigo_str = record.get("codigo_del_hallazgo", "?")
+                errors.append(f"Error hallazgo '{codigo_str}': {str(e)}")
+                hallazgo_id_by_index.append(None)
+
+        # Procesar actividades: reemplazar las del hallazgo con los datos del Excel
+        for hidx, acts in acts_by_hidx.items():
+            if hidx >= len(hallazgo_id_by_index):
+                continue
+            hallazgo_id = hallazgo_id_by_index[hidx]
+            if not hallazgo_id:
+                continue
+            sp2 = db.session.begin_nested()
+            try:
+                Actividad.query.filter_by(hallazgo_id=hallazgo_id).delete(
+                    synchronize_session=False
+                )
+                for adict in acts:
+                    db.session.add(Actividad(hallazgo_id=hallazgo_id, **adict))
+                sp2.commit()
+            except Exception as e:
+                sp2.rollback()
+                errors.append(f"Error actividades hallazgo_id={hallazgo_id}: {str(e)}")
+
+        history.total_registros = len(hallazgo_records)
+        history.registros_exitosos = exitosos
+        history.registros_fallidos = len(hallazgo_records) - exitosos
+        history.estado = "completado" if exitosos > 0 else "error"
+        history.errores = "\n".join(errors) if errors else None
+
+        db.session.commit()
+        logger.info(
+            "Upload completado — user_id=%s, exitosos=%d, fallidos=%d",
+            user.id, exitosos, len(hallazgo_records) - exitosos,
+        )
+        return history, errors
+
+    except Exception as e:
+        db.session.rollback()
+        logger.error("Error crítico en process_upload user_id=%s: %s", user.id, e)
+        # Intentar marcar el history como error
         try:
-            hallazgo = Hallazgo(upload_id=history.id, **record)
-            db.session.add(hallazgo)
-            db.session.flush()
-            hallazgo_id_by_index.append(hallazgo.id)
-            exitosos += 1
-        except Exception as e:
-            errors.append(f"Error al guardar hallazgo: {str(e)}")
-            hallazgo_id_by_index.append(None)
-
-    for hallazgo_idx, actividad_dict in actividades_data:
-        if hallazgo_idx < len(hallazgo_id_by_index):
-            hallazgo_id = hallazgo_id_by_index[hallazgo_idx]
-            if hallazgo_id:
-                try:
-                    actividad = Actividad(hallazgo_id=hallazgo_id, **actividad_dict)
-                    db.session.add(actividad)
-                except Exception as e:
-                    errors.append(f"Error al guardar actividad: {str(e)}")
-
-    history.total_registros = len(hallazgo_records)
-    history.registros_exitosos = exitosos
-    history.registros_fallidos = len(hallazgo_records) - exitosos + len(
-        [e for e in errors if "No se pudo" in e or "No se reconocieron" in e]
-    )
-    history.estado = "completado" if exitosos > 0 else "error"
-    history.errores = "\n".join(errors) if errors else None
-
-    db.session.commit()
-    return history, errors
+            history.estado = "error"
+            history.errores = f"Error crítico: {str(e)}"
+            db.session.add(history)
+            db.session.commit()
+        except Exception:
+            pass
+        return None, f"Error crítico durante la importación: {str(e)}"
 
 
 def get_history(user, page: int, per_page: int):
     query = UploadHistory.query
-    if user.rol == "gestor":
+    if user.rol in ("directivo", "gestor"):
         query = query.filter_by(uploaded_by_id=user.id)
     paginated = query.order_by(UploadHistory.uploaded_at.desc()).paginate(
         page=page, per_page=per_page, error_out=False
@@ -162,18 +209,22 @@ def get_history(user, page: int, per_page: int):
 
 def get_upload_detail(user, upload_id: int):
     upload = UploadHistory.query.get_or_404(upload_id)
-    if user.rol == "directivo" and upload.uploaded_by_id != user.id:
+    if user.rol in ("directivo", "gestor") and upload.uploaded_by_id != user.id:
         return None, "No tiene permisos para ver esta carga"
     return upload, None
 
 
 def delete_upload(user, upload_id: int):
     upload = UploadHistory.query.get_or_404(upload_id)
-    if user.rol == "directivo" and upload.uploaded_by_id != user.id:
+    if user.rol in ("directivo", "gestor") and upload.uploaded_by_id != user.id:
         return False, "No tiene permisos para eliminar esta carga"
-    hallazgo_ids = [h.id for h in Hallazgo.query.filter_by(upload_id=upload_id).with_entities(Hallazgo.id)]
+    hallazgo_ids = [
+        h.id for h in Hallazgo.query.filter_by(upload_id=upload_id).with_entities(Hallazgo.id)
+    ]
     if hallazgo_ids:
-        Notificacition.query.filter(Notificacition.hallazgo_id.in_(hallazgo_ids)).delete(synchronize_session=False)
+        Notificacition.query.filter(
+            Notificacition.hallazgo_id.in_(hallazgo_ids)
+        ).delete(synchronize_session=False)
     Hallazgo.query.filter_by(upload_id=upload_id).delete(synchronize_session=False)
     db.session.delete(upload)
     db.session.commit()
@@ -230,6 +281,13 @@ def analyze_upload(file):
         if h.get("prorroga"):
             con_prorroga += 1
 
+    # Detectar cuántos serían upsert (ya existen en BD)
+    codigos_excel = [h.get("codigo_del_hallazgo") for h in hallazgos if h.get("codigo_del_hallazgo")]
+    existentes = (
+        Hallazgo.query.filter(Hallazgo.codigo_del_hallazgo.in_(codigos_excel)).count()
+        if codigos_excel else 0
+    )
+
     dep_sorted = sorted(por_dependencia.items(), key=lambda x: x[1], reverse=True)[:10]
     resp_sorted = sorted(por_responsable.items(), key=lambda x: x[1], reverse=True)[:10]
     estado_sorted = sorted(por_estado.items(), key=lambda x: x[1], reverse=True)
@@ -237,6 +295,8 @@ def analyze_upload(file):
     return {
         "total": len(hallazgos),
         "total_actividades": len(actividades_data),
+        "nuevos": len(hallazgos) - existentes,
+        "actualizaciones": existentes,
         "vencidos": vencidos,
         "con_prorroga": con_prorroga,
         "por_estado": [{"estado": k, "total": v} for k, v in estado_sorted],

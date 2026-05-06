@@ -35,6 +35,8 @@ class Config:
     MAIL_PASSWORD = os.environ.get("MAIL_PASSWORD", "")
     MAIL_DEFAULT_SENDER = os.environ.get("MAIL_DEFAULT_SENDER", MAIL_USERNAME)
 
+    SCHEDULER_ENABLED = os.environ.get("SCHEDULER_ENABLED", "false")
+
 
 class DevelopmentConfig(Config):
     DEBUG = True
@@ -60,8 +62,21 @@ class ProductionConfig(Config):
             raise ValueError("DB_PASSWORD insegura para producción")
 
 
+class TestingConfig(Config):
+    TESTING = True
+    DEBUG = True
+    SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
+    JWT_SECRET_KEY = "test-secret-key-only-for-pytest"
+    SECRET_KEY = "test-secret-key-only-for-pytest"
+    SCHEDULER_ENABLED = "false"
+    MAIL_SUPPRESS_SEND = True
+    WTF_CSRF_ENABLED = False
+    RATELIMIT_ENABLED = False
+
+
 config = {
     "development": DevelopmentConfig,
     "production": ProductionConfig,
+    "testing": TestingConfig,
     "default": DevelopmentConfig,
 }

@@ -72,7 +72,7 @@ export function HallazgosTable({ hallazgos, loading, meta, page, setPage, onSele
                   {formatDate(h.fecha_inicial_evento)}
                 </TableCell>
                 <TableCell className="whitespace-nowrap text-muted-foreground text-xs">
-                  {formatDate(h.fecha_cierre_proyectada)}
+                  {formatDate(h.fecha_finalizacion_evento ?? h.fecha_cierre_proyectada)}
                 </TableCell>
                 <TableCell>
                   <Button

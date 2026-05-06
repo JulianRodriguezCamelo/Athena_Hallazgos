@@ -13,6 +13,7 @@ const TITLES: Record<string, string> = {
   '/hallazgos': 'Hallazgos ERO',
   '/uploads': 'Carga de datos',
   '/usuarios': 'Gestión de usuarios',
+  '/auditoria': 'Auditoría del sistema',
 }
 
 interface DashboardShellProps {

@@ -20,6 +20,7 @@ COLUMN_MAP = {
     r"fecha.*hallazgo":                "fecha_inicial_evento",
     r"fecha.*inicial.*evento":         "fecha_inicial_evento",
     r"fecha.*finalizaci[oó]n.*evento": "fecha_finalizacion_evento",
+    r"^fechadecierreproyectada$":       "fecha_cierre_proyectada",
     r"fecha.*cierre.*proyectada":      "fecha_cierre_proyectada",
     r"fecha.*compromiso":              "fecha_cierre_proyectada",
     r"^fechacierre$|fecha.*cierre$":   "fecha_finalizacion_evento",
@@ -85,28 +86,34 @@ def _map_columns(df_columns: list) -> dict:
 
 
 def _parse_date(value) -> datetime | None:
+    """Convierte un valor a datetime, retornando None para cualquier valor nulo.
+
+    pd.NaT hereda de datetime en pandas 2.x (nivel C), por eso pd.isnull()
+    debe ir ANTES del isinstance(datetime) para evitar retornar NaT tal cual.
+    """
     if value is None:
         return None
+    # pd.isnull captura None, NaN y pd.NaT antes de cualquier isinstance
+    try:
+        if pd.isnull(value):
+            return None
+    except (TypeError, ValueError):
+        pass
+
+    if isinstance(value, pd.Timestamp):
+        return value.to_pydatetime()
     if isinstance(value, datetime):
         return value
+
     s = str(value).strip()
     if not s or s.lower() in ("nan", "none", "nat", ""):
         return None
-    formats = [
-        "%d/%m/%Y %H:%M", "%d/%m/%Y", "%d-%m-%Y",
-        "%Y-%m-%d %H:%M:%S", "%Y-%m-%d",
-        "%d/%m/%y", "%m/%d/%Y",
-        "%d-%b-%y %H.%M.%S",
-        "%d-%b-%y",
-        "%d-%b-%Y %H.%M.%S",
-        "%d-%b-%Y",
-    ]
-    for fmt in formats:
-        try:
-            return datetime.strptime(s, fmt)
-        except ValueError:
-            continue
-    return None
+
+    try:
+        from dateutil import parser as _du
+        return _du.parse(s, dayfirst=True, yearfirst=False)
+    except Exception:
+        return None
 
 
 def _clean(value) -> str | None:
@@ -210,6 +217,19 @@ def parse_excel(file_path: str) -> tuple[list[dict], list[tuple[int, dict]], lis
             "No se reconocieron columnas válidas en el archivo. "
             "Verifique que la primera fila contenga los encabezados."
         ]
+
+    # Pre-convertir columnas de fecha con pandas (vectorizado, O(n) en C).
+    # Normaliza primero el formato Oracle "DD-MON-YY HH.MM.SS" → "DD-MON-YY HH:MM:SS"
+    # porque pd.to_datetime no reconoce puntos como separador de hora.
+    date_cols_excel = [col for col, field in col_mapping.items() if field in DATE_FIELDS]
+    for col in date_cols_excel:
+        df[col] = (
+            df[col]
+            .astype(str)
+            # Oracle-style time separator: "30-DEC-24 12.00.00" → "30-DEC-24 12:00:00"
+            .str.replace(r"(\d{1,2})\.(\d{2})\.(\d{2})\s*$", r"\1:\2:\3", regex=True)
+        )
+        df[col] = pd.to_datetime(df[col], format="mixed", dayfirst=True, errors="coerce")
 
     hallazgo_cols = [col for col, field in col_mapping.items() if field in HALLAZGO_FIELDS]
     for col in hallazgo_cols:
