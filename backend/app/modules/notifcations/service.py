@@ -13,10 +13,14 @@ from app.modules.notifcations.email_template import (
 
 class NotificationService:
 
+    EMAIL_ENABLED = True
+
     # ── Email base ───────────────────────────────────────────────────────────
 
-    @staticmethod
-    def _send(to: str, subject: str, html: str, fallback: str = ""):
+    @classmethod
+    def _send(cls, to: str, subject: str, html: str, fallback: str = ""):
+        if not cls.EMAIL_ENABLED:
+            return
         msg = Message(subject=subject, recipients=[to])
         msg.body = fallback or subject
         msg.html = html

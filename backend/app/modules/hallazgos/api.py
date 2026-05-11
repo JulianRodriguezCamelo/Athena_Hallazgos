@@ -73,6 +73,14 @@ def list_all_actividades():
         "estado_accion": request.args.get("estado_accion"),
         "vencido": request.args.get("vencido"),
         "con_prorroga": request.args.get("con_prorroga"),
+        "estado": request.args.get("estado"),
+        "dependencia": request.args.get("dependencia"),
+        "vicepresidencia": request.args.get("vicepresidencia"),
+        "direccion": request.args.get("direccion"),
+        "fecha_cierre_desde": request.args.get("fecha_cierre_desde"),
+        "fecha_cierre_hasta": request.args.get("fecha_cierre_hasta"),
+        "fecha_inicial_desde": request.args.get("fecha_inicial_desde"),
+        "fecha_inicial_hasta": request.args.get("fecha_inicial_hasta"),
     }
     page = int(request.args.get("page", 1))
     per_page = int(request.args.get("per_page", 20))
