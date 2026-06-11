@@ -152,6 +152,8 @@ def timeline_por_mes(hallazgo_ids, desde):
     dialect = db.engine.dialect.name
     if dialect == "sqlite":
         mes_expr = func.strftime("%Y-%m-01", Hallazgo.fecha_inicial_evento).label("mes")
+    elif dialect == "oracle":
+        mes_expr = func.trunc(Hallazgo.fecha_inicial_evento, "MM").label("mes")
     else:
         mes_expr = func.date_trunc("month", Hallazgo.fecha_inicial_evento).label("mes")
     return (

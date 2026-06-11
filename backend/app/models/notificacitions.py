@@ -14,13 +14,7 @@ class Notification(db.Model):
     read = db.Column(db.Boolean, default=False)
     email_sent = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
-    type = db.Column(
-        db.Enum(
-            "vencimiento", "prorroga", "asignacion", "actualizacion", "alerta",
-            name="notification_type_enum",
-        ),
-        nullable=False,
-    )
+    type = db.Column(db.String(30), nullable=False)
 
     user = db.relationship("User", backref="notificaciones")
     hallazgo = db.relationship("Hallazgo", backref="notificaciones")

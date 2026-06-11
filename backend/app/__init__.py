@@ -45,6 +45,9 @@ def create_app(config_name: str = "default") -> Flask:
     db.init_app(app)
     jwt.init_app(app)
     mail.init_app(app)
+    redis_url = app.config.get("REDIS_URL")
+    if redis_url:
+        app.config["RATELIMIT_STORAGE_URI"] = redis_url
     limiter.init_app(app)
     migrate.init_app(app, db)
 
@@ -106,6 +109,7 @@ def create_app(config_name: str = "default") -> Flask:
     from app.modules.dashboard.api import dashboard_bp
     from app.modules.notifcations.api import notifications_bp
     from app.modules.audit.api import audit_bp
+    from app.modules.monitoring.api import monitoring_bp
 
     app.register_blueprint(auth_bp)
     app.register_blueprint(users_bp)
@@ -114,6 +118,7 @@ def create_app(config_name: str = "default") -> Flask:
     app.register_blueprint(dashboard_bp)
     app.register_blueprint(notifications_bp)
     app.register_blueprint(audit_bp)
+    app.register_blueprint(monitoring_bp)
 
     with app.app_context():
         # Importar todos los modelos para que SQLAlchemy los registre
@@ -123,62 +128,152 @@ def create_app(config_name: str = "default") -> Flask:
             checklist_item, token_blocklist, audit_log,
         )
 
-        # Asegurar que los valores existan en el ENUM de PostgreSQL
-        from sqlalchemy import text
-        for valor in ("gestor", "administrador"):
+        # Saltar create_all durante comandos de migración y arranque de gunicorn
+        if not os.environ.get("FLASK_SKIP_DB_INIT"):
+            db.create_all()
+            _run_inline_migrations()
+            _seed_admin()
+        else:
+            # Solo hacer seed del admin (las tablas ya existen via migración)
             try:
-                db.session.execute(
-                    text(f"ALTER TYPE rol_enum ADD VALUE IF NOT EXISTS '{valor}'")
-                )
-                db.session.commit()
+                _seed_admin()
             except Exception:
-                db.session.rollback()
+                pass
 
-        db.create_all()
-
-        # Migraciones inline: columnas y tablas agregadas post-despliegue inicial
-        _run_inline_migrations()
-        _seed_admin()
+    @app.route("/health")
+    def health():
+        from flask import jsonify
+        from sqlalchemy import text as sa_text
+        import redis as redis_lib
+        status = {"status": "ok", "db": "ok", "redis": "ok"}
+        code = 200
+        try:
+            db.session.execute(sa_text("SELECT 1"))
+        except Exception:
+            status["db"] = "error"
+            status["status"] = "degraded"
+            code = 503
+        try:
+            r = redis_lib.from_url(app.config.get("REDIS_URL", "redis://redis:6379/0"), socket_connect_timeout=2)
+            r.ping()
+        except Exception:
+            status["redis"] = "error"
+            status["status"] = "degraded"
+            code = 503
+        return jsonify(status), code
 
     init_scheduler(app)
     return app
 
 
 def _run_inline_migrations():
-    """Aplica cambios de esquema idempotentes que no tienen migración Alembic."""
+    """Aplica cambios de esquema idempotentes usando PL/SQL anónimo (Oracle)."""
     from sqlalchemy import text
 
     migrations = [
-        "ALTER TABLE actividades ADD COLUMN IF NOT EXISTS ultima_nota_at TIMESTAMP",
-        """CREATE TABLE IF NOT EXISTS checklist_items (
-            id SERIAL PRIMARY KEY,
-            actividad_id INTEGER NOT NULL REFERENCES actividades(id) ON DELETE CASCADE,
-            descripcion TEXT NOT NULL,
-            completado BOOLEAN NOT NULL DEFAULT FALSE,
-            fecha_completado TIMESTAMP,
-            link_evidencia TEXT,
-            completado_por_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
-            created_at TIMESTAMP NOT NULL DEFAULT NOW()
-        )""",
-        "CREATE INDEX IF NOT EXISTS ix_checklist_items_actividad_id ON checklist_items(actividad_id)",
-        """CREATE TABLE IF NOT EXISTS token_blocklist (
-            id SERIAL PRIMARY KEY,
-            jti VARCHAR(36) NOT NULL UNIQUE,
-            created_at TIMESTAMP NOT NULL DEFAULT NOW()
-        )""",
-        "CREATE INDEX IF NOT EXISTS ix_token_blocklist_jti ON token_blocklist(jti)",
-        """CREATE TABLE IF NOT EXISTS audit_log (
-            id SERIAL PRIMARY KEY,
-            user_id INTEGER REFERENCES users(id),
-            action VARCHAR(50) NOT NULL,
-            entity_type VARCHAR(50) NOT NULL,
-            entity_id INTEGER,
-            changes TEXT,
-            ip_address VARCHAR(45),
-            created_at TIMESTAMP NOT NULL DEFAULT NOW()
-        )""",
-        "CREATE INDEX IF NOT EXISTS ix_audit_log_entity ON audit_log(entity_type, entity_id)",
-        "CREATE INDEX IF NOT EXISTS ix_audit_log_user ON audit_log(user_id)",
+        # Agregar columna ultima_nota_at si no existe
+        """
+        DECLARE v_count NUMBER;
+        BEGIN
+          SELECT COUNT(*) INTO v_count FROM user_tab_columns
+          WHERE table_name = 'ACTIVIDADES' AND column_name = 'ULTIMA_NOTA_AT';
+          IF v_count = 0 THEN
+            EXECUTE IMMEDIATE 'ALTER TABLE actividades ADD ultima_nota_at TIMESTAMP';
+          END IF;
+        END;
+        """,
+        # Crear checklist_items si no existe
+        """
+        DECLARE v_count NUMBER;
+        BEGIN
+          SELECT COUNT(*) INTO v_count FROM user_tables WHERE table_name = 'CHECKLIST_ITEMS';
+          IF v_count = 0 THEN
+            EXECUTE IMMEDIATE 'CREATE TABLE checklist_items (
+              id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+              actividad_id NUMBER NOT NULL REFERENCES actividades(id) ON DELETE CASCADE,
+              descripcion CLOB NOT NULL,
+              completado NUMBER(1,0) DEFAULT 0 NOT NULL,
+              fecha_completado TIMESTAMP,
+              link_evidencia VARCHAR2(500),
+              completado_por_id NUMBER REFERENCES users(id) ON DELETE SET NULL,
+              created_at TIMESTAMP DEFAULT SYSDATE NOT NULL
+            )';
+          END IF;
+        END;
+        """,
+        # Índice checklist_items
+        """
+        DECLARE v_count NUMBER;
+        BEGIN
+          SELECT COUNT(*) INTO v_count FROM user_indexes
+          WHERE index_name = 'IX_CHECKLIST_ITEMS_ACTIVIDAD_ID';
+          IF v_count = 0 THEN
+            EXECUTE IMMEDIATE 'CREATE INDEX ix_checklist_items_actividad_id ON checklist_items(actividad_id)';
+          END IF;
+        END;
+        """,
+        # Crear token_blocklist si no existe
+        """
+        DECLARE v_count NUMBER;
+        BEGIN
+          SELECT COUNT(*) INTO v_count FROM user_tables WHERE table_name = 'TOKEN_BLOCKLIST';
+          IF v_count = 0 THEN
+            EXECUTE IMMEDIATE 'CREATE TABLE token_blocklist (
+              id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+              jti VARCHAR2(36) NOT NULL UNIQUE,
+              created_at TIMESTAMP DEFAULT SYSDATE NOT NULL
+            )';
+          END IF;
+        END;
+        """,
+        # Índice token_blocklist
+        """
+        DECLARE v_count NUMBER;
+        BEGIN
+          SELECT COUNT(*) INTO v_count FROM user_indexes WHERE index_name = 'IX_TOKEN_BLOCKLIST_JTI';
+          IF v_count = 0 THEN
+            EXECUTE IMMEDIATE 'CREATE UNIQUE INDEX ix_token_blocklist_jti ON token_blocklist(jti)';
+          END IF;
+        END;
+        """,
+        # Crear audit_log si no existe
+        """
+        DECLARE v_count NUMBER;
+        BEGIN
+          SELECT COUNT(*) INTO v_count FROM user_tables WHERE table_name = 'AUDIT_LOG';
+          IF v_count = 0 THEN
+            EXECUTE IMMEDIATE 'CREATE TABLE audit_log (
+              id NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+              user_id NUMBER REFERENCES users(id),
+              action VARCHAR2(50) NOT NULL,
+              entity_type VARCHAR2(50) NOT NULL,
+              entity_id NUMBER,
+              changes CLOB,
+              ip_address VARCHAR2(45),
+              created_at TIMESTAMP DEFAULT SYSDATE NOT NULL
+            )';
+          END IF;
+        END;
+        """,
+        # Índices audit_log
+        """
+        DECLARE v_count NUMBER;
+        BEGIN
+          SELECT COUNT(*) INTO v_count FROM user_indexes WHERE index_name = 'IX_AUDIT_LOG_ENTITY';
+          IF v_count = 0 THEN
+            EXECUTE IMMEDIATE 'CREATE INDEX ix_audit_log_entity ON audit_log(entity_type, entity_id)';
+          END IF;
+        END;
+        """,
+        """
+        DECLARE v_count NUMBER;
+        BEGIN
+          SELECT COUNT(*) INTO v_count FROM user_indexes WHERE index_name = 'IX_AUDIT_LOG_USER';
+          IF v_count = 0 THEN
+            EXECUTE IMMEDIATE 'CREATE INDEX ix_audit_log_user ON audit_log(user_id)';
+          END IF;
+        END;
+        """,
     ]
 
     for sql in migrations:

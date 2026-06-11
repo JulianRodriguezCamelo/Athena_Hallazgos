@@ -10,11 +10,7 @@ class User(db.Model):
     nombre = db.Column(db.String(120), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
-    rol = db.Column(
-        db.Enum("vicepresidente", "directivo", "profesional", "gestor", "administrador", name="rol_enum"),
-        nullable=False,
-        default="profesional",
-    )
+    rol = db.Column(db.String(50), nullable=False, default="profesional")
     vicepresidencia = db.Column(db.String(200), nullable=True)
     dependencia = db.Column(db.String(120), nullable=True)
     activo = db.Column(db.Boolean, default=True)

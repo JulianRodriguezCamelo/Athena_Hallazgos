@@ -28,8 +28,8 @@ export function ChecklistSection({ actividadId, onProgresoChange }: Props) {
   useEffect(() => {
     setLoading(true)
     actividadesApi.listChecklist(actividadId)
-      .then((res: { data: { items: ChecklistItem[] } }) => {
-        const data = res.data.items ?? []
+      .then((res) => {
+        const data = (res.data as { items: ChecklistItem[] }).items ?? []
         setItems(data)
         notifyProgreso(data)
       })

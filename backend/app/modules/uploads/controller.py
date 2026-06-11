@@ -78,11 +78,15 @@ def process_upload(user, file):
     os.makedirs(Config.UPLOAD_FOLDER, exist_ok=True)
     file.save(save_path)
 
-    # Lock de advisory para evitar cargas concurrentes
-    locked = db.session.execute(
-        text("SELECT pg_try_advisory_xact_lock(:key)"),
-        {"key": _UPLOAD_LOCK_KEY},
-    ).scalar()
+    # Lock optimista: detectar si ya hay una carga en proceso
+    from sqlalchemy.exc import OperationalError
+    try:
+        db.session.execute(
+            text("SELECT id FROM upload_history WHERE estado = 'procesando' FOR UPDATE NOWAIT")
+        )
+        locked = True
+    except OperationalError:
+        locked = False
     if not locked:
         try:
             os.remove(save_path)
@@ -101,6 +105,15 @@ def process_upload(user, file):
 
     try:
         hallazgo_records, actividades_data, errors = parse_excel(save_path)
+    except Exception as e:
+        try:
+            os.remove(save_path)
+        except OSError:
+            pass
+        db.session.rollback()
+        return None, f"Error al leer el archivo Excel: {str(e)}"
+
+    try:
 
         # Normalizar nombres de responsables al formato canónico de la BD
         user_index = _build_user_token_index()
@@ -160,11 +173,20 @@ def process_upload(user, file):
                 continue
             sp2 = db.session.begin_nested()
             try:
-                Actividad.query.filter_by(hallazgo_id=hallazgo_id).delete(
-                    synchronize_session=False
-                )
+                existing_acts = {
+                    a.orden: a
+                    for a in Actividad.query.filter_by(hallazgo_id=hallazgo_id).all()
+                }
+                ordenes_excel = set()
                 for adict in acts:
-                    db.session.add(Actividad(hallazgo_id=hallazgo_id, **adict))
+                    orden = adict.get("orden")
+                    ordenes_excel.add(orden)
+                    if orden in existing_acts:
+                        for k, v in adict.items():
+                            if v is not None:
+                                setattr(existing_acts[orden], k, v)
+                    else:
+                        db.session.add(Actividad(hallazgo_id=hallazgo_id, **adict))
                 sp2.commit()
             except Exception as e:
                 sp2.rollback()
@@ -181,12 +203,19 @@ def process_upload(user, file):
             "Upload completado — user_id=%s, exitosos=%d, fallidos=%d",
             user.id, exitosos, len(hallazgo_records) - exitosos,
         )
+        try:
+            os.remove(save_path)
+        except OSError:
+            pass
         return history, errors
 
     except Exception as e:
         db.session.rollback()
         logger.error("Error crítico en process_upload user_id=%s: %s", user.id, e)
-        # Intentar marcar el history como error
+        try:
+            os.remove(save_path)
+        except OSError:
+            pass
         try:
             history.estado = "error"
             history.errores = f"Error crítico: {str(e)}"

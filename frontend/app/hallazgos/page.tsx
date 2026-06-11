@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { usePathname } from 'next/navigation'
 import { FileSpreadsheet, ClipboardList, ListChecks, Download } from 'lucide-react'
 import { formatDate, cn } from '@/lib/utils'
@@ -25,7 +25,84 @@ import { useFilterOptions } from '@/hooks/useFilterOptions'
 import { usePagination } from '@/hooks/usePagination'
 import { hallazgosApi } from '@/lib/api'
 import { NotasMensualesInline } from '@/components/organisms/hallazgos/NotasMensualesInline'
+import { useAuth } from '@/lib/auth'
+import { History, Lock } from 'lucide-react'
 import type { Hallazgo, Actividad } from '@/types'
+
+interface HistoryEntry {
+  id: number
+  usuario: string
+  action: string
+  changes: Record<string, [unknown, unknown]>
+  created_at: string
+}
+
+function HistorialTab({ hallazgoId }: { hallazgoId: number }) {
+  const [entries, setEntries] = useState<HistoryEntry[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    let cancelled = false
+    hallazgosApi.history(hallazgoId)
+      .then(res => {
+        if (cancelled) return
+        const d = res.data as { history: HistoryEntry[] }
+        setEntries(d.history ?? [])
+      })
+      .catch(() => {})
+      .finally(() => { if (!cancelled) setLoading(false) })
+    return () => { cancelled = true }
+  }, [hallazgoId])
+
+  if (loading) return <div className="py-8 text-center text-sm text-muted-foreground">Cargando historial…</div>
+
+  if (entries.length === 0) return (
+    <div className="py-12 text-center">
+      <History className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
+      <p className="text-sm text-muted-foreground">No hay cambios registrados aún.</p>
+    </div>
+  )
+
+  const FIELD_LABELS: Record<string, string> = {
+    estado: 'Estado', estado_plan_accion: 'Estado plan', estado_accion: 'Estado acción',
+    responsable_plan_accion: 'Responsable plan', responsable_accion: 'Responsable acción',
+    fecha_cierre_proyectada: 'Fecha cierre proyectada', prorroga: 'Prórroga',
+    fecha_cierre_final_prorroga: 'Fecha cierre prórroga', observaciones: 'Observaciones',
+  }
+
+  return (
+    <div className="space-y-3">
+      {entries.map(e => {
+        const campos = Object.entries(e.changes)
+        return (
+          <div key={e.id} className="rounded-xl border border-border bg-card overflow-hidden">
+            <div className="flex items-center justify-between px-4 py-2.5 bg-muted/30 border-b border-border/60">
+              <span className="text-xs font-semibold text-foreground">{e.usuario}</span>
+              <span className="text-[11px] text-muted-foreground">
+                {new Date(e.created_at).toLocaleString('es-CO', { dateStyle: 'medium', timeStyle: 'short' })}
+              </span>
+            </div>
+            {campos.length > 0 ? (
+              <div className="divide-y divide-border/50">
+                {campos.map(([campo, [antes, despues]]) => (
+                  <div key={campo} className="px-4 py-2.5 grid grid-cols-[auto_1fr_1fr] gap-3 text-xs items-start">
+                    <span className="font-medium text-muted-foreground pt-0.5 min-w-[120px]">
+                      {FIELD_LABELS[campo] ?? campo}
+                    </span>
+                    <span className="line-through text-destructive/70 break-words">{String(antes ?? '—')}</span>
+                    <span className="text-emerald-600 dark:text-emerald-400 break-words">{String(despues ?? '—')}</span>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="px-4 py-2.5 text-xs text-muted-foreground">{e.action}</p>
+            )}
+          </div>
+        )
+      })}
+    </div>
+  )
+}
 
 function ActividadesModalTab({ hallazgoId }: { hallazgoId: number }) {
   const [actividades, setActividades] = useState<Actividad[]>([])
@@ -92,13 +169,15 @@ function ActividadesModalTab({ hallazgoId }: { hallazgoId: number }) {
   )
 }
 
-export default function HallazgosPage() {
+function HallazgosPageInner() {
   const pathname = usePathname()
+  const { isDirectivo, isVice, isAdmin } = useAuth()
+  const canEdit = isDirectivo || isVice || isAdmin
   const [activeMainTab, setActiveMainTab] = useState<'hallazgos' | 'actividades'>('hallazgos')
   const [showAnalyzer, setShowAnalyzer] = useState(false)
   const [selectedHallazgo, setSelectedHallazgo] = useState<Hallazgo | null>(null)
   const [selectedActividad, setSelectedActividad] = useState<Actividad | null>(null)
-  const [activeDetailTab, setActiveDetailTab] = useState<'info' | 'actividades'>('info')
+  const [activeDetailTab, setActiveDetailTab] = useState<'info' | 'actividades' | 'historial'>('info')
   const [exporting, setExporting] = useState(false)
 
   async function handleExport(fmt: 'csv' | 'xlsx') {
@@ -252,24 +331,32 @@ export default function HallazgosPage() {
         {selectedHallazgo && (
           <div className="space-y-4">
             <div className="flex border-b border-border">
-              {(['info', 'actividades'] as const).map((tab) => (
+              {(['info', 'actividades', 'historial'] as const).map((tab) => (
                 <button
                   key={tab}
                   onClick={() => setActiveDetailTab(tab)}
                   className={cn(
-                    'px-4 py-2.5 text-sm font-medium border-b-2 transition-colors capitalize',
+                    'px-4 py-2.5 text-sm font-medium border-b-2 transition-colors flex items-center gap-1.5',
                     activeDetailTab === tab
                       ? 'border-primary text-primary'
                       : 'border-transparent text-muted-foreground hover:text-foreground'
                   )}
                 >
-                  {tab === 'info' ? 'Información' : 'Actividades'}
+                  {tab === 'info' ? 'Información' : tab === 'actividades' ? 'Actividades' : (
+                    <><History className="w-3.5 h-3.5" />Historial</>
+                  )}
                 </button>
               ))}
             </div>
 
             {activeDetailTab === 'info' && (
               <div className="space-y-5 max-h-[65vh] overflow-y-auto pr-1">
+                {!canEdit && (
+                  <div className="flex items-center gap-2 rounded-lg bg-muted/60 border border-border px-3 py-2 text-xs text-muted-foreground">
+                    <Lock className="w-3.5 h-3.5 shrink-0" />
+                    Solo los directivos pueden editar este hallazgo.
+                  </div>
+                )}
                 <div>
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Descripción</p>
                   <div className="bg-muted/50 rounded-lg p-4"><FormattedText value={selectedHallazgo.descripcion} /></div>
@@ -291,7 +378,7 @@ export default function HallazgosPage() {
                 </div>
                 {selectedHallazgo.observaciones && (
                   <div>
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2">Observaciones</p>
+                    <p className="text-xs font-semibond text-muted-foreground uppercase tracking-wide mb-2">Observaciones</p>
                     <div className="bg-muted/50 rounded-lg p-4"><FormattedText value={selectedHallazgo.observaciones} /></div>
                   </div>
                 )}
@@ -303,11 +390,25 @@ export default function HallazgosPage() {
                 <ActividadesModalTab hallazgoId={selectedHallazgo.id} />
               </div>
             )}
+
+            {activeDetailTab === 'historial' && (
+              <div className="max-h-[65vh] overflow-y-auto pr-1">
+                <HistorialTab hallazgoId={selectedHallazgo.id} />
+              </div>
+            )}
           </div>
         )}
       </Modal>
 
       <ActividadDetailModal actividad={selectedActividad} onClose={() => setSelectedActividad(null)} readOnly />
     </DashboardShell>
+  )
+}
+
+export default function HallazgosPage() {
+  return (
+    <Suspense>
+      <HallazgosPageInner />
+    </Suspense>
   )
 }

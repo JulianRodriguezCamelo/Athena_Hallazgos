@@ -13,7 +13,7 @@ class UserPreferences(db.Model):
         unique=True,
         index=True,
     )
-    dashboard_layout = db.Column(db.JSON, nullable=True)
+    dashboard_layout = db.Column(db.Text, nullable=True)
     updated_at       = db.Column(
         db.DateTime,
         default=lambda: datetime.now(timezone.utc),

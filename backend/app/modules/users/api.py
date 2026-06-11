@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required
 from app.modules.users import controller
-from app.utils.decorators import role_required, get_current_user
+from app.utils.decorators import role_required, get_current_user, min_role
 from app.extensions import db
 
 users_bp = Blueprint("users", __name__, url_prefix="/api/users")
@@ -89,6 +89,16 @@ def list_dependencias():
     current_user = get_current_user()
     dependencias = controller.distinct_dependencias_user(current_user)
     return jsonify({"dependencias": dependencias}), 200
+
+
+@users_bp.route("/active", methods=["GET"])
+@jwt_required()
+@min_role("directivo")
+def list_active_users():
+    """Lista mínima de usuarios activos para dropdowns (directivo+)."""
+    from app.models.user import User
+    users = User.query.filter_by(activo=True).order_by(User.nombre).all()
+    return jsonify({"users": [{"id": u.id, "nombre": u.nombre} for u in users]}), 200
 
 
 @users_bp.route("/me/preferences", methods=["GET"])

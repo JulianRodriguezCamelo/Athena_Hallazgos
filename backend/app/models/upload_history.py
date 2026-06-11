@@ -14,10 +14,7 @@ class UploadHistory(db.Model):
     total_registros = db.Column(db.Integer, default=0)
     registros_exitosos = db.Column(db.Integer, default=0)
     registros_fallidos = db.Column(db.Integer, default=0)
-    estado = db.Column(
-        db.Enum("procesando", "completado", "error", name="upload_estado_enum"),
-        default="procesando",
-    )
+    estado = db.Column(db.String(20), default="procesando")
     errores = db.Column(db.Text, nullable=True)
     uploaded_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 

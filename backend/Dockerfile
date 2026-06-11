@@ -4,5 +4,9 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
+
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 EXPOSE 5000
-CMD ["gunicorn", "--worker-class", "eventlet", "--workers", "4", "--timeout", "300", "--graceful-timeout", "30", "--keep-alive", "5", "--bind", "0.0.0.0:5000", "wsgi:app"]
+ENTRYPOINT ["/entrypoint.sh"]

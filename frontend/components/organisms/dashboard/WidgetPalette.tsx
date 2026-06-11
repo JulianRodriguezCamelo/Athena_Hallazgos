@@ -12,7 +12,7 @@ interface Props {
   onClose: () => void
   onAdd: (widgetType: WidgetType) => void
   currentWidgetTypes: WidgetType[]
-  role: 'vicepresidente' | 'directivo'
+  role: 'vicepresidente' | 'directivo' | 'administrador'
 }
 
 const GROUP_LABELS: Record<string, string> = {

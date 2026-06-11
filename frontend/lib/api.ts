@@ -107,10 +107,12 @@ export const hallazgosApi = {
   vicepresidencias: () => request('/api/hallazgos/vicepresidencias'),
   direcciones: () => request('/api/hallazgos/direcciones'),
 
+  history: (id: number) => request(`/api/hallazgos/${id}/history`),
+
   /** Descarga los hallazgos filtrados como archivo CSV o Excel. */
   export: async (params: Record<string, unknown> = {}, fmt: 'csv' | 'xlsx' = 'csv') => {
     const token = getToken()
-    const query = Object.entries({ ...params, format: fmt })
+    const query = Object.entries({ ...params, format: fmt as string })
       .filter(([, v]) => v !== undefined && v !== null && v !== '')
       .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(String(v))}`)
       .join('&')
@@ -224,6 +226,7 @@ export const preferencesApi = {
 // ── Users ─────────────────────────────────────────────────────────────────────
 export const usersApi = {
   list: () => request('/api/users/'),
+  activeList: () => request<{ users: { id: number; nombre: string }[] }>('/api/users/active'),
   get: (id: number) => request(`/api/users/${id}`),
   create: (data: Record<string, unknown>) =>
     request('/api/users/', { method: 'POST', body: data }),

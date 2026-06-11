@@ -8,13 +8,13 @@ class Config:
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(hours=8)
 
     DB_HOST = os.environ.get("DB_HOST", "localhost")
-    DB_PORT = os.environ.get("DB_PORT", "5432")
-    DB_NAME = os.environ.get("DB_NAME", "hallazgos_db")
-    DB_USER = os.environ.get("DB_USER", "postgres")
-    DB_PASSWORD = os.environ.get("DB_PASSWORD", "postgres")
+    DB_PORT = os.environ.get("DB_PORT", "1521")
+    DB_SERVICE = os.environ.get("DB_SERVICE", "XEPDB1")
+    DB_USER = os.environ.get("DB_USER", "hallazgos")
+    DB_PASSWORD = os.environ.get("DB_PASSWORD", "hallazgos")
 
     SQLALCHEMY_DATABASE_URI = (
-        f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+        f"oracle+oracledb://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_SERVICE}"
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
@@ -60,7 +60,7 @@ class ProductionConfig(Config):
             raise ValueError("SECRET_KEY insegura o no configurada para producción")
         if cls.JWT_SECRET_KEY in weak_defaults or len(cls.JWT_SECRET_KEY) < 32:
             raise ValueError("JWT_SECRET_KEY insegura o no configurada para producción")
-        if cls.DB_PASSWORD in ("postgres", "", "password"):
+        if cls.DB_PASSWORD in ("hallazgos", "oracle", "", "password"):
             raise ValueError("DB_PASSWORD insegura para producción")
 
 

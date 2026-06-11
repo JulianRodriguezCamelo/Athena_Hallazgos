@@ -501,6 +501,32 @@ def delete_checklist_item(user, item_id: int):
     return True, None
 
 
+def get_hallazgo_history(user, hallazgo_id: int):
+    """Retorna el log de auditoría de un hallazgo, con nombre de usuario incluido."""
+    import json
+    if not service.get_by_id(user, hallazgo_id):
+        return None
+    from app.models.audit_log import AuditLog
+    from app.models.user import User
+    entries = (
+        AuditLog.query
+        .filter_by(entity_type="hallazgo", entity_id=hallazgo_id)
+        .order_by(AuditLog.created_at.desc())
+        .limit(100)
+        .all()
+    )
+    result = []
+    for e in entries:
+        d = e.to_dict()
+        d["usuario"] = e.user.nombre if e.user else "Sistema"
+        try:
+            d["changes"] = json.loads(e.changes) if e.changes else {}
+        except Exception:
+            d["changes"] = {}
+        result.append(d)
+    return result
+
+
 def get_estados(user):
     ids = service.base_query(user).with_entities(Hallazgo.id)
     return [e[0] for e in service.distinct_estados(ids) if e[0]]

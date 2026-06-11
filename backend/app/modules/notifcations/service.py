@@ -13,13 +13,16 @@ from app.modules.notifcations.email_template import (
 
 class NotificationService:
 
-    EMAIL_ENABLED = True
+    @classmethod
+    def _is_enabled(cls) -> bool:
+        import os
+        return os.environ.get("NOTIFICATIONS_ENABLED", "false").lower() == "true"
 
     # ── Email base ───────────────────────────────────────────────────────────
 
     @classmethod
     def _send(cls, to: str, subject: str, html: str, fallback: str = ""):
-        if not cls.EMAIL_ENABLED:
+        if not cls._is_enabled():
             return
         msg = Message(subject=subject, recipients=[to])
         msg.body = fallback or subject
@@ -28,8 +31,10 @@ class NotificationService:
 
     # ── Guardar en sistema ───────────────────────────────────────────────────
 
-    @staticmethod
-    def _guardar(user_id: int, hallazgo_id: int, title: str, message: str, type: str, email_sent: bool = False):
+    @classmethod
+    def _guardar(cls, user_id: int, hallazgo_id: int, title: str, message: str, type: str, email_sent: bool = False):
+        if not cls._is_enabled():
+            return None
         notificacion = Notificacition(
             user_id=user_id,
             hallazgo_id=hallazgo_id,

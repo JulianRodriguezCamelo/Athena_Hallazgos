@@ -1,7 +1,8 @@
 'use client'
 
 import { usePathname } from 'next/navigation'
-import { RefreshCw } from 'lucide-react'
+import { RefreshCw, FileText } from 'lucide-react'
+import Link from 'next/link'
 import { useAuth } from '@/lib/auth'
 import AdminDashboard from './AdminDashboard'
 import DirectivoDashboard from './DirectivoDashboard'
@@ -66,10 +67,18 @@ export default function DashboardPage() {
           title="Dashboard de Hallazgos"
           description="Resumen ejecutivo de eventos de riesgo operacional"
           action={
-            <Button variant="outline" size="sm" onClick={() => reload(true)} disabled={isRefreshing} className="gap-2">
-              <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
-              Actualizar
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button variant="outline" size="sm" onClick={() => reload(true)} disabled={isRefreshing} className="gap-2">
+                <RefreshCw className={`h-3.5 w-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
+                Actualizar
+              </Button>
+              <Link href="/dashboard/reporte">
+                <Button variant="outline" size="sm" className="gap-2">
+                  <FileText className="h-3.5 w-3.5" />
+                  Reporte PDF
+                </Button>
+              </Link>
+            </div>
           }
         />
 

@@ -29,7 +29,7 @@ export function ActividadDetailModal({ actividad, onClose, readOnly = false }: P
     setNuevaNota('')
     setLoadingNotas(true)
     actividadesApi.listNotas(actividad.id)
-      .then((res: { data: { notas: NotaSeguimiento[] } }) => setNotas(res.data.notas ?? []))
+      .then((res) => setNotas((res.data as { notas: NotaSeguimiento[] }).notas ?? []))
       .catch(() => {})
       .finally(() => setLoadingNotas(false))
   }, [actividad?.id])

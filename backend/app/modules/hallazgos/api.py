@@ -187,6 +187,16 @@ def delete_checklist(item_id):
     return jsonify({"message": "Ítem eliminado"}), 200
 
 
+@hallazgos_bp.route("/<int:hallazgo_id>/history", methods=["GET"])
+@jwt_required()
+def get_hallazgo_history(hallazgo_id):
+    user = get_current_user()
+    history = controller.get_hallazgo_history(user, hallazgo_id)
+    if history is None:
+        return jsonify({"error": "Hallazgo no encontrado o sin permisos"}), 404
+    return jsonify({"history": history}), 200
+
+
 @hallazgos_bp.route("/estados", methods=["GET"])
 @jwt_required()
 def get_estados():
