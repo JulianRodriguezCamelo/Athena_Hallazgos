@@ -14,7 +14,7 @@ class Config:
     DB_PASSWORD = os.environ.get("DB_PASSWORD", "hallazgos")
 
     SQLALCHEMY_DATABASE_URI = (
-        f"oracle+oracledb://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_SERVICE}"
+        f"oracle+oracledb://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/?service_name={DB_SERVICE}"
     )
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
